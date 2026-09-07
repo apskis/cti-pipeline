@@ -1,0 +1,4 @@
+name: bulletin-scan
+cadence: "0 13 * * 1-5"      # weekday 09:00 ET (13:00 UTC)
+enabled_servers: [search, nvd, enrich, ics]
+output_prefix: bulletins

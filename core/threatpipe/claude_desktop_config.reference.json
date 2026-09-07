@@ -1,0 +1,144 @@
+{
+  "mcpServers": {
+    "falcon-mcp": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uv",
+        "run",
+        "--directory",
+        "C:\\Users\\<user>\\projects\\threatpipe",
+        "falcon_launcher.py"
+      ],
+      "env": {
+        "KEY_VAULT_URL": "https://your-keyvault-name.vault.azure.net/"
+      }
+    },
+    "splunk-mcp-server": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uv",
+        "run",
+        "--directory",
+        "C:\\Users\\<user>\\projects\\threatpipe",
+        "splunk_launcher.py"
+      ],
+      "env": {
+        "KEY_VAULT_URL": "https://your-keyvault-name.vault.azure.net/"
+      }
+    },
+    "shodan": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uv",
+        "run",
+        "--directory",
+        "C:\\Users\\<user>\\projects\\threatpipe",
+        "shodan_server.py"
+      ],
+      "env": {
+        "KEY_VAULT_URL": "https://your-keyvault-name.vault.azure.net/"
+      }
+    },
+    "nvd": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uv",
+        "run",
+        "--directory",
+        "C:\\Users\\<user>\\projects\\threatpipe",
+        "nvd_server.py"
+      ],
+      "env": {
+        "KEY_VAULT_URL": "https://your-keyvault-name.vault.azure.net/"
+      }
+    },
+    "intel471": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uv",
+        "run",
+        "--directory",
+        "C:\\Users\\<user>\\projects\\threatpipe",
+        "intel471_server.py"
+      ],
+      "env": {
+        "KEY_VAULT_URL": "https://your-keyvault-name.vault.azure.net/"
+      }
+    },
+    "claroty": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uv",
+        "run",
+        "--directory",
+        "C:\\Users\\<user>\\projects\\threatpipe",
+        "claroty_server.py"
+      ],
+      "env": {
+        "KEY_VAULT_URL": "https://your-keyvault-name.vault.azure.net/"
+      }
+    },
+    "rapid7": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uv",
+        "run",
+        "--directory",
+        "C:\\Users\\<user>\\projects\\threatpipe",
+        "rapid7_server.py"
+      ],
+      "env": {
+        "KEY_VAULT_URL": "https://your-keyvault-name.vault.azure.net/"
+      }
+    },
+    "ics-advisories": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uv",
+        "run",
+        "--directory",
+        "C:\\Users\\<user>\\projects\\threatpipe",
+        "ics_server.py"
+      ],
+      "env": {
+        "KEY_VAULT_URL": "https://your-keyvault-name.vault.azure.net/"
+      }
+    },
+    "threatq": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uv",
+        "run",
+        "--directory",
+        "C:\\Users\\<user>\\projects\\threatpipe",
+        "threatq_server.py"
+      ],
+      "env": {
+        "KEY_VAULT_URL": "https://your-keyvault-name.vault.azure.net/"
+      }
+    },
+    "enrich": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "uv",
+        "run",
+        "--directory",
+        "C:\\Users\\<user>\\projects\\threatpipe",
+        "enrich_server.py"
+      ],
+      "env": {
+        "KEY_VAULT_URL": "https://your-keyvault-name.vault.azure.net/"
+      }
+    }
+  }
+}

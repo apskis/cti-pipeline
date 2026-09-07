@@ -1,0 +1,8 @@
+python-docx>=1.1
+openpyxl>=3.1
+pillow>=10.0
+# Optional, only if you use the Agent SDK runner instead of the Claude Code CLI:
+# claude-agent-sdk
+# python-dotenv
+# NOTE: Azure Key Vault resolution is done by your cti-feeds launchers (their repo,
+# their deps). No azure-* packages are needed by THIS repo.

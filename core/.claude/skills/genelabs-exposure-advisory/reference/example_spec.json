@@ -1,0 +1,248 @@
+{
+  "doc_id": "CTI-EXP-GLCN01 v5.0",
+  "tlp": "AMBER+STRICT",
+  "marking": "CTI Threat Hunt Finding",
+  "copyright_line": "© 2026 GeneLabs LLC  |  Proprietary and Confidential - For Internal Use Only",
+  "title": "Internet Exposure of GLCN-PRD-TMSF01",
+  "subtitle": "Production Windows host in AWS China presenting WinRM and RPC to the public internet. Risk and required actions first; supporting evidence in Technical Detail.",
+  "doc_control": [
+    [
+      "Title",
+      "Internet Exposure of GLCN-PRD-TMSF01 - Findings and Required Actions"
+    ],
+    [
+      "Prepared By",
+      "Cyber Threat Intelligence (CTI Threat Hunting Automation)"
+    ],
+    [
+      "Date",
+      "2026-08-24"
+    ],
+    [
+      "Affected Asset",
+      "GLCN-PRD-TMSF01  (AWS EC2 i-0b00e4b6ca6fdee31, 203.0.113.10)"
+    ],
+    [
+      "Source Hunts",
+      "TH26-01 (Windows IKE) and TH26-04 (Ray) rescans; Shodan and connector enrichment 2026-08-24"
+    ],
+    [
+      "Severity",
+      "HIGH - internet exposed management services on a production server"
+    ],
+    [
+      "Document Owner Function",
+      "EIS - Cyber Threat Intelligence"
+    ]
+  ],
+  "summary_label": "Summary:",
+  "summary": "GLCN-PRD-TMSF01, a production Windows Server 2022 host in AWS China, is presenting WinRM (TCP 5985) and RPC Endpoint Mapper (TCP 135) to the public internet. The host is governed by an AWS security group rather than the corporate perimeter, so the exposure is outside firewall and SIEM visibility and was detectable only through external scanning. No compromise has been observed. Remediation is a security group ingress change.",
+  "sections": [
+    {
+      "heading": "Why We Care",
+      "paragraphs": [
+        "GLCN-PRD-TMSF01 is a production Windows Server 2022 host supporting the TMSF application estate. It resides in AWS China (account 179162745785) with a routable public address, and its ingress is controlled solely by an AWS security group. There is no corporate firewall, no proxy and no inspection layer between the host and the internet.",
+        "WinRM on TCP 5985 is an authenticated remote command execution service. Exposing it to 0.0.0.0/0 places a credential dependent path to remote code execution on a production host directly on the internet, with authentication as the only remaining control. That surface is exposed to unauthenticated credential attack: password spraying, credential stuffing against reused or previously breached accounts, and NTLM negotiation abuse. The WinRM listener discloses NTLM derived host and domain information before authentication, which reduces the effort required to target it. Successful authentication yields interactive PowerShell execution in the security context of the authenticating principal, positioning an attacker inside the production estate in a single step.",
+        "RPC Endpoint Mapper on TCP 135 does not itself provide execution, but it discloses the host's internal address (172.31.14.69), a dynamic endpoint port and a named service interface. This is pre attack reconnaissance that supports internal network mapping and subsequent targeting.",
+        "No compromise has been observed. Falcon telemetry shows no post exploitation activity in the hunt window and the address carries no association with known threat infrastructure in Intel471 or ThreatQ. The finding is an unmitigated attack surface, not an active incident, and remediation is a configuration change rather than patching or rebuild."
+      ],
+      "callout": {
+        "label": "Detection gap:",
+        "text": "Ingress to this host does not traverse the corporate Palo Alto firewall, so no perimeter or SIEM detection can fire on traffic to these ports. In an attack over WinRM, the earliest GeneLabs owned telemetry would be Falcon endpoint detection after execution has already occurred. The same gap covers every internet facing instance in AWS account 179162745785."
+      },
+      "bullets": [
+        "Internet reachable administrative services on a production host represent the shortest available path from external attacker to internal execution.",
+        "Authentication is the only control in front of WinRM here. Any credential compromise elsewhere in the estate becomes directly actionable against this host.",
+        "The exposure exceeds the scope of the originating hunt. TH26-01 addressed IKE probing tied to a single CVE; WinRM and RPC are general purpose administrative services exposed without restriction.",
+        "The finding was identified only through external scanning. GeneLabs owned telemetry did not and cannot surface it, and that limitation applies to every internet facing instance in the account."
+      ]
+    },
+    {
+      "heading": "What Needs To Be Done",
+      "intro": "The first three items close the exposure. The rest confirm how far the same problem spreads and stop it coming back.",
+      "subsections": [
+        {
+          "heading": "Immediate - close the exposure",
+          "table": {
+            "header": [
+              "Action",
+              "Owner",
+              "Detail"
+            ],
+            "rows": [
+              [
+                "Restrict the AWS security group",
+                "Cloud Engineering",
+                "On instance i-0b00e4b6ca6fdee31, remove the 0.0.0.0/0 ingress rules for TCP 5985, TCP 135 and UDP 500/4500. Any port that is genuinely required, for example a validated IPsec peer, should be scoped to that specific peer address list only."
+              ],
+              [
+                "Confirm the management services are not needed remotely",
+                "TMSF App Owner / Cloud Engineering",
+                "WinRM and RPC should be reachable from a management subnet or a bastion host, never from the open internet. Confirm no external integration depends on them before or immediately after locking the group."
+              ],
+              [
+                "Verify patch state for CVE-2026-33824",
+                "Vulnerability Management",
+                "Confirm the IKE double free vulnerability (CVE-2026-33824, CVSS 9.8, on the CISA KEV list) is patched on this host, using Rapid7 InsightVM. Falcon Spotlight is not licensed, so the SIEM cannot answer this."
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "Follow up - confirm scope and prevent recurrence",
+          "table": {
+            "header": [
+              "Action",
+              "Owner",
+              "Detail"
+            ],
+            "rows": [
+              [
+                "Audit the whole AWS China account",
+                "Cloud Engineering",
+                "Review every internet facing instance in account 179162745785 for the same pattern: security groups exposing management ports (3389, 5985, 135, 22, 5986) or VPN services to 0.0.0.0/0. GLCN-PRD-TMSF01 is unlikely to be the only one."
+              ],
+              [
+                "Close the monitoring blind spot",
+                "SIEM Engineering / Cloud Engineering",
+                "Ingest VPC Flow Logs for internet facing instances into Splunk or NG-SIEM. Today the SIEM cannot see ingress to any host governed by an AWS security group, which is why external scanning data was the only source that caught this."
+              ],
+              [
+                "Review the RPC information leak",
+                "TMSF App Owner",
+                "The RPC banner exposes the internal address 172.31.14.69 and names the Ngc Pop Key Service. Confirm this is no longer visible once port 135 is closed to the internet."
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Technical Detail",
+      "intro": "The preceding sections carry the assessment and required actions. This section carries the supporting evidence.",
+      "subsections": [
+        {
+          "heading": "The asset",
+          "paragraphs": [
+            "GLCN-PRD-TMSF01 is a production Windows Server 2022 instance (AWS EC2 m5.xlarge) in the AWS China Beijing region, account 179162745785, instance i-0b00e4b6ca6fdee31, public IP 203.0.113.10. It carries a healthy CrowdStrike Falcon sensor (version 7.38.21003.0, last seen 2026-08-24) and belongs to the TMSF application estate."
+          ]
+        },
+        {
+          "heading": "External view: Shodan",
+          "intro": "Shodan indexes services reachable from the public internet and was the only source in this investigation with visibility of the exposed management services. The lookup below was re run on 2026-08-24 and confirms the exposure remains present.",
+          "table": {
+            "header": [
+              "Field",
+              "Value from Shodan"
+            ],
+            "rows": [
+              [
+                "IP",
+                "203.0.113.10"
+              ],
+              [
+                "Reverse hostname",
+                "ec2-52-81-4-218.cn-north-1.compute.amazonaws.com.cn"
+              ],
+              [
+                "Organisation / ISP",
+                "Beijing Sinnet Technology Co., Ltd. / Beijing Guanghuan Xinwang Digital"
+              ],
+              [
+                "ASN",
+                "AS55960"
+              ],
+              [
+                "Country",
+                "China"
+              ],
+              [
+                "Tags",
+                "cloud"
+              ],
+              [
+                "Open ports seen from the internet",
+                "TCP 5985 (WinRM), TCP 135 (Microsoft RPC Endpoint Mapper)"
+              ],
+              [
+                "Last Shodan scan",
+                "2026-08-21 15:31 UTC"
+              ],
+              [
+                "CVEs asserted by Shodan",
+                "None. Shodan flags no vulnerability on this host; the concern is the exposure itself."
+              ]
+            ],
+            "caption": "Source: Shodan host lookup on 203.0.113.10, retrieved 2026-08-24."
+          },
+          "callout": {
+            "label": "Why the external source was decisive:",
+            "text": "Falcon observes the host from the endpoint and Splunk observes only traffic traversing the corporate firewall. Neither can characterise external reachability. Shodan answered that question directly and returned two unauthorised management services."
+          },
+          "subsections": [
+            {
+              "heading": "What the banners reveal",
+              "bullets": [
+                "TCP 5985 banner: HTTP/1.1 404 Not Found, Server: Microsoft-HTTPAPI/2.0, followed by WinRM NTLM Info disclosing operating system detail. The 404 status is the WinRM listener responding to an unrouted request and confirms the service is live and reachable; it does not indicate a filtered port.",
+                "TCP 135 banner: Microsoft RPC Endpoint Mapper, interface 51a227ae-825b-41f2-b4a9-1ac9557a1018 v1.0, annotation Ngc Pop Key Service, ncacn_ip_tcp 172.31.14.69:49664, with named pipes samss lpc and SidKey Local En. This discloses the private address, a dynamic endpoint port and an internal service interface.",
+                "Shodan reports no UDP 500 or 4500. Shodan's UDP coverage is substantially less complete than its TCP coverage, so absence is not evidence of a filtered port. The IKE exposure rests on the TH26-01 Falcon and Splunk evidence below, not on this scan."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "Exposed service classes",
+          "bullets": [
+            "TCP 5985, WinRM (Windows Remote Management). Authenticated remote PowerShell and command execution endpoint. Returns Microsoft-HTTPAPI/2.0 and discloses NTLM derived host information pre authentication.",
+            "TCP 135, Microsoft RPC Endpoint Mapper. Discloses the internal address 172.31.14.69 and the Ngc Pop Key Service interface, supporting reconnaissance and internal network mapping.",
+            "UDP 500 and 4500, IKE and IPsec negotiation. TH26-01 observed three external addresses probing this service, and the TH26-01 Splunk rescan identified the same source cluster sweeping GeneLabs's wider public IKE surface. All firewall protected sites blocked the traffic; this host accepted it."
+          ]
+        },
+        {
+          "heading": "How this was discovered",
+          "intro": "Three telemetry sources contributed and none provided complete coverage independently.",
+          "subsections": [
+            {
+              "heading": "CrowdStrike Falcon (endpoint view)",
+              "paragraphs": [
+                "TH26-01 observed inbound IKE probing against the host and confirmed no subsequent exploitation at the endpoint. Falcon establishes that the host is production, sensored and healthy. Falcon has no visibility of external reachability, as it observes the host from the operating system inward."
+              ]
+            },
+            {
+              "heading": "Splunk and PAN firewall (SIEM view)",
+              "paragraphs": [
+                "A 14 day search of firewall traffic to 203.0.113.10 returned only internally sourced RDP sessions from the L3-Trust and GlobalProtect zones. No traffic to TCP 5985 or TCP 135 from external sources was recorded. This absence is a visibility artefact rather than a negative finding: ingress to this host is governed by an AWS security group and never traverses the Palo Alto estate, so it is not represented in the SIEM."
+              ]
+            },
+            {
+              "heading": "Shodan and indicator enrichment (external view)",
+              "paragraphs": [
+                "The external exposure lookup was the sole source with visibility of WinRM and RPC. Indicator enrichment corroborated both ports and confirmed the ASN as Beijing Sinnet (AS55960). Neither Intel471 nor ThreatQ associate the address with known malicious infrastructure; the finding is the exposure itself rather than attributed activity."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "Visibility gap",
+          "paragraphs": [
+            "Because ingress is governed by an AWS security group rather than the corporate firewall, neither perimeter enforcement nor SIEM detection covers traffic to these ports. In an attack over WinRM the earliest GeneLabs owned telemetry would be Falcon endpoint detection, post execution. No perimeter alerting exists.",
+            "This is a property of the account rather than of this host. Every internet facing instance in AWS account 179162745785 carries the same gap until VPC Flow Logs are ingested."
+          ]
+        },
+        {
+          "heading": "Assessment",
+          "paragraphs": [
+            "No compromise has been observed. Falcon showed no post exploitation activity in the hunt window and the exposed IP is not tied to known threat infrastructure. This is an attack surface to close before it is used, not an active incident."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Bottom Line",
+      "paragraphs": [
+        "GLCN-PRD-TMSF01 is presenting WinRM and RPC Endpoint Mapper to the public internet from AWS China. Shodan confirmed the exposure on 2026-08-21 and it remains present on re check. The host sits outside the corporate perimeter, so neither firewall enforcement nor SIEM detection covers it. No compromise has been observed.",
+        "Required remediation is an AWS security group ingress change. Residual risk if unremediated is credential dependent remote code execution on a production host with no perimeter detection. Restrict the security group, confirm the patch state for CVE-2026-33824 in InsightVM, then audit the account for the same configuration pattern."
+      ]
+    }
+  ]
+}

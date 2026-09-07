@@ -1,0 +1,15 @@
+[project]
+name = "cti-threat-hunting-automation"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "anthropic[bedrock]>=1.3.0",
+    "azure-identity>=1.25.3",
+    "azure-keyvault-secrets>=4.11.2",
+    "claude-agent-sdk>=0.2.150",
+    "openpyxl>=3.1.5",
+    "pillow>=12.3.0",
+    "python-docx>=1.2.0",
+]

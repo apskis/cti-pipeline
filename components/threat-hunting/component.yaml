@@ -1,0 +1,4 @@
+name: threat-hunting
+cadence: "0 14 * * *"        # daily
+enabled_servers: [splunk, enrich]   # splunk only once the dev license lands
+output_prefix: hunts

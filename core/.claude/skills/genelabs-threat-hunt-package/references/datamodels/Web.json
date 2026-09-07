@@ -1,0 +1,1482 @@
+{
+	"modelName": "Web",
+	"displayName": "Web",
+	"description": "Web Data Model",
+	"objectSummary": {
+		"Event-Based": 2,
+		"Transaction-Based": 0,
+		"Search-Based": 0
+	},
+	"objects": [
+		{
+			"objectName": "Web",
+			"displayName": "Web",
+			"parentName": "BaseEvent",
+			"comment": {
+				"tags": [
+					"web"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "app",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "app",
+					"comment": {
+						"description": "The application detected or hosted by the server/site such as wordpress, splunk, or facebook."
+					}
+				},
+				{
+					"fieldName": "cached",
+					"owner": "Web",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "cached",
+					"comment": {
+						"description": "Indicates whether the event data is cached or not.",
+						"expected_values": [
+							"true",
+							"false",
+							"1",
+							"0"
+						]
+					}
+				},
+				{
+					"fieldName": "category",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "category",
+					"comment": {
+						"description": "The category of traffic, such as may be provided by a proxy server."
+					}
+				},
+				{
+					"fieldName": "cookie",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "cookie",
+					"comment": {
+						"description": "The cookie file recorded in the event."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_port",
+					"owner": "Web",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_port",
+					"comment": {
+						"description": "The destination port of the web traffic."
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "Web",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The time taken by the proxy event, in milliseconds."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "Web",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response, if applicable, in milliseconds."
+					}
+				},
+				{
+					"fieldName": "site",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "site",
+					"comment": {
+						"description": "The virtual site which services the request, if applicable."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "uri_path",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "uri_path",
+					"comment": {
+						"description": "The path of the resource served by the webserver or proxy."
+					}
+				},
+				{
+					"fieldName": "uri_query",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "uri_query",
+					"comment": {
+						"description": "The path of the resource requested by the client."
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "query",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "query",
+					"comment": ""
+				},
+				{
+					"fieldName": "file_name",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_name",
+					"comment": ""
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "action",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "action",
+							"comment": {
+								"description": "The action taken by the server or proxy.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_fillnull_action",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(action) OR action=\"\",\"unknown\",action)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "app",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "app",
+							"comment": ""
+						}
+					],
+					"calculationID": "fcbmhi4qn35",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(app) OR app=\"\",\"unknown\",app)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "bytes",
+							"owner": "Web",
+							"type": "number",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "bytes",
+							"comment": {
+								"description": "The total number of bytes transferred (bytes_in + bytes_out).",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_bytes",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnum(bytes),bytes,isnum(bytes_in) AND isnum(bytes_out),bytes_in+bytes_out,1=1,\"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "bytes_in",
+							"owner": "Web",
+							"type": "number",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "bytes_in",
+							"comment": {
+								"description": "The number of inbound bytes transferred.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_bytes_in",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnum(bytes_in),bytes_in,isnum(bytes) AND isnum(bytes_out),bytes-bytes_out,1=1,\"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "bytes_out",
+							"owner": "Web",
+							"type": "number",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "bytes_out",
+							"comment": {
+								"description": "The number of outbound bytes transferred.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_bytes_out",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnum(bytes_out),bytes_out,isnum(bytes) AND isnum(bytes_in),bytes-bytes_in,1=1,\"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "category",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "category",
+							"comment": ""
+						}
+					],
+					"calculationID": "95fdtzhukpn",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(category) OR category=\"\",\"unknown\",category)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "cookie",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "cookie",
+							"comment": ""
+						}
+					],
+					"calculationID": "3ckmss16ibu",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(cookie) OR cookie=\"\",\"unknown\",cookie)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest",
+							"comment": {
+								"description": "The destination of the network traffic (the remote host). You can alias this from more specific fields, such as dest_host, dest_ip, or dest_name.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_fillnull_dest",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(match(dest,\"[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]|[A-Fa-f0-9]:{1,2}[A-Fa-f0-9]|::[A-Fa-f0-9]|[A-Fa-f0-9]::|::\") OR isnull(dest) OR dest=\"\",\"unknown\",dest)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest_ip",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest_ip",
+							"comment": ""
+						}
+					],
+					"calculationID": "gel0n2qisk",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(match(dest,\"[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]|[A-Fa-f0-9]:{1,2}[A-Fa-f0-9]|::[A-Fa-f0-9]|[A-Fa-f0-9]::|::\"),dest,dest_ip)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest_ip",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest_ip",
+							"comment": ""
+						}
+					],
+					"calculationID": "3kce6fwquxy",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(match(dest_ip,\"[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]|[A-Fa-f0-9]:{1,2}[A-Fa-f0-9]|::[A-Fa-f0-9]|[A-Fa-f0-9]::|::\"), dest_ip, isnull(dest_ip) OR dest_ip=\"\",\"unknown\", 1=1, \"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "http_content_type",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "http_content_type",
+							"comment": ""
+						}
+					],
+					"calculationID": "p31gg19e1u",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(http_content_type) OR http_content_type=\"\",\"unknown\",http_content_type)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "http_method",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "http_method",
+							"comment": {
+								"description": "The HTTP method used in the request.",
+								"expected_values": [
+									"GET",
+									"PUT",
+									"POST",
+									"DELETE",
+									"HEAD",
+									"OPTIONS",
+									"CONNECT",
+									"TRACE"
+								],
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_fillnull_http_method",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(http_method) OR http_method=\"\" OR http_method=\"-\",\"unknown\",http_method)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "http_referrer",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "http_referrer",
+							"comment": {
+								"description": "The HTTP referrer used in the request. The W3C specification and many implementations misspell this as http_referer. Use a FIELDALIAS to handle both key names.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_fillnull_http_referrer",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(http_referrer) OR http_referrer=\"\" OR http_referrer=\"-\",\"unknown\",http_referrer)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "http_user_agent",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "http_user_agent",
+							"comment": {
+								"description": "The user agent used in the request.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_fillnull_http_user_agent",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(http_user_agent) OR http_user_agent=\"\" OR http_user_agent=\"-\",\"unknown\",http_user_agent)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "http_user_agent_length",
+							"owner": "Web",
+							"type": "number",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "http_user_agent_length",
+							"comment": {
+								"description": "The length of the user agent used in the request.",
+								"ta_relevant": false
+							}
+						}
+					],
+					"calculationID": "Web_http_user_agent_length",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "len(http_user_agent)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src",
+							"comment": {
+								"description": "The source of the network traffic (the client requesting the connection).",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_fillnull_src",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(src) OR src=\"\",\"uknown\",src)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src_ip",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src_ip",
+							"comment": ""
+						}
+					],
+					"calculationID": "96uatwecjmi",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(match(src,\"[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]|[A-Fa-f0-9]:{1,2}[A-Fa-f0-9]|::[A-Fa-f0-9]|[A-Fa-f0-9]::|::\"),src,src_ip)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src_ip",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src_ip",
+							"comment": ""
+						}
+					],
+					"calculationID": "4zj2mdcz1m2",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(match(src_ip,\"[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]|[A-Fa-f0-9]:{1,2}[A-Fa-f0-9]|::[A-Fa-f0-9]|[A-Fa-f0-9]::|::\"), src_ip, isnull(src_ip) OR src_ip=\"\",\"unknown\", 1=1, \"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "status",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "status",
+							"comment": {
+								"description": "The HTTP response code indicating the status of the proxy request.",
+								"expected_values": [
+									"100",
+									"101",
+									"102",
+									"200",
+									"201",
+									"202",
+									"203",
+									"204",
+									"205",
+									"206",
+									"207",
+									"208",
+									"226",
+									"300",
+									"301",
+									"302",
+									"303",
+									"304",
+									"305",
+									"306",
+									"307",
+									"308",
+									"400",
+									"401",
+									"402",
+									"403",
+									"404",
+									"405",
+									"406",
+									"407",
+									"408",
+									"409",
+									"410",
+									"411",
+									"412",
+									"413",
+									"414",
+									"415",
+									"416",
+									"417",
+									"422",
+									"423",
+									"424",
+									"426",
+									"428",
+									"429",
+									"431",
+									"500",
+									"501",
+									"502",
+									"503",
+									"504",
+									"505",
+									"506",
+									"507",
+									"508",
+									"510",
+									"511"
+								],
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_fillnull_status",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(status) OR status=\"\" OR status=\"-\",\"unknown\",status)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "url",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "url",
+							"comment": {
+								"description": "The URL of the requested HTTP resource.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_fillnull_url",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(url) OR url=\"\" OR url=\"-\",\"unknown\",url)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "url_length",
+							"owner": "Web",
+							"type": "number",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "url_length",
+							"comment": {
+								"description": "The length of the URL.",
+								"ta_relevant": false
+							}
+						}
+					],
+					"calculationID": "Web_url_length",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "len(url)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "user",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "user",
+							"comment": {
+								"description": "The user that requested the HTTP resource.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_fillnull_user",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(user) OR user=\"\",\"unknown\",user)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "vendor_product",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "vendor_product",
+							"comment": {
+								"description": "The vendor and product of the proxy server, such as Squid Proxy Server. This field can be automatically populated by vendor and product fields in your data.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Web_vendor_product",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(vendor_product),vendor_product,isnotnull(vendor) AND vendor!=\"unknown\" AND isnotnull(product) AND product!=\"unknown\",vendor.\" \".product,isnotnull(vendor) AND vendor!=\"unknown\" AND (isnull(product) OR product=\"unknown\"),vendor.\" unknown\",(isnull(vendor) OR vendor=\"unknown\") AND isnotnull(product) AND product!=\"unknown\",\"unknown \".product,isnotnull(sourcetype),sourcetype,1=1,\"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "vendor_product",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "vendor_product",
+							"comment": ""
+						}
+					],
+					"calculationID": "acvymj3s3dk",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(vendor_product),vendor_product,isnotnull(vendor) AND vendor!=\"unknown\" AND isnotnull(product) AND product!=\"unknown\",vendor.\" \".product,isnotnull(vendor) AND vendor!=\"unknown\" AND (isnull(product) OR product=\"unknown\"),vendor.\" unknown\",(isnull(vendor) OR vendor=\"unknown\") AND isnotnull(product) AND product!=\"unknown\",\"unknown \".product,1=1,\"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "file_name",
+							"owner": "Web",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "file_name",
+							"comment": ""
+						}
+					],
+					"calculationID": "w061lgh7vvg",
+					"owner": "Web",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(file_name) OR file_name=\"\",\"unknown\",file_name)"
+				}
+			],
+			"constraints": [
+				{
+					"search": "(`cim_Web_indexes`) (tag=proxy OR tag=resolution OR tag=web)",
+					"owner": "Web"
+				}
+			],
+			"lineage": "Web"
+		},
+		{
+			"objectName": "Proxy",
+			"displayName": "Proxy",
+			"parentName": "Web",
+			"comment": {
+				"tags": [
+					"web",
+					"proxy"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "app",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "app",
+					"comment": {
+						"description": "The application detected or hosted by the server/site such as wordpress, splunk, or facebook."
+					}
+				},
+				{
+					"fieldName": "cached",
+					"owner": "Web",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "cached",
+					"comment": {
+						"description": "Indicates whether the event data is cached or not.",
+						"expected_values": [
+							"true",
+							"false",
+							"1",
+							"0"
+						]
+					}
+				},
+				{
+					"fieldName": "category",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "category",
+					"comment": {
+						"description": "The category of traffic, such as may be provided by a proxy server."
+					}
+				},
+				{
+					"fieldName": "cookie",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "cookie",
+					"comment": {
+						"description": "The cookie file recorded in the event."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_port",
+					"owner": "Web",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_port",
+					"comment": {
+						"description": "The destination port of the web traffic."
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "Web",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The time taken by the proxy event, in milliseconds."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "Web",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response, if applicable, in milliseconds."
+					}
+				},
+				{
+					"fieldName": "site",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "site",
+					"comment": {
+						"description": "The virtual site which services the request, if applicable."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "uri_path",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "uri_path",
+					"comment": {
+						"description": "The path of the resource served by the webserver or proxy."
+					}
+				},
+				{
+					"fieldName": "uri_query",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "uri_query",
+					"comment": {
+						"description": "The path of the resource requested by the client."
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "query",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "query",
+					"comment": ""
+				},
+				{
+					"fieldName": "file_name",
+					"owner": "Web",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_name",
+					"comment": ""
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "file_name",
+							"owner": "Web.Proxy",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "file_name",
+							"comment": ""
+						}
+					],
+					"calculationID": "bqc9lj9v40t",
+					"owner": "Web.Proxy",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(file_name) OR file_name=\"\",\"unknown\",file_name)"
+				}
+			],
+			"constraints": [
+				{
+					"search": "tag=proxy",
+					"owner": "Web.Proxy"
+				}
+			],
+			"lineage": "Web.Proxy"
+		}
+	],
+	"objectNameList": [
+		"Web",
+		"Proxy"
+	]
+}

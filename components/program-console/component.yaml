@@ -1,0 +1,4 @@
+name: program-console
+cadence: "0 * * * *"         # hourly
+enabled_servers: []          # dashboard refresh is plain python; no MCP needed
+output_prefix: console

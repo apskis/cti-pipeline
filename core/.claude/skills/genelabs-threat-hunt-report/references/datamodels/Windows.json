@@ -1,0 +1,1004 @@
+{
+	"modelName": "Windows",
+	"displayName": "Windows",
+	"description": "",
+	"objectSummary": {
+		"Event-Based": 1,
+		"Transaction-Based": 0,
+		"Search-Based": 0
+	},
+	"objects": [
+		{
+			"objectName": "Windows_Security",
+			"displayName": "Windows Security",
+			"parentName": "BaseEvent",
+			"comment": "",
+			"fields": [
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "EventCode",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "EventCode",
+							"comment": ""
+						}
+					],
+					"calculationID": "iaxces5x648",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(EventCode) OR EventCode=\"\",\"unknown\",EventCode)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Logon_ID",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Logon_ID",
+							"comment": ""
+						}
+					],
+					"calculationID": "r7soqrhw4c",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Logon_ID) OR Logon_ID=\"\",\"unknown\",Logon_ID)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Security_ID",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Security_ID",
+							"comment": ""
+						}
+					],
+					"calculationID": "buhvihpgddw",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Security_ID) OR Security_ID=\"\",\"unknown\",Security_ID)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "action",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "action",
+							"comment": ""
+						}
+					],
+					"calculationID": "g4c4dnowhe5",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(action) OR action=\"\",\"unknown\",action)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "app",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "app",
+							"comment": ""
+						}
+					],
+					"calculationID": "lzmay5mkqc",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(app) OR app=\"\",\"unknown\",app)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest",
+							"comment": ""
+						}
+					],
+					"calculationID": "91o95z2zyr9",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(match(dest,\"[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]|[A-Fa-f0-9]:{1,2}[A-Fa-f0-9]|::[A-Fa-f0-9]|[A-Fa-f0-9]::|::\") OR isnull(dest) OR dest=\"\",\"unknown\",dest)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest_ip",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest_ip",
+							"comment": ""
+						}
+					],
+					"calculationID": "hi09wteyyqs",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(match(dest_ip,\"[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]|[A-Fa-f0-9]:{1,2}[A-Fa-f0-9]|::[A-Fa-f0-9]|[A-Fa-f0-9]::|::\"), dest_ip, isnull(dest_ip) OR dest_ip=\"\",\"unknown\", 1=1, \"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest_nt_domain",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest_nt_domain",
+							"comment": ""
+						}
+					],
+					"calculationID": "h39dbuhlayk",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(dest_nt_domain) OR dest_nt_domain=\"\",\"unknown\",dest_nt_domain)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "product",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "product",
+							"comment": ""
+						}
+					],
+					"calculationID": "un48u22rnf",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(product) OR product=\"\",\"unknown\",product)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "signature",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "signature",
+							"comment": ""
+						}
+					],
+					"calculationID": "exjvilpcbzl",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(signature) OR signature=\"\",\"unknown\",signature)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "signature_id",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "signature_id",
+							"comment": ""
+						}
+					],
+					"calculationID": "63c00g48le9",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(signature_id) OR signature_id=\"\",\"unknown\",signature_id)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src",
+							"comment": ""
+						}
+					],
+					"calculationID": "geabk6tsk3p",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(match(src,\"[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]|[A-Fa-f0-9]:{1,2}[A-Fa-f0-9]|::[A-Fa-f0-9]|[A-Fa-f0-9]::|::\") OR isnull(src) OR src=\"\",\"unknown\",src)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src_ip",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src_ip",
+							"comment": ""
+						}
+					],
+					"calculationID": "ggtcqnavg9n",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(match(src_ip,\"[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]*?(\\.|:)[A-Fa-f0-9]|[A-Fa-f0-9]:{1,2}[A-Fa-f0-9]|::[A-Fa-f0-9]|[A-Fa-f0-9]::|::\"),src_ip, isnull(src_ip) OR src_ip=\"\",\"unknown\",1=1, \"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src_nt_domain",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src_nt_domain",
+							"comment": ""
+						}
+					],
+					"calculationID": "8u9o35dx7bq",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(src_nt_domain) OR src_nt_domain=\"\",\"unknown\",src_nt_domain)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "status",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "status",
+							"comment": ""
+						}
+					],
+					"calculationID": "2psopp2ztfe",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(status) OR status=\"\",\"unknown\",status)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "user",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "user",
+							"comment": ""
+						}
+					],
+					"calculationID": "fk7kd6sjf5",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(user) OR user=\"\",\"unknown\",user)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "vendor",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "vendor",
+							"comment": ""
+						}
+					],
+					"calculationID": "fur59r19mw",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(vendor) OR vendor=\"\",\"unknown\",vendor)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Service_Account",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Service_Account",
+							"comment": ""
+						}
+					],
+					"calculationID": "8eafzvigbf4",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Service_Account) OR Service_Account=\"\",\"unknown\",Service_Account)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Service_File_Name",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Service_File_Name",
+							"comment": ""
+						}
+					],
+					"calculationID": "qsuadwrnt1",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Service_File_Name) OR Service_File_Name=\"\",\"unknown\",Service_File_Name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Service_Name",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Service_Name",
+							"comment": ""
+						}
+					],
+					"calculationID": "6izy1lduycs",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Service_Name) OR Service_Name=\"\",\"unknown\",Service_Name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Service_Start_Type",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Service_Start_Type",
+							"comment": ""
+						}
+					],
+					"calculationID": "ke2xui1flij",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Service_Start_Type) OR Service_Start_Type=\"\",\"unknown\",Service_Start_Type)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Service_Type",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Service_Type",
+							"comment": ""
+						}
+					],
+					"calculationID": "0bvv9efkq1z",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Service_Type) OR Service_Type=\"\",\"unknown\",Service_Type)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "user_group",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "user_group",
+							"comment": ""
+						}
+					],
+					"calculationID": "oz6uwja7oca",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(user_group) OR user_group=\"\",\"unknown\",user_group)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src_user",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src_user",
+							"comment": ""
+						}
+					],
+					"calculationID": "t60tccx6tqi",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(src_user) OR src_user=\"\",\"unknown\",src_user)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "New_DN",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "New_DN",
+							"comment": ""
+						}
+					],
+					"calculationID": "eo9xa20vbzu",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(New_DN) OR New_DN=\"\",\"unknown\",New_DN)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Old_DN",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Old_DN",
+							"comment": ""
+						}
+					],
+					"calculationID": "kbujjzghmsf",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Old_DN) OR Old_DN=\"\",\"unknown\",Old_DN)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Class",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Class",
+							"comment": ""
+						}
+					],
+					"calculationID": "94j3km1pziu",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Class) OR Class=\"\",\"unknown\",Class)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Change_Type",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Change_Type",
+							"comment": ""
+						}
+					],
+					"calculationID": "p6730ko1ylo",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Change_Type) OR Change_Type=\"\",\"unknown\",Change_Type)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Number_of_audit_messages_discarded",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Number_of_audit_messages_discarded",
+							"comment": ""
+						}
+					],
+					"calculationID": "k92r474d7e",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Number_of_audit_messages_discarded) OR Number_of_audit_messages_discarded=\"\",\"unknown\",Number_of_audit_messages_discarded)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Min__Password_Age",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Min__Password_Age",
+							"comment": ""
+						}
+					],
+					"calculationID": "1gds7hbrnqg",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Min__Password_Age) OR Min__Password_Age=\"\",\"unknown\",Min__Password_Age)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Min__Password_Length",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Min__Password_Length",
+							"comment": ""
+						}
+					],
+					"calculationID": "n38h8ktsu4e",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Min__Password_Length) OR Min__Password_Length=\"\",\"unknown\",Min__Password_Length)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Max__Password_Age",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Max__Password_Age",
+							"comment": ""
+						}
+					],
+					"calculationID": "290rurnhitd",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Max__Password_Age) OR Max__Password_Age=\"\",\"unknown\",Max__Password_Age)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Lockout_Threshold",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Lockout_Threshold",
+							"comment": ""
+						}
+					],
+					"calculationID": "h9d6o7irvu6",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Lockout_Threshold) OR Lockout_Threshold=\"\",\"unknown\",Lockout_Threshold)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Password_History_Length",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Password_History_Length",
+							"comment": ""
+						}
+					],
+					"calculationID": "x8bacy9d43h",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Password_History_Length) OR Password_History_Length=\"\",\"unknown\",Password_History_Length)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "SourceName",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "SourceName",
+							"comment": ""
+						}
+					],
+					"calculationID": "c8tektyr4tk",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(SourceName) OR SourceName=\"\",\"unknown\",SourceName)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Object_Name",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Object_Name",
+							"comment": ""
+						}
+					],
+					"calculationID": "d52clwhtz7u",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Object_Name) OR Object_Name=\"\",\"unknown\",Object_Name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Object_Value_Name",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Object_Value_Name",
+							"comment": ""
+						}
+					],
+					"calculationID": "htm43fov3iq",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Object_Value_Name) OR Object_Value_Name=\"\",\"unknown\",Object_Value_Name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "File_Name",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "File_Name",
+							"comment": ""
+						}
+					],
+					"calculationID": "ic1l5nkw0d",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(File_Name) OR File_Name=\"\",\"unknown\",File_Name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Relative_Target_Name",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Relative_Target_Name",
+							"comment": ""
+						}
+					],
+					"calculationID": "e4mv651gwd4",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Relative_Target_Name) OR Relative_Target_Name=\"\",\"unknown\",Relative_Target_Name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Share_Name",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Share_Name",
+							"comment": ""
+						}
+					],
+					"calculationID": "sed2sy85j6o",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Share_Name) OR Share_Name=\"\",\"unknown\",Share_Name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Share_Path",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Share_Path",
+							"comment": ""
+						}
+					],
+					"calculationID": "08g4hmmw6qc",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Share_Path) OR Share_Path=\"\",\"unknown\",Share_Path)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "Caller_Computer_Name",
+							"owner": "Windows_Security",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "Caller_Computer_Name",
+							"comment": ""
+						}
+					],
+					"calculationID": "ahb1ixevoq7",
+					"owner": "Windows_Security",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(Caller_Computer_Name) OR Caller_Computer_Name=\"\",\"unknown\",Caller_Computer_Name)"
+				}
+			],
+			"constraints": [
+				{
+					"search": "(`cim_Windows_indexes`) `wineventcode_filters` tag!=authentication tag=windows tag=security",
+					"owner": "Windows_Security"
+				}
+			],
+			"lineage": "Windows_Security"
+		}
+	],
+	"objectNameList": [
+		"Windows_Security"
+	]
+}

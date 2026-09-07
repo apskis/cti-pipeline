@@ -1,0 +1,4 @@
+name: perimeter-scan
+cadence: "0 13 * * 1"        # weekly Monday
+enabled_servers: [shodan, enrich, nvd]
+output_prefix: perimeter

@@ -1,0 +1,51 @@
+{
+  "_comment": "Non-secret project settings. Bedrock is OFF - using enterprise Claude account via SSO.",
+  "env": {},
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Edit(**)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(soffice:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(aws bedrock list-inference-profiles:*)",
+      "Bash(aws sts get-caller-identity:*)",
+      "WebFetch",
+      "mcp__falcon-mcp__falcon_search_*",
+      "mcp__falcon-mcp__falcon_get_*",
+      "mcp__falcon-mcp__falcon_aggregate_*",
+      "mcp__falcon-mcp__falcon_check_connectivity",
+      "mcp__splunk-mcp-server__splunk_run_query",
+      "mcp__splunk-mcp-server__splunk_run_saved_search",
+      "mcp__splunk-mcp-server__splunk_get_info",
+      "mcp__shodan__*",
+      "mcp__nvd__*",
+      "mcp__intel471__*",
+      "mcp__threatq__*",
+      "mcp__rapid7__*",
+      "mcp__enrich__*",
+      "mcp__claroty__*",
+      "mcp__ics-advisories__*",
+      "mcp__hisac__*"
+    ],
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(git push:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(aws bedrock-runtime invoke-model:*)",
+      "mcp__falcon-mcp__falcon_add_*",
+      "mcp__falcon-mcp__falcon_update_*",
+      "mcp__falcon-mcp__falcon_delete_*",
+      "mcp__falcon-mcp__falcon_create_*",
+      "mcp__falcon-mcp__falcon_perform_*",
+      "mcp__falcon-mcp__falcon_execute_*",
+      "mcp__falcon-mcp__falcon_init_rtr_session",
+      "mcp__falcon-mcp__falcon_run_rtr_*"
+    ]
+  },
+  "_model_note": "Using enterprise Claude account via SSO. Latest models available. Switch: .\switch_provider.ps1 bedrock"
+}

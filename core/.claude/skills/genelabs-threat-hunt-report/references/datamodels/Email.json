@@ -1,0 +1,3643 @@
+{
+	"modelName": "Email",
+	"displayName": "Email",
+	"description": "Email Data Model",
+	"objectSummary": {
+		"Event-Based": 5,
+		"Transaction-Based": 0,
+		"Search-Based": 0
+	},
+	"objects": [
+		{
+			"objectName": "All_Email",
+			"displayName": "All Email",
+			"parentName": "BaseEvent",
+			"comment": {
+				"tags": [
+					"email"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "delay",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "delay",
+					"comment": {
+						"description": "Total sending delay in milliseconds."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "The business unit of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "The category of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "The priority of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The amount of time for the completion of the messaging event, in seconds."
+					}
+				},
+				{
+					"fieldName": "file_hash",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_hash",
+					"comment": {
+						"description": "The hashes for the files attached to the message, if any exist."
+					}
+				},
+				{
+					"fieldName": "file_name",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_name",
+					"comment": {
+						"description": "The names of the files attached to the message, if any exist."
+					}
+				},
+				{
+					"fieldName": "file_size",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_size",
+					"comment": {
+						"description": "The size of the files attached the message, in bytes."
+					}
+				},
+				{
+					"fieldName": "internal_message_id",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "internal_message_id",
+					"comment": {
+						"description": "Host-specific unique message identifier (such as aid in sendmail, IMI in Domino, Internal-Message-ID in Exchange, and MID in Ironport)."
+					}
+				},
+				{
+					"fieldName": "message_id",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "message_id",
+					"comment": {
+						"description": "The globally-unique message identifier."
+					}
+				},
+				{
+					"fieldName": "message_info",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "message_info",
+					"comment": {
+						"description": "Additional information about the message."
+					}
+				},
+				{
+					"fieldName": "orig_dest",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_dest",
+					"comment": {
+						"description": "The original destination host of the message. The message destination host can change when a message is relayed or bounced."
+					}
+				},
+				{
+					"fieldName": "orig_recipient",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_recipient",
+					"comment": {
+						"description": "The original recipient of the message. The message recipient can change when the original email address is an alias and has to be resolved to the actual recipient."
+					}
+				},
+				{
+					"fieldName": "orig_src",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_src",
+					"comment": {
+						"description": "The original source of the message."
+					}
+				},
+				{
+					"fieldName": "protocol",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "protocol",
+					"comment": {
+						"description": "The email protocol involved, such as SMTP or RPC.",
+						"expected_values": [
+							"smtp",
+							"imap",
+							"pop3",
+							"mapi"
+						]
+					}
+				},
+				{
+					"fieldName": "process",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process",
+					"comment": {
+						"description": "The name of the email executable that carries out the message transaction, such as sendmail, postfix, or the name of an email client."
+					}
+				},
+				{
+					"fieldName": "process_id",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_id",
+					"comment": {
+						"description": "The numeric identifier of the process invoked to send the message."
+					}
+				},
+				{
+					"fieldName": "recipient_status",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "recipient_status",
+					"comment": {
+						"description": "The recipient delivery status, if available."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response in the messaging event, in seconds."
+					}
+				},
+				{
+					"fieldName": "retries",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "retries",
+					"comment": {
+						"description": "The number of times that the message was automatically resent because it was bounced back, or a similar transmission error condition."
+					}
+				},
+				{
+					"fieldName": "return_addr",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "return_addr",
+					"comment": {
+						"description": "The return address for the message."
+					}
+				},
+				{
+					"fieldName": "size",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "size",
+					"comment": {
+						"description": "The size of the message, in bytes."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "The business unit of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "The category of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "The priority of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_bunit",
+					"comment": {
+						"description": "The business unit of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_category",
+					"comment": {
+						"description": "The category of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_priority",
+					"comment": {
+						"description": "The priority of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "status_code",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "status_code",
+					"comment": {
+						"description": "The status code associated with the message."
+					}
+				},
+				{
+					"fieldName": "subject",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "subject",
+					"comment": {
+						"description": "The subject of the message."
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "url",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "url",
+					"comment": {
+						"description": "The URL associated with the message, if any."
+					}
+				},
+				{
+					"fieldName": "user",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user",
+					"comment": {
+						"description": "The user context for the process. This is not the email address for the sender. For that, use the src_user field."
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "The business unit of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "The category of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "The priority of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "xdelay",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "xdelay",
+					"comment": {
+						"description": "Extended delay information for the message transaction. May contain details of all the delays from all the servers in the message transmission chain."
+					}
+				},
+				{
+					"fieldName": "xref",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "xref",
+					"comment": {
+						"description": "An external reference. Can contain message IDs or recipient addresses from related messages."
+					}
+				},
+				{
+					"fieldName": "threatStatus",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "threatStatus",
+					"comment": ""
+				},
+				{
+					"fieldName": "sender",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sender",
+					"comment": ""
+				},
+				{
+					"fieldName": "eventType",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "eventType",
+					"comment": ""
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "action",
+							"owner": "All_Email",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "action",
+							"comment": {
+								"description": "Action taken by the reporting device.",
+								"expected_values": [
+									"delivered",
+									"blocked",
+									"quarantined",
+									"deleted"
+								],
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Email_fillnull_action",
+					"owner": "All_Email",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(action) OR action=\"\",\"unknown\",action)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest",
+							"owner": "All_Email",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest",
+							"comment": {
+								"description": "The endpoint system to which the message was delivered. You can alias this from more specific fields, such as dest_host, dest_ip, or dest_name.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Email_fillnull_dest",
+					"owner": "All_Email",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(dest) OR dest=\"\",\"unknown\",dest)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src",
+							"owner": "All_Email",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src",
+							"comment": {
+								"description": "The system that sent the message. You can alias this from more specific fields, such as src_host, src_ip, or src_name.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Email_fillnull_src",
+					"owner": "All_Email",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(src) OR src=\"\",\"unknown\",src)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "recipient",
+							"owner": "All_Email",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": true,
+							"hidden": false,
+							"editable": true,
+							"displayName": "recipient",
+							"comment": {
+								"description": "The recipient email addresses.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "0Email_fillnull_recipient",
+					"owner": "All_Email",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(recipient) OR recipient=\"\",\"unknown\",recipient)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "recipient_domain",
+							"owner": "All_Email",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "recipient_domain",
+							"comment": {
+								"description": "The domain name contained within the recipient email addresses.",
+								"recommended": true
+							}
+						}
+					],
+					"inputField": "recipient",
+					"calculationID": "1Email_recipient_domain",
+					"owner": "All_Email",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Rex",
+					"expression": "^.*@(?<recipient_domain>.+)$"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "recipient_count",
+							"owner": "All_Email",
+							"type": "number",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "recipient_count",
+							"comment": {
+								"description": "The total number of intended message recipients.",
+								"ta_relevant": false
+							}
+						}
+					],
+					"calculationID": "2Email_recipient_count",
+					"owner": "All_Email",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnum(recipient_count),recipient_count,isnotnull(recipient),mvcount(recipient),1=1,1)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src_user",
+							"owner": "All_Email",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src_user",
+							"comment": {
+								"description": "The email address of the message sender.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "0Email_fillnull_src_user",
+					"owner": "All_Email",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(src_user) OR src_user=\"\",\"unknown\",src_user)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src_user_domain",
+							"owner": "All_Email",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src_user_domain",
+							"comment": {
+								"description": "The domain name contained within the email address of the message sender.",
+								"recommended": true
+							}
+						}
+					],
+					"inputField": "src_user",
+					"calculationID": "1Email_src_user_domain",
+					"owner": "All_Email",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Rex",
+					"expression": "^.*@(?<src_user_domain>.+)$"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "vendor_product",
+							"owner": "All_Email",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "vendor_product",
+							"comment": {
+								"description": "The vendor and product of the email server used for the email transaction. This field can be automatically populated by vendor and product fields in your data.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Email_vendor_product",
+					"owner": "All_Email",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(vendor_product),vendor_product,isnotnull(vendor) AND vendor!=\"unknown\" AND isnotnull(product) AND product!=\"unknown\",vendor.\" \".product,isnotnull(vendor) AND vendor!=\"unknown\" AND (isnull(product) OR product=\"unknown\"),vendor.\" unknown\",(isnull(vendor) OR vendor=\"unknown\") AND isnotnull(product) AND product!=\"unknown\",\"unknown \".product,isnotnull(sourcetype),sourcetype,1=1,\"unknown\")"
+				}
+			],
+			"constraints": [
+				{
+					"search": "(`cim_Email_indexes`)",
+					"owner": "All_Email"
+				}
+			],
+			"lineage": "All_Email"
+		},
+		{
+			"objectName": "Delivery",
+			"displayName": "Email Delivery",
+			"parentName": "All_Email",
+			"comment": {
+				"tags": [
+					"email",
+					"delivery"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "delay",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "delay",
+					"comment": {
+						"description": "Total sending delay in milliseconds."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "The business unit of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "The category of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "The priority of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The amount of time for the completion of the messaging event, in seconds."
+					}
+				},
+				{
+					"fieldName": "file_hash",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_hash",
+					"comment": {
+						"description": "The hashes for the files attached to the message, if any exist."
+					}
+				},
+				{
+					"fieldName": "file_name",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_name",
+					"comment": {
+						"description": "The names of the files attached to the message, if any exist."
+					}
+				},
+				{
+					"fieldName": "file_size",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_size",
+					"comment": {
+						"description": "The size of the files attached the message, in bytes."
+					}
+				},
+				{
+					"fieldName": "internal_message_id",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "internal_message_id",
+					"comment": {
+						"description": "Host-specific unique message identifier (such as aid in sendmail, IMI in Domino, Internal-Message-ID in Exchange, and MID in Ironport)."
+					}
+				},
+				{
+					"fieldName": "message_id",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "message_id",
+					"comment": {
+						"description": "The globally-unique message identifier."
+					}
+				},
+				{
+					"fieldName": "message_info",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "message_info",
+					"comment": {
+						"description": "Additional information about the message."
+					}
+				},
+				{
+					"fieldName": "orig_dest",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_dest",
+					"comment": {
+						"description": "The original destination host of the message. The message destination host can change when a message is relayed or bounced."
+					}
+				},
+				{
+					"fieldName": "orig_recipient",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_recipient",
+					"comment": {
+						"description": "The original recipient of the message. The message recipient can change when the original email address is an alias and has to be resolved to the actual recipient."
+					}
+				},
+				{
+					"fieldName": "orig_src",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_src",
+					"comment": {
+						"description": "The original source of the message."
+					}
+				},
+				{
+					"fieldName": "protocol",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "protocol",
+					"comment": {
+						"description": "The email protocol involved, such as SMTP or RPC.",
+						"expected_values": [
+							"smtp",
+							"imap",
+							"pop3",
+							"mapi"
+						]
+					}
+				},
+				{
+					"fieldName": "process",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process",
+					"comment": {
+						"description": "The name of the email executable that carries out the message transaction, such as sendmail, postfix, or the name of an email client."
+					}
+				},
+				{
+					"fieldName": "process_id",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_id",
+					"comment": {
+						"description": "The numeric identifier of the process invoked to send the message."
+					}
+				},
+				{
+					"fieldName": "recipient_status",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "recipient_status",
+					"comment": {
+						"description": "The recipient delivery status, if available."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response in the messaging event, in seconds."
+					}
+				},
+				{
+					"fieldName": "retries",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "retries",
+					"comment": {
+						"description": "The number of times that the message was automatically resent because it was bounced back, or a similar transmission error condition."
+					}
+				},
+				{
+					"fieldName": "return_addr",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "return_addr",
+					"comment": {
+						"description": "The return address for the message."
+					}
+				},
+				{
+					"fieldName": "size",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "size",
+					"comment": {
+						"description": "The size of the message, in bytes."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "The business unit of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "The category of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "The priority of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_bunit",
+					"comment": {
+						"description": "The business unit of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_category",
+					"comment": {
+						"description": "The category of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_priority",
+					"comment": {
+						"description": "The priority of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "status_code",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "status_code",
+					"comment": {
+						"description": "The status code associated with the message."
+					}
+				},
+				{
+					"fieldName": "subject",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "subject",
+					"comment": {
+						"description": "The subject of the message."
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "url",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "url",
+					"comment": {
+						"description": "The URL associated with the message, if any."
+					}
+				},
+				{
+					"fieldName": "user",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user",
+					"comment": {
+						"description": "The user context for the process. This is not the email address for the sender. For that, use the src_user field."
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "The business unit of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "The category of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "The priority of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "xdelay",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "xdelay",
+					"comment": {
+						"description": "Extended delay information for the message transaction. May contain details of all the delays from all the servers in the message transmission chain."
+					}
+				},
+				{
+					"fieldName": "xref",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "xref",
+					"comment": {
+						"description": "An external reference. Can contain message IDs or recipient addresses from related messages."
+					}
+				},
+				{
+					"fieldName": "threatStatus",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "threatStatus",
+					"comment": ""
+				},
+				{
+					"fieldName": "sender",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sender",
+					"comment": ""
+				},
+				{
+					"fieldName": "eventType",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "eventType",
+					"comment": ""
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [],
+			"constraints": [
+				{
+					"search": "sourcetype=pps_maillog",
+					"owner": "All_Email.Delivery"
+				}
+			],
+			"lineage": "All_Email.Delivery"
+		},
+		{
+			"objectName": "Content",
+			"displayName": "Email Content",
+			"parentName": "All_Email",
+			"comment": {
+				"tags": [
+					"email",
+					"content"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "delay",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "delay",
+					"comment": {
+						"description": "Total sending delay in milliseconds."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "The business unit of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "The category of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "The priority of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The amount of time for the completion of the messaging event, in seconds."
+					}
+				},
+				{
+					"fieldName": "file_hash",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_hash",
+					"comment": {
+						"description": "The hashes for the files attached to the message, if any exist."
+					}
+				},
+				{
+					"fieldName": "file_name",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_name",
+					"comment": {
+						"description": "The names of the files attached to the message, if any exist."
+					}
+				},
+				{
+					"fieldName": "file_size",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_size",
+					"comment": {
+						"description": "The size of the files attached the message, in bytes."
+					}
+				},
+				{
+					"fieldName": "internal_message_id",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "internal_message_id",
+					"comment": {
+						"description": "Host-specific unique message identifier (such as aid in sendmail, IMI in Domino, Internal-Message-ID in Exchange, and MID in Ironport)."
+					}
+				},
+				{
+					"fieldName": "message_id",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "message_id",
+					"comment": {
+						"description": "The globally-unique message identifier."
+					}
+				},
+				{
+					"fieldName": "message_info",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "message_info",
+					"comment": {
+						"description": "Additional information about the message."
+					}
+				},
+				{
+					"fieldName": "orig_dest",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_dest",
+					"comment": {
+						"description": "The original destination host of the message. The message destination host can change when a message is relayed or bounced."
+					}
+				},
+				{
+					"fieldName": "orig_recipient",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_recipient",
+					"comment": {
+						"description": "The original recipient of the message. The message recipient can change when the original email address is an alias and has to be resolved to the actual recipient."
+					}
+				},
+				{
+					"fieldName": "orig_src",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_src",
+					"comment": {
+						"description": "The original source of the message."
+					}
+				},
+				{
+					"fieldName": "protocol",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "protocol",
+					"comment": {
+						"description": "The email protocol involved, such as SMTP or RPC.",
+						"expected_values": [
+							"smtp",
+							"imap",
+							"pop3",
+							"mapi"
+						]
+					}
+				},
+				{
+					"fieldName": "process",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process",
+					"comment": {
+						"description": "The name of the email executable that carries out the message transaction, such as sendmail, postfix, or the name of an email client."
+					}
+				},
+				{
+					"fieldName": "process_id",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_id",
+					"comment": {
+						"description": "The numeric identifier of the process invoked to send the message."
+					}
+				},
+				{
+					"fieldName": "recipient_status",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "recipient_status",
+					"comment": {
+						"description": "The recipient delivery status, if available."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response in the messaging event, in seconds."
+					}
+				},
+				{
+					"fieldName": "retries",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "retries",
+					"comment": {
+						"description": "The number of times that the message was automatically resent because it was bounced back, or a similar transmission error condition."
+					}
+				},
+				{
+					"fieldName": "return_addr",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "return_addr",
+					"comment": {
+						"description": "The return address for the message."
+					}
+				},
+				{
+					"fieldName": "size",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "size",
+					"comment": {
+						"description": "The size of the message, in bytes."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "The business unit of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "The category of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "The priority of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_bunit",
+					"comment": {
+						"description": "The business unit of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_category",
+					"comment": {
+						"description": "The category of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_priority",
+					"comment": {
+						"description": "The priority of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "status_code",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "status_code",
+					"comment": {
+						"description": "The status code associated with the message."
+					}
+				},
+				{
+					"fieldName": "subject",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "subject",
+					"comment": {
+						"description": "The subject of the message."
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "url",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "url",
+					"comment": {
+						"description": "The URL associated with the message, if any."
+					}
+				},
+				{
+					"fieldName": "user",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user",
+					"comment": {
+						"description": "The user context for the process. This is not the email address for the sender. For that, use the src_user field."
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "The business unit of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "The category of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "The priority of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "xdelay",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "xdelay",
+					"comment": {
+						"description": "Extended delay information for the message transaction. May contain details of all the delays from all the servers in the message transmission chain."
+					}
+				},
+				{
+					"fieldName": "xref",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "xref",
+					"comment": {
+						"description": "An external reference. Can contain message IDs or recipient addresses from related messages."
+					}
+				},
+				{
+					"fieldName": "threatStatus",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "threatStatus",
+					"comment": ""
+				},
+				{
+					"fieldName": "sender",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sender",
+					"comment": ""
+				},
+				{
+					"fieldName": "eventType",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "eventType",
+					"comment": ""
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [],
+			"constraints": [
+				{
+					"search": "tag=content",
+					"owner": "All_Email.Content"
+				}
+			],
+			"lineage": "All_Email.Content"
+		},
+		{
+			"objectName": "Filtering",
+			"displayName": "Email Filtering",
+			"parentName": "All_Email",
+			"comment": {
+				"tags": [
+					"email",
+					"filter"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "filter_action",
+					"owner": "All_Email.Filtering",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "filter_action",
+					"comment": {
+						"description": "The status produced by the filter, such as 'accepted', 'rejected', or 'dropped'."
+					}
+				},
+				{
+					"fieldName": "filter_score",
+					"owner": "All_Email.Filtering",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "filter_score",
+					"comment": {
+						"description": "Numeric indicator assigned to specific emails by an email filter."
+					}
+				},
+				{
+					"fieldName": "signature",
+					"owner": "All_Email.Filtering",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "signature",
+					"comment": {
+						"description": "The name of the filter applied.",
+						"recommended": true
+					}
+				},
+				{
+					"fieldName": "signature_extra",
+					"owner": "All_Email.Filtering",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "signature_extra",
+					"comment": {
+						"description": "Any additional information about the filter."
+					}
+				},
+				{
+					"fieldName": "signature_id",
+					"owner": "All_Email.Filtering",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "signature_id",
+					"comment": {
+						"description": "The id associated with the filter name."
+					}
+				},
+				{
+					"fieldName": "delay",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "delay",
+					"comment": {
+						"description": "Total sending delay in milliseconds."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "The business unit of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "The category of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "The priority of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The amount of time for the completion of the messaging event, in seconds."
+					}
+				},
+				{
+					"fieldName": "file_hash",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_hash",
+					"comment": {
+						"description": "The hashes for the files attached to the message, if any exist."
+					}
+				},
+				{
+					"fieldName": "file_name",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_name",
+					"comment": {
+						"description": "The names of the files attached to the message, if any exist."
+					}
+				},
+				{
+					"fieldName": "file_size",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_size",
+					"comment": {
+						"description": "The size of the files attached the message, in bytes."
+					}
+				},
+				{
+					"fieldName": "internal_message_id",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "internal_message_id",
+					"comment": {
+						"description": "Host-specific unique message identifier (such as aid in sendmail, IMI in Domino, Internal-Message-ID in Exchange, and MID in Ironport)."
+					}
+				},
+				{
+					"fieldName": "message_id",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "message_id",
+					"comment": {
+						"description": "The globally-unique message identifier."
+					}
+				},
+				{
+					"fieldName": "message_info",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "message_info",
+					"comment": {
+						"description": "Additional information about the message."
+					}
+				},
+				{
+					"fieldName": "orig_dest",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_dest",
+					"comment": {
+						"description": "The original destination host of the message. The message destination host can change when a message is relayed or bounced."
+					}
+				},
+				{
+					"fieldName": "orig_recipient",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_recipient",
+					"comment": {
+						"description": "The original recipient of the message. The message recipient can change when the original email address is an alias and has to be resolved to the actual recipient."
+					}
+				},
+				{
+					"fieldName": "orig_src",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_src",
+					"comment": {
+						"description": "The original source of the message."
+					}
+				},
+				{
+					"fieldName": "protocol",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "protocol",
+					"comment": {
+						"description": "The email protocol involved, such as SMTP or RPC.",
+						"expected_values": [
+							"smtp",
+							"imap",
+							"pop3",
+							"mapi"
+						]
+					}
+				},
+				{
+					"fieldName": "process",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process",
+					"comment": {
+						"description": "The name of the email executable that carries out the message transaction, such as sendmail, postfix, or the name of an email client."
+					}
+				},
+				{
+					"fieldName": "process_id",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_id",
+					"comment": {
+						"description": "The numeric identifier of the process invoked to send the message."
+					}
+				},
+				{
+					"fieldName": "recipient_status",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "recipient_status",
+					"comment": {
+						"description": "The recipient delivery status, if available."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response in the messaging event, in seconds."
+					}
+				},
+				{
+					"fieldName": "retries",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "retries",
+					"comment": {
+						"description": "The number of times that the message was automatically resent because it was bounced back, or a similar transmission error condition."
+					}
+				},
+				{
+					"fieldName": "return_addr",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "return_addr",
+					"comment": {
+						"description": "The return address for the message."
+					}
+				},
+				{
+					"fieldName": "size",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "size",
+					"comment": {
+						"description": "The size of the message, in bytes."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "The business unit of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "The category of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "The priority of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_bunit",
+					"comment": {
+						"description": "The business unit of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_category",
+					"comment": {
+						"description": "The category of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_priority",
+					"comment": {
+						"description": "The priority of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "status_code",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "status_code",
+					"comment": {
+						"description": "The status code associated with the message."
+					}
+				},
+				{
+					"fieldName": "subject",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "subject",
+					"comment": {
+						"description": "The subject of the message."
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "url",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "url",
+					"comment": {
+						"description": "The URL associated with the message, if any."
+					}
+				},
+				{
+					"fieldName": "user",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user",
+					"comment": {
+						"description": "The user context for the process. This is not the email address for the sender. For that, use the src_user field."
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "The business unit of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "The category of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "The priority of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "xdelay",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "xdelay",
+					"comment": {
+						"description": "Extended delay information for the message transaction. May contain details of all the delays from all the servers in the message transmission chain."
+					}
+				},
+				{
+					"fieldName": "xref",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "xref",
+					"comment": {
+						"description": "An external reference. Can contain message IDs or recipient addresses from related messages."
+					}
+				},
+				{
+					"fieldName": "threatStatus",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "threatStatus",
+					"comment": ""
+				},
+				{
+					"fieldName": "sender",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sender",
+					"comment": ""
+				},
+				{
+					"fieldName": "eventType",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "eventType",
+					"comment": ""
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [],
+			"constraints": [
+				{
+					"search": "tag=filter",
+					"owner": "All_Email.Filtering"
+				}
+			],
+			"lineage": "All_Email.Filtering"
+		},
+		{
+			"objectName": "Active_Threat",
+			"displayName": "Active_Threat",
+			"parentName": "All_Email",
+			"comment": "",
+			"fields": [
+				{
+					"fieldName": "delay",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "delay",
+					"comment": {
+						"description": "Total sending delay in milliseconds."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "The business unit of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "The category of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "The priority of the endpoint system to which the message was delivered. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The amount of time for the completion of the messaging event, in seconds."
+					}
+				},
+				{
+					"fieldName": "file_hash",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_hash",
+					"comment": {
+						"description": "The hashes for the files attached to the message, if any exist."
+					}
+				},
+				{
+					"fieldName": "file_name",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_name",
+					"comment": {
+						"description": "The names of the files attached to the message, if any exist."
+					}
+				},
+				{
+					"fieldName": "file_size",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_size",
+					"comment": {
+						"description": "The size of the files attached the message, in bytes."
+					}
+				},
+				{
+					"fieldName": "internal_message_id",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "internal_message_id",
+					"comment": {
+						"description": "Host-specific unique message identifier (such as aid in sendmail, IMI in Domino, Internal-Message-ID in Exchange, and MID in Ironport)."
+					}
+				},
+				{
+					"fieldName": "message_id",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "message_id",
+					"comment": {
+						"description": "The globally-unique message identifier."
+					}
+				},
+				{
+					"fieldName": "message_info",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "message_info",
+					"comment": {
+						"description": "Additional information about the message."
+					}
+				},
+				{
+					"fieldName": "orig_dest",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_dest",
+					"comment": {
+						"description": "The original destination host of the message. The message destination host can change when a message is relayed or bounced."
+					}
+				},
+				{
+					"fieldName": "orig_recipient",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_recipient",
+					"comment": {
+						"description": "The original recipient of the message. The message recipient can change when the original email address is an alias and has to be resolved to the actual recipient."
+					}
+				},
+				{
+					"fieldName": "orig_src",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "orig_src",
+					"comment": {
+						"description": "The original source of the message."
+					}
+				},
+				{
+					"fieldName": "protocol",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "protocol",
+					"comment": {
+						"description": "The email protocol involved, such as SMTP or RPC.",
+						"expected_values": [
+							"smtp",
+							"imap",
+							"pop3",
+							"mapi"
+						]
+					}
+				},
+				{
+					"fieldName": "process",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process",
+					"comment": {
+						"description": "The name of the email executable that carries out the message transaction, such as sendmail, postfix, or the name of an email client."
+					}
+				},
+				{
+					"fieldName": "process_id",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_id",
+					"comment": {
+						"description": "The numeric identifier of the process invoked to send the message."
+					}
+				},
+				{
+					"fieldName": "recipient_status",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "recipient_status",
+					"comment": {
+						"description": "The recipient delivery status, if available."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response in the messaging event, in seconds."
+					}
+				},
+				{
+					"fieldName": "retries",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "retries",
+					"comment": {
+						"description": "The number of times that the message was automatically resent because it was bounced back, or a similar transmission error condition."
+					}
+				},
+				{
+					"fieldName": "return_addr",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "return_addr",
+					"comment": {
+						"description": "The return address for the message."
+					}
+				},
+				{
+					"fieldName": "size",
+					"owner": "All_Email",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "size",
+					"comment": {
+						"description": "The size of the message, in bytes."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "The business unit of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "The category of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "The priority of the system that sent the message. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_bunit",
+					"comment": {
+						"description": "The business unit of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_category",
+					"comment": {
+						"description": "The category of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_user_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_user_priority",
+					"comment": {
+						"description": "The priority of the message sender. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "status_code",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "status_code",
+					"comment": {
+						"description": "The status code associated with the message."
+					}
+				},
+				{
+					"fieldName": "subject",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "subject",
+					"comment": {
+						"description": "The subject of the message."
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "url",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "url",
+					"comment": {
+						"description": "The URL associated with the message, if any."
+					}
+				},
+				{
+					"fieldName": "user",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user",
+					"comment": {
+						"description": "The user context for the process. This is not the email address for the sender. For that, use the src_user field."
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "The business unit of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "The category of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "The priority of the user context for the process. This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "xdelay",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "xdelay",
+					"comment": {
+						"description": "Extended delay information for the message transaction. May contain details of all the delays from all the servers in the message transmission chain."
+					}
+				},
+				{
+					"fieldName": "xref",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "xref",
+					"comment": {
+						"description": "An external reference. Can contain message IDs or recipient addresses from related messages."
+					}
+				},
+				{
+					"fieldName": "threatStatus",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "threatStatus",
+					"comment": ""
+				},
+				{
+					"fieldName": "sender",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sender",
+					"comment": ""
+				},
+				{
+					"fieldName": "eventType",
+					"owner": "All_Email",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "eventType",
+					"comment": ""
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "clickTime",
+							"owner": "All_Email.Active_Threat",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "clickTime",
+							"comment": ""
+						}
+					],
+					"calculationID": "rdyk9cduo9",
+					"owner": "All_Email.Active_Threat",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnotnull(clickTime),clickTime,\"\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "clicksPermitted",
+							"owner": "All_Email.Active_Threat",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "clicksPermitted",
+							"comment": ""
+						}
+					],
+					"calculationID": "84a5msljppc",
+					"owner": "All_Email.Active_Threat",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(eventType=\"clicksPermitted\",\"yes\",\"no\")"
+				}
+			],
+			"constraints": [
+				{
+					"search": "\"threatsInfoMap{}.threatStatus\"=\"active\" OR (eventType=\"clicksPermitted\" AND threatStatus!=\"falsePositive\") OR (\"threatsInfoMap{}.threatType\"=\"attachment\" AND eventType=\"messagesDelivered\")",
+					"owner": "All_Email.Active_Threat"
+				}
+			],
+			"lineage": "All_Email.Active_Threat"
+		}
+	],
+	"objectNameList": [
+		"All_Email",
+		"Delivery",
+		"Content",
+		"Filtering",
+		"Active_Threat"
+	]
+}

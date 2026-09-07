@@ -1,0 +1,4 @@
+name: documentation-sync
+cadence: "0 6 1 * *"         # monthly, 1st
+enabled_servers: []
+output_prefix: docs

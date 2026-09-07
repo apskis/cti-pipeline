@@ -1,0 +1,1857 @@
+{
+	"modelName": "Network_Sessions",
+	"displayName": "Network Sessions",
+	"description": "Network Sessions Data Model",
+	"objectSummary": {
+		"Event-Based": 5,
+		"Transaction-Based": 0,
+		"Search-Based": 0
+	},
+	"objects": [
+		{
+			"objectName": "All_Sessions",
+			"displayName": "All Sessions",
+			"parentName": "BaseEvent",
+			"comment": {
+				"tags": [
+					"network",
+					"session"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "action",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "action",
+					"comment": {
+						"description": "The action taken by the reporting device."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "The business unit of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "The category of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "The priority of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "All_Sessions",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The amount of time for the completion of the network session event, in seconds."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "All_Sessions",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response in the network session event, in seconds."
+					}
+				},
+				{
+					"fieldName": "signature",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "signature",
+					"comment": {
+						"description": "An indication of the type of network session event."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "The business unit of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "The category of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_dns",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_dns",
+					"comment": {
+						"description": "The external domain name of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_ip",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_ip",
+					"comment": {
+						"description": "The IP address of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_mac",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_mac",
+					"comment": {
+						"description": "The MAC address of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_nt_host",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_nt_host",
+					"comment": {
+						"description": "The NetBIOS name of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "The priority of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "The business unit associated with the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "The category of the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "The priority of the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest_ip",
+							"owner": "All_Sessions",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest_ip",
+							"comment": {
+								"description": "The internal IP address allocated to the client initializing a network session. For DHCP and VPN events, this is the IP address leased to the client.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "All_Sessions_fillnull_dest_ip",
+					"owner": "All_Sessions",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(source LIKE \"stream%\" AND isnotnull(yiaddr) AND yiaddr!=\"\",yiaddr,isnull(dest_ip) OR dest_ip=\"\",\"unknown\",1=1,dest_ip)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest_mac",
+							"owner": "All_Sessions",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest_mac",
+							"comment": {
+								"description": "The internal MAC address of the network session client. For DHCP events, this is the MAC address of the client acquiring an IP address lease. For VPN events, this is the MAC address of the client initializing a network session.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "All_Sessions_fillnull_dest_mac",
+					"owner": "All_Sessions",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(source LIKE \"stream%\" AND isnotnull(chaddr) AND chaddr!=\"\",chaddr,isnull(dest_mac) OR dest_mac=\"\",\"unknown\",1=1,dest_mac)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest_nt_host",
+							"owner": "All_Sessions",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest_nt_host",
+							"comment": {
+								"description": "The NetBIOS name of the client initializing a network session.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "All_Sessions_fillnull_dest_nt_host",
+					"owner": "All_Sessions",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(dest_nt_host) OR dest_nt_host=\"\",\"unknown\",dest_nt_host)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest_dns",
+							"owner": "All_Sessions",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest_dns",
+							"comment": {
+								"description": "The domain name system address of the destination for a network session event.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "All_Sessions_fillnull_dest_dns",
+					"owner": "All_Sessions",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(dest_dns) OR dest_dns=\"\",\"unknown\",dest_dns)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "user",
+							"owner": "All_Sessions",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "user",
+							"comment": {
+								"description": "The user in a network session event, where applicable. For example, a VPN session or an authenticated DHCP event.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "All_Sessions_fillnull_user",
+					"owner": "All_Sessions",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(user) OR user=\"\",\"unknown\",user)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "vendor_product",
+							"owner": "All_Sessions",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "vendor_product",
+							"comment": {
+								"description": "The full name of the Dynamic Host Configuration Protocol (DHCP) or DNS server involved in this event including vendor and product name, such as Microsoft DHCP or ISC BIND. This field is generated by combining the values of the vendor and product fields.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "All_Sessions_vendor_product",
+					"owner": "All_Sessions",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(vendor_product),vendor_product,isnotnull(vendor) AND vendor!=\"unknown\" AND isnotnull(product) AND product!=\"unknown\",vendor.\" \".product,isnotnull(vendor) AND vendor!=\"unknown\" AND (isnull(product) OR product=\"unknown\"),vendor.\" unknown\",(isnull(vendor) OR vendor=\"unknown\") AND isnotnull(product) AND product!=\"unknown\",\"unknown \".product,isnotnull(sourcetype),sourcetype,1=1,\"unknown\")"
+				}
+			],
+			"constraints": [
+				{
+					"search": "(`cim_Network_Sessions_indexes`) tag=network tag=session",
+					"owner": "All_Sessions"
+				}
+			],
+			"lineage": "All_Sessions"
+		},
+		{
+			"objectName": "Session_Start",
+			"displayName": "Session Start",
+			"parentName": "All_Sessions",
+			"comment": {
+				"tags": [
+					"network",
+					"session",
+					"start"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "action",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "action",
+					"comment": {
+						"description": "The action taken by the reporting device."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "The business unit of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "The category of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "The priority of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "All_Sessions",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The amount of time for the completion of the network session event, in seconds."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "All_Sessions",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response in the network session event, in seconds."
+					}
+				},
+				{
+					"fieldName": "signature",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "signature",
+					"comment": {
+						"description": "An indication of the type of network session event."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "The business unit of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "The category of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_dns",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_dns",
+					"comment": {
+						"description": "The external domain name of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_ip",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_ip",
+					"comment": {
+						"description": "The IP address of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_mac",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_mac",
+					"comment": {
+						"description": "The MAC address of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_nt_host",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_nt_host",
+					"comment": {
+						"description": "The NetBIOS name of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "The priority of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "The business unit associated with the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "The category of the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "The priority of the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [],
+			"constraints": [
+				{
+					"search": "tag=start",
+					"owner": "All_Sessions.Session_Start"
+				}
+			],
+			"lineage": "All_Sessions.Session_Start"
+		},
+		{
+			"objectName": "Session_End",
+			"displayName": "Session End",
+			"parentName": "All_Sessions",
+			"comment": {
+				"tags": [
+					"network",
+					"session",
+					"end"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "action",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "action",
+					"comment": {
+						"description": "The action taken by the reporting device."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "The business unit of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "The category of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "The priority of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "All_Sessions",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The amount of time for the completion of the network session event, in seconds."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "All_Sessions",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response in the network session event, in seconds."
+					}
+				},
+				{
+					"fieldName": "signature",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "signature",
+					"comment": {
+						"description": "An indication of the type of network session event."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "The business unit of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "The category of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_dns",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_dns",
+					"comment": {
+						"description": "The external domain name of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_ip",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_ip",
+					"comment": {
+						"description": "The IP address of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_mac",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_mac",
+					"comment": {
+						"description": "The MAC address of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_nt_host",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_nt_host",
+					"comment": {
+						"description": "The NetBIOS name of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "The priority of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "The business unit associated with the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "The category of the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "The priority of the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [],
+			"constraints": [
+				{
+					"search": "tag=end",
+					"owner": "All_Sessions.Session_End"
+				}
+			],
+			"lineage": "All_Sessions.Session_End"
+		},
+		{
+			"objectName": "DHCP",
+			"displayName": "DHCP",
+			"parentName": "All_Sessions",
+			"comment": {
+				"tags": [
+					"network",
+					"session",
+					"dhcp"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "lease_duration",
+					"owner": "All_Sessions.DHCP",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "lease_duration",
+					"comment": {
+						"description": "The duration of the Dynamic Host Configuration Protocol (DHCP) lease, in seconds."
+					}
+				},
+				{
+					"fieldName": "lease_scope",
+					"owner": "All_Sessions.DHCP",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "lease_scope",
+					"comment": {
+						"description": "The consecutive range of possible IP addresses that the Dynamic Host Configuration Protocol (DHCP) server can lease to clients on a subnet. A lease_scope typically defines a single physical subnet on your network to which DHCP services are offered."
+					}
+				},
+				{
+					"fieldName": "action",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "action",
+					"comment": {
+						"description": "The action taken by the reporting device."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "The business unit of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "The category of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "The priority of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "All_Sessions",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The amount of time for the completion of the network session event, in seconds."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "All_Sessions",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response in the network session event, in seconds."
+					}
+				},
+				{
+					"fieldName": "signature",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "signature",
+					"comment": {
+						"description": "An indication of the type of network session event."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "The business unit of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "The category of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_dns",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_dns",
+					"comment": {
+						"description": "The external domain name of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_ip",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_ip",
+					"comment": {
+						"description": "The IP address of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_mac",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_mac",
+					"comment": {
+						"description": "The MAC address of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_nt_host",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_nt_host",
+					"comment": {
+						"description": "The NetBIOS name of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "The priority of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "The business unit associated with the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "The category of the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "The priority of the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [],
+			"constraints": [
+				{
+					"search": "tag=dhcp",
+					"owner": "All_Sessions.DHCP"
+				}
+			],
+			"lineage": "All_Sessions.DHCP"
+		},
+		{
+			"objectName": "VPN",
+			"displayName": "VPN",
+			"parentName": "All_Sessions",
+			"comment": {
+				"tags": [
+					"network",
+					"session",
+					"vpn"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "action",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "action",
+					"comment": {
+						"description": "The action taken by the reporting device."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "The business unit of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "The category of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "The priority of the destination.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "duration",
+					"owner": "All_Sessions",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "duration",
+					"comment": {
+						"description": "The amount of time for the completion of the network session event, in seconds."
+					}
+				},
+				{
+					"fieldName": "response_time",
+					"owner": "All_Sessions",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "response_time",
+					"comment": {
+						"description": "The amount of time it took to receive a response in the network session event, in seconds."
+					}
+				},
+				{
+					"fieldName": "signature",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "signature",
+					"comment": {
+						"description": "An indication of the type of network session event."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "The business unit of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "The category of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_dns",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_dns",
+					"comment": {
+						"description": "The external domain name of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_ip",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_ip",
+					"comment": {
+						"description": "The IP address of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_mac",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_mac",
+					"comment": {
+						"description": "The MAC address of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_nt_host",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_nt_host",
+					"comment": {
+						"description": "The NetBIOS name of the client initializing a network session. Not applicable for DHCP events."
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "The priority of the source.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "The business unit associated with the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "The category of the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "All_Sessions",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "The priority of the user.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "_time",
+					"owner": "BaseEvent",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "_time",
+					"comment": ""
+				},
+				{
+					"fieldName": "host",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "host",
+					"comment": ""
+				},
+				{
+					"fieldName": "source",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "source",
+					"comment": ""
+				},
+				{
+					"fieldName": "sourcetype",
+					"owner": "BaseEvent",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "sourcetype",
+					"comment": ""
+				}
+			],
+			"calculations": [],
+			"constraints": [
+				{
+					"search": "tag=vpn",
+					"owner": "All_Sessions.VPN"
+				}
+			],
+			"lineage": "All_Sessions.VPN"
+		}
+	],
+	"objectNameList": [
+		"All_Sessions",
+		"Session_Start",
+		"Session_End",
+		"DHCP",
+		"VPN"
+	]
+}

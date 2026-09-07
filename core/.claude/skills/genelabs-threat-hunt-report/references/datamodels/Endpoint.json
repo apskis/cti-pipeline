@@ -1,0 +1,2698 @@
+{
+	"modelName": "Endpoint",
+	"displayName": "Endpoint",
+	"description": "Endpoint Data Model",
+	"objectSummary": {
+		"Event-Based": 0,
+		"Transaction-Based": 0,
+		"Search-Based": 5
+	},
+	"objects": [
+		{
+			"objectName": "Ports",
+			"displayName": "Ports",
+			"parentName": "BaseSearch",
+			"comment": {
+				"tags": [
+					"listening",
+					"port"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "creation_time",
+					"owner": "Ports",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "creation_time",
+					"comment": {
+						"description": "The time at which the network port started listening on the endpoint."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_port",
+					"owner": "Ports",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_port",
+					"comment": {
+						"description": "Network port listening on the endpoint, such as 53.",
+						"recommended": true
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_requires_av",
+					"owner": "Ports",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_requires_av",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_should_timesync",
+					"owner": "Ports",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_should_timesync",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_should_update",
+					"owner": "Ports",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_should_update",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "process_guid",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_guid",
+					"comment": {
+						"description": "The globally unique identifier of the process assigned by the vendor_product."
+					}
+				},
+				{
+					"fieldName": "process_id",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_id",
+					"comment": {
+						"description": "The numeric identifier of the process assigned by the operating system."
+					}
+				},
+				{
+					"fieldName": "src_bunit",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_category",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_priority",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_requires_av",
+					"owner": "Ports",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_requires_av",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_should_timesync",
+					"owner": "Ports",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_should_timesync",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "src_should_update",
+					"owner": "Ports",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "src_should_update",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "state",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "state",
+					"comment": {
+						"description": "The status of the listening port, such as established, listening, etc."
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "transport",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "transport",
+					"comment": {
+						"description": "The network transport protocol associated with the listening port, such as tcp, udp, etc.",
+						"recommended": true
+					}
+				},
+				{
+					"fieldName": "transport_dest_port",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "transport_dest_port",
+					"comment": {
+						"description": "Calculated as transport/dest_port, such as tcp/53.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "event_simpleName",
+					"owner": "Ports",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "event_simpleName",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "src",
+							"owner": "Ports",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src",
+							"comment": {
+								"description": "The \"remote\" system connected to the listening port (if applicable).",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Ports_fillnull_src",
+					"owner": "Ports",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(src) OR src=\"\",\"unknown\",src)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "src_port",
+							"owner": "Ports",
+							"type": "number",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "src_port",
+							"comment": {
+								"description": "The \"remote\" port connected to the listening port (if applicable).",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Ports_fillnull_src_port",
+					"owner": "Ports",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnum(src_port),src_port,0)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest",
+							"owner": "Ports",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest",
+							"comment": {
+								"description": "The endpoint for which the port is listening on.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Ports_fillnull_dest",
+					"owner": "Ports",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(dest) OR dest=\"\",\"unknown\",dest)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "user",
+							"owner": "Ports",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "user",
+							"comment": {
+								"description": "The user account associated with the listening port.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Ports_fillnull_user",
+					"owner": "Ports",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(user) OR user=\"\",\"unknown\",user)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "vendor_product",
+							"owner": "Ports",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "vendor_product",
+							"comment": {
+								"description": "The vendor and product name of the Endpoint solution that reported the event, such as Carbon Black Cb Response. This field can be automatically populated by vendor and product fields in your data.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Ports_vendor_product",
+					"owner": "Ports",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(vendor_product),vendor_product,isnotnull(vendor) AND vendor!=\"unknown\" AND isnotnull(product) AND product!=\"unknown\",vendor.\" \".product,isnotnull(vendor) AND vendor!=\"unknown\" AND (isnull(product) OR product=\"unknown\"),vendor.\" unknown\",(isnull(vendor) OR vendor=\"unknown\") AND isnotnull(product) AND product!=\"unknown\",\"unknown \".product,isnotnull(sourcetype),sourcetype,1=1,\"unknown\")"
+				}
+			],
+			"constraints": [],
+			"lineage": "Ports",
+			"baseSearch": "(`cim_Endpoint_indexes`) tag=listening tag=port | eval transport=if(isnull(transport) OR transport=\"\",\"unknown\",transport),dest_port=if(isnull(dest_port) OR dest_port=\"\",0,dest_port),transport_dest_port=mvzip(transport,dest_port,\"/\") | mvexpand transport_dest_port"
+		},
+		{
+			"objectName": "Processes",
+			"displayName": "Processes",
+			"parentName": "BaseSearch",
+			"comment": {
+				"tags": [
+					"process",
+					"report"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "action",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "action",
+					"comment": {
+						"description": "The action taken by the endpoint."
+					}
+				},
+				{
+					"fieldName": "cpu_load_percent",
+					"owner": "Processes",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "cpu_load_percent",
+					"comment": {
+						"description": "CPU load consumed by the process (in percent)."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_is_expected",
+					"owner": "Processes",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_is_expected",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_requires_av",
+					"owner": "Processes",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_requires_av",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_should_timesync",
+					"owner": "Processes",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_should_timesync",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_should_update",
+					"owner": "Processes",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_should_update",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "mem_used",
+					"owner": "Processes",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "mem_used",
+					"comment": {
+						"description": "Memory used by the process (in bytes)."
+					}
+				},
+				{
+					"fieldName": "os",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "os",
+					"comment": {
+						"description": "The operating system of the resource, such as Microsoft Windows Server 2008r2."
+					}
+				},
+				{
+					"fieldName": "parent_process_exec",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "parent_process_exec",
+					"comment": {
+						"description": "The executable name of the parent process."
+					}
+				},
+				{
+					"fieldName": "parent_process_id",
+					"owner": "Processes",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "parent_process_id",
+					"comment": {
+						"description": "The numeric identifier of the parent process assigned by the operating system."
+					}
+				},
+				{
+					"fieldName": "parent_process_guid",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "parent_process_guid",
+					"comment": {
+						"description": "The globally unique identifier of the parent process assigned by the vendor_product."
+					}
+				},
+				{
+					"fieldName": "parent_process_path",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "parent_process_path",
+					"comment": {
+						"description": "The file path of the parent process, such as C:\\Windows\\System32\\notepad.exe."
+					}
+				},
+				{
+					"fieldName": "process_current_directory",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_current_directory",
+					"comment": {
+						"description": "The current working directory used to spawn the process."
+					}
+				},
+				{
+					"fieldName": "process_exec",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_exec",
+					"comment": {
+						"description": "The executable name of the process."
+					}
+				},
+				{
+					"fieldName": "process_hash",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_hash",
+					"comment": {
+						"description": "The digest(s) of the parent process, such as <md5>, <sha1>, etc."
+					}
+				},
+				{
+					"fieldName": "process_guid",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_guid",
+					"comment": {
+						"description": "The globally unique identifier of the process assigned by the vendor_product."
+					}
+				},
+				{
+					"fieldName": "process_id",
+					"owner": "Processes",
+					"type": "number",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_id",
+					"comment": {
+						"description": "The numeric identifier of the process assigned by the operating system."
+					}
+				},
+				{
+					"fieldName": "process_integrity_level",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_integrity_level",
+					"comment": {
+						"description": "The integrity level of the process.",
+						"expected_values": [
+							"system",
+							"high",
+							"medium",
+							"low",
+							"untrusted"
+						]
+					}
+				},
+				{
+					"fieldName": "process_path",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_path",
+					"comment": {
+						"description": "The file path of the process, such as C:\\Windows\\System32\\notepad.exe."
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_id",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_id",
+					"comment": {
+						"description": "The unique identifier of the user account which spawned the process."
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "event_simpleName",
+					"owner": "Processes",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "event_simpleName",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest",
+							"owner": "Processes",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest",
+							"comment": {
+								"description": "The endpoint for which the process was spawned.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Processes_fillnull_dest",
+					"owner": "Processes",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(dest) OR dest=\"\",\"unknown\",dest)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "parent_process",
+							"owner": "Processes",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "parent_process",
+							"comment": {
+								"description": "The full command string of the parent process",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Processes_fillnull_parent_process",
+					"owner": "Processes",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(parent_process) OR parent_process=\"\",\"unknown\",parent_process)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "parent_process_name",
+							"owner": "Processes",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "parent_process_name",
+							"comment": {
+								"description": "The friendly name of the parent process, such as notepad.exe.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Processes_fillnull_parent_process_name",
+					"owner": "Processes",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(parent_process_name) AND parent_process_name!=\"\",parent_process_name,isnotnull(parent_process) AND parent_process!=\"\",replace(parent_process,\"^\\s*([^\\s]+).*\",\"\\1\"),1=1,\"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "process",
+							"owner": "Processes",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "process",
+							"comment": {
+								"description": "The full command string of the spawned process. Such as C:\\WINDOWS\\system32\\cmd.exe /c \"\"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\bin\\powershell.cmd\" --scheme\"",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Processes_fillnull_process",
+					"owner": "Processes",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(process) OR process=\"\",\"unknown\",process)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "process_name",
+							"owner": "Processes",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "process_name",
+							"comment": {
+								"description": "The friendly name of the process, such as notepad.exe.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Processes_fillnull_process_name",
+					"owner": "Processes",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(process_name) AND process_name!=\"\",process_name,isnotnull(process) AND process!=\"\",replace(process,\"^\\s*([^\\s]+).*\",\"\\1\"),1=1,\"unknown\")"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "user",
+							"owner": "Processes",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "user",
+							"comment": {
+								"description": "The user account which spawned the process.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Processes_fillnull_user",
+					"owner": "Processes",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(user) OR user=\"\",\"unknown\",user)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "vendor_product",
+							"owner": "Processes",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "vendor_product",
+							"comment": {
+								"description": "The vendor and product name of the Endpoint solution that reported the event, such as Carbon Black Cb Response. This field can be automatically populated by vendor and product fields in your data.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Processes_vendor_product",
+					"owner": "Processes",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(vendor_product),vendor_product,isnotnull(vendor) AND vendor!=\"unknown\" AND isnotnull(product) AND product!=\"unknown\",vendor.\" \".product,isnotnull(vendor) AND vendor!=\"unknown\" AND (isnull(product) OR product=\"unknown\"),vendor.\" unknown\",(isnull(vendor) OR vendor=\"unknown\") AND isnotnull(product) AND product!=\"unknown\",\"unknown \".product,isnotnull(sourcetype),sourcetype,1=1,\"unknown\")"
+				}
+			],
+			"constraints": [],
+			"lineage": "Processes",
+			"baseSearch": "(`cim_Endpoint_indexes`) tag=process tag=report | eval process_integrity_level=lower(process_integrity_level)"
+		},
+		{
+			"objectName": "Services",
+			"displayName": "Services",
+			"parentName": "BaseSearch",
+			"comment": {
+				"tags": [
+					"service",
+					"report"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "description",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "description",
+					"comment": {
+						"description": "The description of the service."
+					}
+				},
+				{
+					"fieldName": "dest_bunit",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_is_expected",
+					"owner": "Services",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_is_expected",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_requires_av",
+					"owner": "Services",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_requires_av",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_should_timesync",
+					"owner": "Services",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_should_timesync",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_should_update",
+					"owner": "Services",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_should_update",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "process_guid",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_guid",
+					"comment": {
+						"description": "The globally unique identifier of the process assigned by the vendor_product."
+					}
+				},
+				{
+					"fieldName": "process_id",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_id",
+					"comment": {
+						"description": "The numeric identifier of the process assigned by the operating system."
+					}
+				},
+				{
+					"fieldName": "service_dll",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "service_dll",
+					"comment": {
+						"description": "The dynamic link library associated with the service."
+					}
+				},
+				{
+					"fieldName": "service_dll_path",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "service_dll_path",
+					"comment": {
+						"description": "The file path to the dynamic link library assocatied with the service, such as C:\\Windows\\System32\\comdlg32.dll."
+					}
+				},
+				{
+					"fieldName": "service_dll_hash",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "service_dll_hash",
+					"comment": {
+						"description": "The digest(s) of the dynamic link library associated with the service, such as <md5>, <sha1>, etc."
+					}
+				},
+				{
+					"fieldName": "service_dll_signature_exists",
+					"owner": "Services",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "service_dll_signature_exists",
+					"comment": {
+						"description": "Whether or not the dynamic link library associated with the service has a digitally signed signature."
+					}
+				},
+				{
+					"fieldName": "service_dll_signature_verified",
+					"owner": "Services",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "service_dll_signature_verified",
+					"comment": {
+						"description": "Whether or not the dynamic link library associated with the service has had it's digitally signed signature verified."
+					}
+				},
+				{
+					"fieldName": "service_exec",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "service_exec",
+					"comment": {
+						"description": "The executable name of the service."
+					}
+				},
+				{
+					"fieldName": "service_hash",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "service_hash",
+					"comment": {
+						"description": "The digest(s) of the service, such as <md5>, <sha1>, etc."
+					}
+				},
+				{
+					"fieldName": "service_path",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "service_path",
+					"comment": {
+						"description": "The file path of the service, such as C:\\WINDOWS\\system32\\svchost.exe."
+					}
+				},
+				{
+					"fieldName": "service_signature_exists",
+					"owner": "Services",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "service_signature_exists",
+					"comment": {
+						"description": "Whether or not the service has a digitally signed signature."
+					}
+				},
+				{
+					"fieldName": "service_signature_verified",
+					"owner": "Services",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "service_signature_verified",
+					"comment": {
+						"description": "Whether or not the service has had it's digitally signed signature verified."
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "event_simpleName",
+					"owner": "Services",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "event_simpleName",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest",
+							"owner": "Services",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest",
+							"comment": {
+								"description": "The endpoint for which the service is installed.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Services_fillnull_dest",
+					"owner": "Services",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(dest) OR dest=\"\",\"unknown\",dest)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "service",
+							"owner": "Services",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "service",
+							"comment": {
+								"description": "The full service name.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Services_fillnull_service",
+					"owner": "Services",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(service) OR service=\"\",\"unknown\",service)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "service_name",
+							"owner": "Services",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "service_name",
+							"comment": {
+								"description": "The friendly service name.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Services_fillnull_service_name",
+					"owner": "Services",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(service_name) OR service_name=\"\",\"unknown\",service_name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "service_id",
+							"owner": "Services",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "service_id",
+							"comment": {
+								"description": "The unique identifier of the service assigned by the operating system..",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Services_fillnull_service_id",
+					"owner": "Services",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(service_id) OR service_id=\"\",\"unknown\",service_id)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "start_mode",
+							"owner": "Services",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "start_mode",
+							"comment": {
+								"description": "The start mode for the service.",
+								"expected_values": [
+									"disabled",
+									"manual",
+									"auto"
+								],
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Services_fillnull_start_mode",
+					"owner": "Services",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(start_mode) OR start_mode=\"\",\"unknown\",start_mode)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "status",
+							"owner": "Services",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "status",
+							"comment": {
+								"description": "The status of the service.",
+								"expected_values": [
+									"critical",
+									"started",
+									"stopped",
+									"warning"
+								],
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Services_fillnull_status",
+					"owner": "Services",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(status) OR status=\"\",\"unknown\",status)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "user",
+							"owner": "Services",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "user",
+							"comment": {
+								"description": "The user account associated with the service.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Services_fillnull_user",
+					"owner": "Services",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(user) OR user=\"\",\"unknown\",user)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "vendor_product",
+							"owner": "Services",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "vendor_product",
+							"comment": {
+								"description": "The vendor and product name of the Endpoint solution that reported the event, such as Carbon Black Cb Response. This field can be automatically populated by vendor and product fields in your data.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Services_vendor_product",
+					"owner": "Services",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(vendor_product),vendor_product,isnotnull(vendor) AND vendor!=\"unknown\" AND isnotnull(product) AND product!=\"unknown\",vendor.\" \".product,isnotnull(vendor) AND vendor!=\"unknown\" AND (isnull(product) OR product=\"unknown\"),vendor.\" unknown\",(isnull(vendor) OR vendor=\"unknown\") AND isnotnull(product) AND product!=\"unknown\",\"unknown \".product,isnotnull(sourcetype),sourcetype,1=1,\"unknown\")"
+				}
+			],
+			"constraints": [],
+			"lineage": "Services",
+			"baseSearch": "(`cim_Endpoint_indexes`) tag=service tag=report"
+		},
+		{
+			"objectName": "Filesystem",
+			"displayName": "Filesystem",
+			"parentName": "BaseSearch",
+			"comment": {
+				"tags": [
+					"endpoint",
+					"filesystem"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "dest_bunit",
+					"owner": "Filesystem",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "Filesystem",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "Filesystem",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_requires_av",
+					"owner": "Filesystem",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_requires_av",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_should_timesync",
+					"owner": "Filesystem",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_should_timesync",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_should_update",
+					"owner": "Filesystem",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_should_update",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "file_access_time",
+					"owner": "Filesystem",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_access_time",
+					"comment": {
+						"description": "The time the file (the object of the event) was accessed.",
+						"recommended": true
+					}
+				},
+				{
+					"fieldName": "file_create_time",
+					"owner": "Filesystem",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_create_time",
+					"comment": {
+						"description": "The time the file (the object of the event) was created.",
+						"recommended": true
+					}
+				},
+				{
+					"fieldName": "file_modify_time",
+					"owner": "Filesystem",
+					"type": "timestamp",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "file_modify_time",
+					"comment": {
+						"description": "The time the file (the object of the event) was altered.",
+						"recommended": true
+					}
+				},
+				{
+					"fieldName": "process_guid",
+					"owner": "Filesystem",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_guid",
+					"comment": {
+						"description": "The globally unique identifier of the process assigned by the vendor_product."
+					}
+				},
+				{
+					"fieldName": "process_id",
+					"owner": "Filesystem",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_id",
+					"comment": {
+						"description": "The numeric identifier of the process assigned by the operating system."
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "Filesystem",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "Filesystem",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "Filesystem",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "Filesystem",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "event_simpleName",
+					"owner": "Filesystem",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "event_simpleName",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "action",
+							"owner": "Filesystem",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "action",
+							"comment": {
+								"description": "The action performed on the resource.",
+								"expected_values": [
+									"acl_modified",
+									"created",
+									"deleted",
+									"modified",
+									"read"
+								],
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Filesystem_fillnull_action",
+					"owner": "Filesystem",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(action) OR action=\"\",\"unknown\",action)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest",
+							"owner": "Filesystem",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest",
+							"comment": {
+								"description": "The endpoint pertaining to the filesystem activity.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Filesystem_fillnull_dest",
+					"owner": "Filesystem",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(dest) OR dest=\"\",\"unknown\",dest)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "file_hash",
+							"owner": "Filesystem",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "file_hash",
+							"comment": {
+								"description": "A cryptographic identifier assigned to the file object affected by the event.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Filesystem_eval_file_hash",
+					"owner": "Filesystem",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(file_hash) OR file_hash=\"\",\"unknown\",file_hash)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "file_name",
+							"owner": "Filesystem",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "file_name",
+							"comment": {
+								"description": "The name of the file, such as notepad.exe.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Filesystem_eval_file_name",
+					"owner": "Filesystem",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(file_name) OR file_name=\"\",\"unknown\",file_name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "file_path",
+							"owner": "Filesystem",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "file_path",
+							"comment": {
+								"description": "The path of the file, such as C:\\Windows\\System32\\notepad.exe.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Filesystem_eval_file_path",
+					"owner": "Filesystem",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(file_path) OR file_path=\"\",\"unknown\",file_path)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "file_acl",
+							"owner": "Filesystem",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "file_acl",
+							"comment": {
+								"description": "Access controls associated with the file affected by the event.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Filesystem_eval_file_acl",
+					"owner": "Filesystem",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(file_acl) OR file_acl=\"\",\"unknown\",file_acl)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "file_size",
+							"owner": "Filesystem",
+							"type": "number",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "file_size",
+							"comment": {
+								"description": "The size of the file that is the object of the event, in kilobytes.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Filesystem_eval_file_size",
+					"owner": "Filesystem",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnum(file_size),file_size,null())"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "user",
+							"owner": "Filesystem",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "user",
+							"comment": {
+								"description": "The user account associated with the filesystem access.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Filesystem_fillnull_user",
+					"owner": "Filesystem",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(user) OR user=\"\",\"unknown\",user)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "vendor_product",
+							"owner": "Filesystem",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "vendor_product",
+							"comment": {
+								"description": "The vendor and product name of the Endpoint solution that reported the event, such as Carbon Black Cb Response. This field can be automatically populated by vendor and product fields in your data.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Filesystem_vendor_product",
+					"owner": "Filesystem",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(vendor_product),vendor_product,isnotnull(vendor) AND vendor!=\"unknown\" AND isnotnull(product) AND product!=\"unknown\",vendor.\" \".product,isnotnull(vendor) AND vendor!=\"unknown\" AND (isnull(product) OR product=\"unknown\"),vendor.\" unknown\",(isnull(vendor) OR vendor=\"unknown\") AND isnotnull(product) AND product!=\"unknown\",\"unknown \".product,isnotnull(sourcetype),sourcetype,1=1,\"unknown\")"
+				}
+			],
+			"constraints": [],
+			"lineage": "Filesystem",
+			"baseSearch": "(`cim_Endpoint_indexes`) tag=endpoint tag=filesystem"
+		},
+		{
+			"objectName": "Registry",
+			"displayName": "Registry",
+			"parentName": "BaseSearch",
+			"comment": {
+				"tags": [
+					"endpoint",
+					"registry"
+				]
+			},
+			"fields": [
+				{
+					"fieldName": "dest_bunit",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_category",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_priority",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_requires_av",
+					"owner": "Registry",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_requires_av",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_should_timesync",
+					"owner": "Registry",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_should_timesync",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "dest_should_update",
+					"owner": "Registry",
+					"type": "boolean",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "dest_should_update",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "process_guid",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_guid",
+					"comment": {
+						"description": "The globally unique identifier of the process assigned by the vendor_product."
+					}
+				},
+				{
+					"fieldName": "process_id",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "process_id",
+					"comment": {
+						"description": "The numeric identifier of the process assigned by the operating system."
+					}
+				},
+				{
+					"fieldName": "registry_hive",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "registry_hive",
+					"comment": {
+						"description": "The logical grouping of registry keys, subkeys, and values.",
+						"expected_values": [
+							"HKEY_CURRENT_CONFIG",
+							"HKEY_CURRENT_USER",
+							"HKEY_LOCAL_MACHINE\\SAM",
+							"HKEY_LOCAL_MACHINE\\Security",
+							"HKEY_LOCAL_MACHINE\\Software",
+							"HKEY_LOCAL_MACHINE\\System",
+							"HKEY_USERS\\.DEFAULT"
+						],
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "registry_value_text",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "registry_value_text",
+					"comment": {
+						"description": "The textual representation of registry_value_data (if applicable)."
+					}
+				},
+				{
+					"fieldName": "status",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "status",
+					"comment": {
+						"description": "The outcome of the registry action.",
+						"expected_values": [
+							"failure",
+							"success"
+						],
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "tag",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "tag",
+					"comment": {
+						"description": "This automatically generated field is used to access tags from within data models. Add-on builders do not need to populate it.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_bunit",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_bunit",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_category",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": true,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_category",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "user_priority",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "user_priority",
+					"comment": {
+						"description": "This field is automatically provided by asset and identity correlation features of applications like Splunk Enterprise Security. Do not define extractions for this field when writing add-ons.",
+						"ta_relevant": false
+					}
+				},
+				{
+					"fieldName": "event_simpleName",
+					"owner": "Registry",
+					"type": "string",
+					"fieldSearch": "",
+					"required": false,
+					"multivalue": false,
+					"hidden": false,
+					"editable": true,
+					"displayName": "event_simpleName",
+					"comment": ""
+				}
+			],
+			"calculations": [
+				{
+					"outputFields": [
+						{
+							"fieldName": "action",
+							"owner": "Registry",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "action",
+							"comment": {
+								"description": "The action performed on the resource.",
+								"expected_values": [
+									"created",
+									"deleted",
+									"modified",
+									"read"
+								],
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Registry_fillnull_action",
+					"owner": "Registry",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(action) OR action=\"\",\"unknown\",action)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "dest",
+							"owner": "Registry",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "dest",
+							"comment": {
+								"description": "The endpoint pertaining to the registry events.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Registry_fillnull_dest",
+					"owner": "Registry",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(dest) OR dest=\"\",\"unknown\",dest)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "registry_path",
+							"owner": "Registry",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "registry_path",
+							"comment": {
+								"description": "The path to the registry value, such as \\win\\directory\\directory2\\{676235CD-B656-42D5-B737-49856E97D072}\\PrinterDriverData.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Registry_fillnull_registry_path",
+					"owner": "Registry",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(registry_path) OR registry_path=\"\",\"unknown\",registry_path)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "registry_key_name",
+							"owner": "Registry",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "registry_key_name",
+							"comment": {
+								"description": "The name of the registry key, such as PrinterDriverData.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Registry_fillnull_registry_key_name",
+					"owner": "Registry",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(registry_key_name) OR registry_key_name=\"\",\"unknown\",registry_key_name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "registry_value_data",
+							"owner": "Registry",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "registry_value_data",
+							"comment": {
+								"description": "The unaltered registry value.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Registry_fillnull_registry_value_data",
+					"owner": "Registry",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(registry_value_data) OR registry_value_data=\"\",\"unknown\",registry_value_data)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "registry_value_name",
+							"owner": "Registry",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "registry_value_name",
+							"comment": {
+								"description": "The name of the registry value.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Registry_fillnull_registry_value_name",
+					"owner": "Registry",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(registry_value_name) OR registry_value_name=\"\",\"unknown\",registry_value_name)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "registry_value_type",
+							"owner": "Registry",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "registry_value_type",
+							"comment": {
+								"description": "The type of the registry value.",
+								"expected_values": [
+									"REG_BINARY",
+									"REG_DWORD",
+									"REG_DWORD_LITTLE_ENDIAN",
+									"REG_DWORD_BIG_ENDIAN",
+									"REG_EXPAND_SZ",
+									"REG_LINK",
+									"REG_MULTI_SZ",
+									"REG_NONE",
+									"REG_QWORD",
+									"REG_QWORD_LITTLE_ENDIAN",
+									"REG_SZ"
+								],
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Registry_fillnull_registry_value_type",
+					"owner": "Registry",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(registry_value_type) OR registry_value_type=\"\",\"unknown\",registry_value_type)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "user",
+							"owner": "Registry",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "user",
+							"comment": {
+								"description": "The user account associated with the registry access.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Registry_fillnull_user",
+					"owner": "Registry",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "if(isnull(user) OR user=\"\",\"unknown\",user)"
+				},
+				{
+					"outputFields": [
+						{
+							"fieldName": "vendor_product",
+							"owner": "Registry",
+							"type": "string",
+							"fieldSearch": "",
+							"required": false,
+							"multivalue": false,
+							"hidden": false,
+							"editable": true,
+							"displayName": "vendor_product",
+							"comment": {
+								"description": "The vendor and product name of the Endpoint solution that reported the event, such as Carbon Black Cb Response. This field can be automatically populated by vendor and product fields in your data.",
+								"recommended": true
+							}
+						}
+					],
+					"calculationID": "Endpoint_Registry_vendor_product",
+					"owner": "Registry",
+					"editable": true,
+					"comment": "",
+					"calculationType": "Eval",
+					"expression": "case(isnotnull(vendor_product),vendor_product,isnotnull(vendor) AND vendor!=\"unknown\" AND isnotnull(product) AND product!=\"unknown\",vendor.\" \".product,isnotnull(vendor) AND vendor!=\"unknown\" AND (isnull(product) OR product=\"unknown\"),vendor.\" unknown\",(isnull(vendor) OR vendor=\"unknown\") AND isnotnull(product) AND product!=\"unknown\",\"unknown \".product,isnotnull(sourcetype),sourcetype,1=1,\"unknown\")"
+				}
+			],
+			"constraints": [],
+			"lineage": "Registry",
+			"baseSearch": "(`cim_Endpoint_indexes`) tag=endpoint tag=registry"
+		}
+	],
+	"objectNameList": [
+		"Ports",
+		"Processes",
+		"Services",
+		"Filesystem",
+		"Registry"
+	]
+}
