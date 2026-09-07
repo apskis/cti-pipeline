@@ -10,8 +10,9 @@ servers, tools). Deploy via `deploy/aws|azure/deploy-with-claude-code.md`. See
 `docs/POC-overview.md`.
 
 ## Coding standards — apply them
-Follow the **`coding-standards`** skill (`core/.claude/skills/coding-standards/`). Always
-apply `rules/universal.md` and `rules/security.md`; add packs per stack.
+Follow the **`coding-standards`** skill (installed globally in `~/.claude/skills`, source of
+truth: the `dev-standards` repo). Always apply its `universal` and `security` packs; add packs
+per stack.
 
 For THIS repo (Python + Claude Code agent runtime): **universal + python + security**.
 - Python 3.11+, full type hints, `uv` for envs and deps (this repo uses it), keep functions
