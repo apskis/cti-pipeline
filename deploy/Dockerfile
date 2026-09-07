@@ -27,7 +27,9 @@ WORKDIR /app
 COPY . /app
 RUN chmod +x deploy/entrypoint.sh && (uv sync --frozen 2>/dev/null || uv sync || true)
 
-ENV CLAUDE_CODE_USE_BEDROCK=1 \
+# Model backend defaults to Bedrock; entrypoint sets CLAUDE_CODE_USE_BEDROCK when
+# MODEL_BACKEND=bedrock, or reads CLAUDE_CODE_OAUTH_TOKEN when =subscription.
+ENV MODEL_BACKEND=bedrock \
     THREATPIPE_ROOT=/app/core/threatpipe \
     OUTPUT_DIR=/app/out
 ENTRYPOINT ["deploy/entrypoint.sh"]
