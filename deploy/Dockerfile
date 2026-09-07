@@ -20,8 +20,8 @@ ENV PATH="/root/.local/bin:${PATH}"
 # AWS CLI v2 (Bedrock preflight + S3 output)
 RUN curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o /tmp/awscliv2.zip \
     && unzip -q /tmp/awscliv2.zip -d /tmp && /tmp/aws/install && rm -rf /tmp/aws*
-# Azure CLI — uncomment for the Azure image
-# RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+# Azure CLI — the same image ships both CLIs so CLOUD=aws|azure both work.
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY . /app

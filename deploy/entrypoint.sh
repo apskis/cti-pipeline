@@ -62,6 +62,7 @@ case "${CLOUD:-aws}" in
   aws)   : "${OUTPUT_BUCKET:?set OUTPUT_BUCKET}"
          aws s3 cp "$OUTPUT_DIR" "s3://${OUTPUT_BUCKET}/${COMPONENT}/" --recursive ;;
   azure) : "${STORAGE_ACCOUNT:?}" ; : "${OUTPUT_CONTAINER:?}"
+         az login --identity --allow-no-subscriptions >/dev/null
          az storage blob upload-batch -d "$OUTPUT_CONTAINER" -s "$OUTPUT_DIR" \
             --account-name "$STORAGE_ACCOUNT" --auth-mode login --overwrite true ;;
   *) echo "unknown CLOUD=${CLOUD}"; exit 2 ;;
