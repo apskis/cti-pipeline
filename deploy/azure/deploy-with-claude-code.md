@@ -106,43 +106,43 @@ az extension add -n containerapp --upgrade
 az containerapp env create -g $RG -n $CAENV -l $LOC
 ```
 
-## Step 8 — Container Apps Job (scheduled)
-Create a **Schedule**-triggered job for bulletin-scan (cadence from
-`components/bulletin-scan/component.yaml` → `0 13 * * 1-5`). Write the create command to
-generated/ and show it. Key pieces:
-- `--trigger-type Schedule --cron-expression "0 13 * * 1-5"`
-- `--image $ACR.azurecr.io/cti-pipeline:latest`, `--registry-server $ACR.azurecr.io`
-  with `--registry-identity` = the user-assigned identity.
-- `--mi-user-assigned` = the identity (so `az login --identity` works at runtime for Blob).
-- Key Vault secret refs (`--secrets`) using `keyvaultref:<secret-uri>,identityref:<id>` for
-  nvd/shodan/otx/aws-access-key-id/aws-secret-access-key.
-- `--env-vars`: COMPONENT=bulletin-scan MODEL_BACKEND=bedrock CLOUD=azure
-  ANTHROPIC_MODEL=$MODEL AWS_REGION=$AWSREGION STORAGE_ACCOUNT=$STORAGE
-  OUTPUT_CONTAINER=$CONTAINER MODE=weekly
-  NVD_API_KEY=secretref:nvd-api-key SHODAN_API_KEY=secretref:shodan-api-key
-  OTX_API_KEY=secretref:otx-api-key
-  AWS_ACCESS_KEY_ID=secretref:aws-access-key-id
-  AWS_SECRET_ACCESS_KEY=secretref:aws-secret-access-key
-**STOP** — show the full job definition before creating.
+## Step 8 — One Container Apps Job per component (schedule built in)
+Container Apps Jobs carry their own cron, so there is no separate scheduler. Create one
+Schedule-triggered job per row, all sharing: `--image $ACR.azurecr.io/cti-pipeline:latest`,
+`--registry-server $ACR.azurecr.io` + `--registry-identity` = the identity, `--mi-user-assigned`
+= the identity, Key Vault secret refs, and common env COMPONENT / MODEL_BACKEND=bedrock /
+CLOUD=azure / ANTHROPIC_MODEL=$MODEL / AWS_REGION=$AWSREGION / STORAGE_ACCOUNT=$STORAGE /
+OUTPUT_CONTAINER=$CONTAINER. **Every** job also gets the AWS Bedrock creds
+(`AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` from Key Vault), because every component calls the
+model. Per component:
 
-## Step 9 — Test run and verify
+| job | COMPONENT | MODE | cron | data-source secrets |
+|---|---|---|---|---|
+| cti-bulletin-scan       | bulletin-scan      | weekly    | `0 13 * * 1-5`      | nvd, otx |
+| cti-perimeter-scan      | perimeter-scan     | weekly    | `0 13 * * 1`        | shodan, nvd, otx |
+| cti-reporting-weekly    | reporting          | weekly    | `0 13 * * 1`        | nvd, otx |
+| cti-reporting-quarterly | reporting          | quarterly | `0 13 1 1,4,7,10 *` | nvd, otx |
+| cti-program-console     | program-console    | weekly    | `0 * * * *`         | (none) |
+| cti-documentation-sync  | documentation-sync | weekly    | `0 6 1 * *`         | (none) |
+
+reporting is two jobs (each job carries a single cron), differing only by `MODE`. Write each
+`az containerapp job create` to `generated/` and show `cti-bulletin-scan` first. **STOP** —
+once approved, create the rest the same way. threat-hunting is deferred (Step 10).
+
+## Step 9 — Smoke test and verify
 ```
 az containerapp job start -g $RG -n cti-bulletin-scan
 az containerapp job execution list -g $RG -n cti-bulletin-scan -o table
-# tail logs:
 az containerapp job logs show -g $RG -n cti-bulletin-scan --container cti --follow
-# confirm output landed:
 az storage blob list --account-name $STORAGE -c $CONTAINER --auth-mode login -o table
 ```
-Read one blob back and summarize for April. The cron schedule is already attached to the
-job, so no separate scheduler is needed. **STOP** — confirm a bulletin landed before moving on.
+Read one blob back and summarize. Each job's cron is already attached, so the pipeline is
+scheduled the moment the jobs exist. **STOP** — confirm a bulletin landed before relying on it.
 
-## Step 10 — Replicate to the other components
-Same image, one job per component with its own `COMPONENT` (and `MODE` for reporting) and the
-cadence from its `component.yaml`. Do reporting next; hold threat-hunting until Splunk is up.
-**STOP** after each.
-
----
+## Step 10 — threat-hunting (deferred until Splunk)
+When Splunk is up: add `splunk-url` and `splunk-token` to Key Vault and create
+`cti-threat-hunting` (COMPONENT=threat-hunting, cron `0 14 * * *`, those two secrets + the AWS
+creds). Do not create it now — it would fail with no Splunk endpoint.
 
 ## Parity note
 This mirrors `deploy/aws/deploy-with-claude-code.md` exactly, service for service:

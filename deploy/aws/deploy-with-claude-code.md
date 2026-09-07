@@ -147,19 +147,30 @@ aws logs create-log-group --log-group-name $LOGS --region $REGION 2>/dev/null ||
 aws logs put-retention-policy --log-group-name $LOGS --retention-in-days 30 --region $REGION
 ```
 
-## Step 7 — ECS cluster + task definition
+## Step 7 — ECS cluster + one task definition per component
 ```
 aws ecs create-cluster --cluster-name $CLUSTER --region $REGION 2>/dev/null || true
 ```
-Register a Fargate task def `cti-bulletin-scan` (write JSON to generated/):
-- requiresCompatibilities FARGATE, networkMode awsvpc, cpu 1024, memory 2048.
-- executionRoleArn = cti-pipeline-exec, taskRoleArn = cti-pipeline-task.
-- One container `cti` from `$ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$ECR:latest`.
-  - `environment`: COMPONENT=bulletin-scan, MODEL_BACKEND=bedrock, CLOUD=aws,
-    AWS_REGION=$REGION, ANTHROPIC_MODEL=$MODEL, OUTPUT_BUCKET=$BUCKET, MODE=weekly.
-  - `secrets`: NVD_API_KEY→NVD_ARN, SHODAN_API_KEY→SHODAN_ARN, OTX_API_KEY→OTX_ARN.
-  - `logConfiguration`: awslogs → group $LOGS, region $REGION, stream-prefix bulletin.
-**STOP** — show the task def JSON before registering.
+Register one Fargate task def per component. All share: FARGATE, awsvpc, cpu 1024, memory
+2048, executionRoleArn=`cti-pipeline-exec`, taskRoleArn=`cti-pipeline-task`, one container
+`cti` from the ECR image, `logConfiguration` → `$LOGS` (stream-prefix = the component), and
+common env: COMPONENT / MODEL_BACKEND=bedrock / CLOUD=aws / AWS_REGION=$REGION /
+ANTHROPIC_MODEL=$MODEL / OUTPUT_BUCKET=$BUCKET / MODE=weekly. Per component:
+
+| task def | COMPONENT | secrets (Secrets Manager) |
+|---|---|---|
+| cti-bulletin-scan      | bulletin-scan      | NVD, OTX |
+| cti-perimeter-scan     | perimeter-scan     | SHODAN, NVD, OTX |
+| cti-reporting          | reporting          | NVD, OTX |
+| cti-program-console    | program-console    | (none) |
+| cti-documentation-sync | documentation-sync | (none) |
+
+MODE only affects reporting; keep it `weekly` on the task def and override to `quarterly` on
+the quarterly schedule (Step 10). program-console and documentation-sync take no external
+keys but still run the model, so they rely on the task role for Bedrock. threat-hunting is
+deferred (Step 11). Write each task def JSON to `generated/` and register with
+`aws ecs register-task-definition`. **STOP** — show `cti-bulletin-scan` first; once approved,
+register the other four the same way.
 
 ## Step 8 — Networking
 Use the default VPC for the POC:
@@ -170,34 +181,43 @@ SUBNETS=$(aws ec2 describe-subnets --filters Name=vpc-id,Values=$VPC --query "Su
 Create a security group `cti-pipeline-sg` in $VPC with **egress all, no ingress**. Fargate
 needs a public subnet + `assignPublicIp=ENABLED` to reach Bedrock and the feeds.
 
-## Step 9 — Test run (one-off) and verify
+## Step 9 — Smoke test (bulletin-scan) and verify
+Prove the plumbing with one on-demand run before wiring schedules:
 ```
 aws ecs run-task --cluster $CLUSTER --launch-type FARGATE \
   --task-definition cti-bulletin-scan --count 1 --region $REGION \
   --network-configuration "awsvpcConfiguration={subnets=[<one public subnet>],securityGroups=[<sg>],assignPublicIp=ENABLED}"
-```
-Tail logs until the task stops, then confirm output landed:
-```
 aws logs tail $LOGS --follow --region $REGION      # Ctrl-C when the task exits
 aws s3 ls s3://$BUCKET/bulletin-scan/ --region $REGION
 ```
-Read one output object back and show April a summary. **STOP** — do not create the schedule
-until the test run has produced a bulletin in S3.
+Read one output object back and summarize for April. **STOP** — only wire schedules after a
+green run produced a bulletin in S3.
 
-## Step 10 — Schedule (only after a green test run)
-Create an EventBridge Scheduler rule `cti-bulletin-scan` on the component's cadence
-(`components/bulletin-scan/component.yaml` → `0 13 * * 1-5`), target = ECS run-task with the
-task def, cluster, and the same network configuration, plus a scheduler role that may
-`ecs:RunTask` and `iam:PassRole` the two task roles. Show the config. **STOP** — confirm.
+## Step 10 — Schedules for every component (EventBridge Scheduler)
+Create a schedule group `cti-pipeline`, a scheduler role (`ecs:RunTask` + `iam:PassRole` on
+the two task roles), then one schedule per row (FlexibleTimeWindow OFF), target = ECS RunTask
+with the task def, cluster, and the Step 8 network config. Cadences come from each
+`component.yaml`:
 
-## Step 11 — Replicate to the other components
-Each of perimeter-scan, threat-hunting, reporting, program-console, documentation-sync uses
-the SAME image with a different `COMPONENT` (and, for reporting, `MODE=weekly|quarterly`) and
-its own cadence from its `component.yaml`. Register one task def per component (or reuse one
-family with container env overrides at run-task time) and one schedule each. Do reporting
-next; leave threat-hunting until Splunk is up. **STOP** after each.
+| schedule | task def | cron (UTC) | override |
+|---|---|---|---|
+| bulletin-scan       | cti-bulletin-scan      | `0 13 * * 1-5`      | — |
+| perimeter-scan      | cti-perimeter-scan     | `0 13 * * 1`        | — |
+| reporting-weekly    | cti-reporting          | `0 13 * * 1`        | — |
+| reporting-quarterly | cti-reporting          | `0 13 1 1,4,7,10 *` | containerOverrides MODE=quarterly |
+| program-console     | cti-program-console    | `0 * * * *`         | — |
+| documentation-sync  | cti-documentation-sync | `0 6 1 * *`         | — |
 
----
+For `reporting-quarterly`, set the target's `containerOverrides` to
+`environment:[{name:MODE,value:quarterly}]`. Note EventBridge Scheduler cron is 6-field with a
+year and uses `?` for an unspecified day — translate each 5-field cron accordingly (e.g.
+`0 13 * * 1-5` → `cron(0 13 ? * MON-FRI *)`). **STOP** — list the six schedules when done.
+
+## Step 11 — threat-hunting (deferred until Splunk)
+threat-hunting needs a live Splunk (dev license pending). When it is up: store `SPLUNK_URL`
+and `SPLUNK_TOKEN` in Secrets Manager, register `cti-threat-hunting` (COMPONENT=threat-hunting,
+secrets SPLUNK_URL/SPLUNK_TOKEN + NVD/OTX), grant the exec role read on those secrets, and add
+a schedule at `0 14 * * *`. Do not create it now — its task would fail with no Splunk endpoint.
 
 ## Running locally on the Max plan (Opus)
 To run any component on your own machine against your Max plan instead of Bedrock:
