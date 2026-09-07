@@ -5,10 +5,13 @@
 set -euo pipefail
 cd /app
 
-: "${COMPONENT:?set COMPONENT (bulletin-scan|perimeter-scan|threat-hunting|program-console|documentation-sync)}"
+: "${COMPONENT:?set COMPONENT (bulletin-scan|perimeter-scan|threat-hunting|reporting|program-console|documentation-sync)}"
 : "${ANTHROPIC_MODEL:?set ANTHROPIC_MODEL to a Bedrock inference-profile id}"
 : "${AWS_REGION:=us-east-1}"
 : "${OUTPUT_DIR:=/app/out}"
+# MODE only matters for the reporting component (weekly|quarterly); harmless elsewhere.
+: "${MODE:=weekly}"
+export MODE
 export CLAUDE_CODE_USE_BEDROCK=1
 mkdir -p "$OUTPUT_DIR"
 
@@ -19,9 +22,19 @@ TASK="$CDIR/task.md"
 # Skills and MCP config are resolved from core/ (CLAUDE_PROJECT_DIR points there).
 export CLAUDE_PROJECT_DIR=/app/core
 
-echo "[entrypoint] component=$COMPONENT cloud=${CLOUD:-aws} model=$ANTHROPIC_MODEL"
+echo "[entrypoint] component=$COMPONENT mode=$MODE cloud=${CLOUD:-aws} model=$ANTHROPIC_MODEL"
 claude --print --permission-mode acceptEdits \
-  "Read ${TASK} and run it in full for today. Write outputs under ${OUTPUT_DIR}. Report what you saved and where."
+  "Read ${TASK} and run it in full for today. The MODE environment variable is '${MODE}'. Write outputs under ${OUTPUT_DIR}. Report what you saved and where."
+
+# Reporting is the analysis layer only: Claude wrote analysis_result.json, and the
+# deterministic renderer turns it into the branded .docx here (no model call).
+if [ "$COMPONENT" = "reporting" ]; then
+  ANALYSIS="${OUTPUT_DIR}/analysis_result.json"
+  [ -f "$ANALYSIS" ] || { echo "[entrypoint] reporting: ${ANALYSIS} missing — analysis did not complete"; exit 4; }
+  echo "[entrypoint] rendering ${MODE} report from ${ANALYSIS}"
+  python core/tools/reporting/render_report.py --mode "$MODE" \
+    --analysis "$ANALYSIS" --out-dir "$OUTPUT_DIR"
+fi
 
 # Ship output to the cloud's object store
 case "${CLOUD:-aws}" in

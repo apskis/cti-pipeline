@@ -1,0 +1,58 @@
+"""
+Report generator registry.
+
+Provides dynamic registration and lookup of report generators.
+"""
+
+import logging
+
+from src.reports.base import BaseReportGenerator
+
+logger = logging.getLogger(__name__)
+
+# Registry mapping report type names to generator classes
+REPORT_REGISTRY: dict[str, type[BaseReportGenerator]] = {}
+
+
+def register_report_generator(report_type: str):
+    """
+    Decorator to register a report generator class.
+
+    Usage:
+        @register_report_generator("weekly")
+        class WeeklyReportGenerator(BaseReportGenerator):
+            ...
+    """
+
+    def decorator(cls: type[BaseReportGenerator]):
+        if report_type in REPORT_REGISTRY:
+            logger.warning(f"Overwriting existing report generator: {report_type}")
+        REPORT_REGISTRY[report_type] = cls
+        logger.debug(f"Registered report generator: {report_type}")
+        return cls
+
+    return decorator
+
+
+def get_report_generator(report_type: str, use_mock_data: bool = False) -> BaseReportGenerator | None:
+    """
+    Get a report generator instance by type name.
+
+    Args:
+        report_type: The report type identifier (e.g., "weekly", "monthly")
+        use_mock_data: Whether this report uses mock data (affects filename)
+
+    Returns:
+        Instantiated report generator, or None if not found
+    """
+    generator_class = REPORT_REGISTRY.get(report_type.lower())
+    if generator_class is None:
+        logger.error(f"Unknown report type: {report_type}. Available: {list(REPORT_REGISTRY.keys())}")
+        return None
+
+    return generator_class(use_mock_data=use_mock_data)
+
+
+def list_report_types() -> list[str]:
+    """Return list of available report type names."""
+    return list(REPORT_REGISTRY.keys())

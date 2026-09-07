@@ -1,0 +1,20 @@
+name: reporting
+# Two cadences, one component. The scheduler sets MODE per rule; the entrypoint
+# renders the matching .docx after Claude writes analysis_result.json.
+#   weekly    -> tactical report   (Mon 09:00 ET)
+#   quarterly -> strategic brief   (1st of Jan/Apr/Jul/Oct, 09:00 ET)
+modes:
+  weekly:
+    cadence: "0 13 * * 1"            # weekly Monday 13:00 UTC
+    output_prefix: reports/weekly
+  quarterly:
+    cadence: "0 13 1 1,4,7,10 *"     # quarter start, 13:00 UTC
+    output_prefix: reports/quarterly
+# Default cadence/prefix if MODE is unset (treated as weekly).
+cadence: "0 13 * * 1"
+output_prefix: reports
+# POC free sources. Production adds intel471 + falcon (CrowdStrike) for actor/breach depth.
+enabled_servers: [search, nvd, enrich, ics]
+# Claude performs the analysis the Azure OpenAI layer used to; the deterministic
+# renderer (core/tools/reporting/render_report.py) turns analysis_result.json into .docx.
+render: "core/tools/reporting/render_report.py"

@@ -1,4 +1,5 @@
 python-docx>=1.1
+pyyaml>=6.0            # customer_profile.yaml parsing for the report renderer
 openpyxl>=3.1
 pillow>=10.0
 # Optional, only if you use the Agent SDK runner instead of the Claude Code CLI:
