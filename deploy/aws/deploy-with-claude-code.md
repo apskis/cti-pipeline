@@ -29,6 +29,8 @@ at every **STOP**. This is a POC: prefer simple, least privilege, and idempotent
 - Image: built from `deploy/Dockerfile` at repo root. Entry `deploy/entrypoint.sh`
   selects the component by `COMPONENT` and the backend by `MODEL_BACKEND`.
 - First component to prove the plumbing: **bulletin-scan** (needs open feeds, NVD, no Splunk).
+- **No local Docker.** The image is built in AWS by CodeBuild (Step 2), the same way
+  Azure uses `az acr build`. April installs nothing.
 
 ---
 
@@ -37,7 +39,6 @@ Run and show results; STOP if any fails.
 ```
 aws sts get-caller-identity                 # expect account 574625227402
 aws configure get region || echo us-east-1  # target us-east-1
-docker info >/dev/null 2>&1 && echo "docker OK" || echo "docker NOT running"
 ```
 Confirm Sonnet 4.5 invokes:
 ```
@@ -60,17 +61,44 @@ CLUSTER=cti-pipeline
 LOGS=/ecs/cti-pipeline
 ```
 
-## Step 2 — Build and push the image (ECR)
+## Step 2 — Build and push the image with CodeBuild (no local Docker)
+Build in AWS from the local source. You (Claude Code) do all of this; April installs nothing.
+
+1. **ECR repo** (idempotent):
 ```
 aws ecr describe-repositories --repository-names $ECR --region $REGION 2>/dev/null \
   || aws ecr create-repository --repository-name $ECR --region $REGION
-aws ecr get-login-password --region $REGION \
-  | docker login --username AWS --password-stdin $ACCOUNT.dkr.ecr.$REGION.amazonaws.com
-docker build -f deploy/Dockerfile -t $ECR:latest .
-docker tag $ECR:latest $ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$ECR:latest
-docker push $ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$ECR:latest
 ```
-**STOP** — confirm the push succeeded (image digest shown).
+2. **Build bucket + upload source.** Create a private bucket and upload a zip of the working
+   tree, EXCLUDING `.git`, `out/`, `__pycache__`, `deploy/*/generated/`, `.venv`:
+```
+BUILDBUCKET=cti-pipeline-build-$ACCOUNT
+aws s3api create-bucket --bucket $BUILDBUCKET --region $REGION
+aws s3api put-public-access-block --bucket $BUILDBUCKET \
+  --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+# zip with your shell (PowerShell: Compress-Archive; bash: git archive or zip -r),
+# then:
+aws s3 cp cti-pipeline-src.zip s3://$BUILDBUCKET/source.zip
+```
+3. **CodeBuild service role** `cti-pipeline-build` (trust `codebuild.amazonaws.com`), scoped to:
+   ECR auth + push to the `$ECR` repo, read `s3://$BUILDBUCKET/*`, and CloudWatch Logs.
+   Write the policy JSON to `generated/`. **STOP** — show it before creating.
+4. **CodeBuild project** `cti-pipeline-build`:
+   - source: `S3` = `$BUILDBUCKET/source.zip`
+   - environment: `aws/codebuild/standard:7.0`, LINUX_CONTAINER, `BUILD_GENERAL1_SMALL`,
+     **privilegedMode = true** (needed to run `docker build`; the CodeBuild image already has Docker).
+   - env vars: ACCOUNT, REGION, ECR.
+   - inline buildspec:
+     - pre_build: `aws ecr get-login-password | docker login --username AWS --password-stdin $ACCOUNT.dkr.ecr.$REGION.amazonaws.com`
+     - build: `docker build -f deploy/Dockerfile -t $ECR:latest .`
+     - post_build: tag + `docker push $ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$ECR:latest`
+5. **Run it and wait:**
+```
+aws codebuild start-build --project-name cti-pipeline-build --region $REGION
+# poll: aws codebuild batch-get-builds --ids <id> --query "builds[0].buildStatus"
+```
+**STOP** — confirm `SUCCEEDED` and that `aws ecr describe-images --repository-name $ECR`
+shows the `latest` tag.
 
 ## Step 3 — Output bucket (S3)
 Create private, versioned:
