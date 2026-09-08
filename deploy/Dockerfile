@@ -31,7 +31,8 @@ COPY . /app
 # actually reads, which is the cwd (/app).
 RUN pip install --no-cache-dir -r deploy/requirements.txt \
     && chmod +x deploy/entrypoint.sh scripts/resolve_paths.py deploy/gen_mcp_config.py \
-    && ln -s /app/core/.claude /app/.claude
+    && ln -s /app/core/.claude /app/.claude \
+    && echo '{"projects":{"/app":{"hasTrustDialogAccepted":true}}}' > /root/.claude.json
 
 # Model backend defaults to Bedrock; entrypoint sets CLAUDE_CODE_USE_BEDROCK when
 # MODEL_BACKEND=bedrock, or reads CLAUDE_CODE_OAUTH_TOKEN when =subscription.

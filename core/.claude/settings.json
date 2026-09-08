@@ -47,5 +47,5 @@
       "mcp__falcon-mcp__falcon_run_rtr_*"
     ]
   },
-  "_model_note": "Using enterprise Claude account via SSO. Latest models available. Switch: .\switch_provider.ps1 bedrock"
+  "_model_note": "Using enterprise Claude account via SSO. Latest models available. Switch: .\\switch_provider.ps1 bedrock"
 }

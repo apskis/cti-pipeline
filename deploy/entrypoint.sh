@@ -54,7 +54,10 @@ MCP_CONFIG=/app/.mcp.json
 python3 deploy/gen_mcp_config.py --component "$COMPONENT" --repo /app --out "$MCP_CONFIG"
 
 echo "[entrypoint] component=$COMPONENT mode=$MODE cloud=${CLOUD:-aws}"
+# --settings loads the repo allow/deny list explicitly: headless runs have no trust
+# dialog, and an untrusted workspace's .claude/settings.json permissions are ignored.
 claude --print --permission-mode acceptEdits \
+  --settings /app/core/.claude/settings.json \
   --mcp-config "$MCP_CONFIG" --strict-mcp-config \
   "Read ${TASK} and run it in full for today. The MODE environment variable is '${MODE}'. Write outputs under ${OUTPUT_DIR}. Report what you saved and where."
 
