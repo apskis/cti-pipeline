@@ -43,9 +43,18 @@ TASK="$CDIR/task.md"
 # Skills are resolved from core/ (/app/.claude is a symlink to it; CLAUDE_PROJECT_DIR too).
 export CLAUDE_PROJECT_DIR=/app/core
 
+# Restore prior state from the object store first, so the dedup log, registers, IDs
+# and earlier deliverables are on disk and the run reports only new or changed items.
+# (Azure restore via blob download-batch is a follow up; AWS is the POC target.)
+export OUTPUT_DIR REPO_ROOT=/app
+if [ "${CLOUD:-aws}" = "aws" ]; then
+  : "${OUTPUT_BUCKET:?set OUTPUT_BUCKET}"
+  echo "[entrypoint] restoring prior state from s3://${OUTPUT_BUCKET}/${COMPONENT}/"
+  aws s3 sync "s3://${OUTPUT_BUCKET}/${COMPONENT}/" "$OUTPUT_DIR" --only-show-errors
+fi
+
 # Output layout: every config/paths.json key resolves under OUTPUT_DIR and is created
 # now, so a wrong path fails here rather than when a finished document is saved.
-export OUTPUT_DIR REPO_ROOT=/app
 python3 scripts/resolve_paths.py
 
 # MCP servers: one stdio server per name in the component's enabled_servers. Keys are
@@ -74,7 +83,7 @@ fi
 # Ship output to the cloud's object store
 case "${CLOUD:-aws}" in
   aws)   : "${OUTPUT_BUCKET:?set OUTPUT_BUCKET}"
-         aws s3 cp "$OUTPUT_DIR" "s3://${OUTPUT_BUCKET}/${COMPONENT}/" --recursive ;;
+         aws s3 sync "$OUTPUT_DIR" "s3://${OUTPUT_BUCKET}/${COMPONENT}/" --only-show-errors ;;
   azure) : "${STORAGE_ACCOUNT:?}" ; : "${OUTPUT_CONTAINER:?}"
          az login --identity --allow-no-subscriptions >/dev/null
          az storage blob upload-batch -d "$OUTPUT_CONTAINER" -s "$OUTPUT_DIR" \

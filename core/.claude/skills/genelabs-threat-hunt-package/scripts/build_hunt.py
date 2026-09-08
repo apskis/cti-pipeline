@@ -584,7 +584,13 @@ def add_findings(doc, spec):
 
 
 def build(spec, template_path, out_path):
-    doc = Document(template_path)
+    # The branded template is not shipped in the sanitized build; an unbranded
+    # document still lets the pipeline deliver the content for review.
+    if os.path.exists(template_path):
+        doc = Document(template_path)
+    else:
+        print(f"template not found ({template_path}); building unbranded", file=sys.stderr)
+        doc = Document()
     set_base_style(doc)
     hid = spec.get("hunt_id", "TH-26-XX")
     # header line

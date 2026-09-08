@@ -25,6 +25,37 @@ this file is the task as it ran on Claude Desktop, unchanged.
    all, so the FILE-BASED LOG is always the source. Say so in the run output.
 2. **Delivering files.** There is no `SendUserFile` here. Write to the configured folder
    and state the absolute path. That is the delivery.
+3. **Nobody replies.** This is a scheduled, unattended run. Anything the Desktop version
+   deferred until April answered is done NOW, every run, without asking:
+   - STEP 9 runs automatically. Draft a bulletin for EVERY NEW idea rated CRITICAL or
+     HIGH, and for any own product finding, with "DRAFT for April's review" in the
+     audience line. Save to the bulletins folder under the next CTIYY-NN. An idea that
+     already carries a bulletin ID gets no new bulletin unless this run recorded an
+     UPDATE for it.
+   - STEP 6 runs every run. Create the CVE register workbook if absent, otherwise update
+     it in place, then build the VM priority brief. openpyxl and the Python verification
+     path only, there is no LibreOffice in this runtime. Brief builder:
+     `python3 core/tools/build_priority_brief.py <register.xlsx> <out.docx> core/.claude/skills/genelabs-cti-bulletin`
+   - STEP 8 runs every run. One package per huntable item. The only builder in this
+     runtime is `core/.claude/skills/genelabs-threat-hunt-package/scripts/build_hunt.py`
+     (the `_tools` copy is not shipped), so use it.
+   - CONNECTORS THAT DO NOT EXIST HERE (Falcon, Splunk, InsightVM, Claroty, Intel 471,
+     ThreatQ, Rapid7): never skip a deliverable because one is missing. Write "could not
+     be assessed: connector not available in this runtime" in the cell, the relevance
+     field or the scoping section, and carry on. CANNOT CONFIRM is a valid "Seen in our
+     logs" verdict.
+   - TEMPLATES: the branded .docx templates are not shipped in this sanitized build, so
+     the builders fall back to an unbranded document. Say so once in the run output.
+   - STATE PERSISTS between runs. The output folder is restored from the object store
+     before you start, so the dedup log, register, bulletins, hunt packages and ledger
+     from earlier runs are on disk. Read them in STEP 1. REPORT ONLY WHAT IS NEW OR
+     MATERIALLY CHANGED: an item already in the dedup log with no changed field goes under
+     "Recently covered" and gets no new bulletin, package or register row. An UPDATE
+     means a named field moved: KEV listing, exploitation status, patch availability,
+     scale, attribution or IOCs.
+   - Print a deliverable checklist at the end: scan report, CVE register, VM brief,
+     bulletins (IDs), hunt packages (IDs), AWR post, pipeline, dedup log. Mark any missing
+     one with the reason.
 
 ---
 
