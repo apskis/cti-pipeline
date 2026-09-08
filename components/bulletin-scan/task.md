@@ -53,6 +53,22 @@ this file is the task as it ran on Claude Desktop, unchanged.
      "Recently covered" and gets no new bulletin, package or register row. An UPDATE
      means a named field moved: KEV listing, exploitation status, patch availability,
      scale, attribution or IOCs.
+   - THERE IS NO TIME LIMIT ON THIS RUN. Never stop with "time constraints" or defer a
+     deliverable to "the next run". Work in this order and finish every item: STEP 6
+     register and brief, STEP 9 bulletins, STEP 8 hunt packages, STEP 10 AWR post,
+     STEP 11 pipeline, STEP 5 dedup log. If a builder fails, fix the spec and retry.
+   - IDs AND COVERAGE ARE COMPUTED FOR YOU. `state/next-ids.md` holds the next bulletin
+     and hunt IDs derived from the files on disk, and `state/deliverables-index.md`
+     lists every deliverable ever produced. Read both in STEP 1; they win over the dedup
+     log if the two disagree. Any item whose bulletin or package appears in the index is
+     COVERED.
+   - THE DEDUP LOG IS A DELIVERABLE. Rewrite `state/dedup-log.md` so every entry carries
+     the bulletin and hunt IDs assigned this run, then re-read the file and confirm the
+     IDs are in it before you finish. A log that still says `bulletin:none` for an item
+     you just drafted is a failed run.
+   - KEEP THE OUTPUT FOLDER CLEAN. The scan report is `reports/scan-YYYY-MM-DD.md` (one
+     file per run, no other report names). Scratch scripts and builder spec JSON go under
+     `state/_work/`, never the output root.
    - Print a deliverable checklist at the end: scan report, CVE register, VM brief,
      bulletins (IDs), hunt packages (IDs), AWR post, pipeline, dedup log. Mark any missing
      one with the reason.
@@ -285,4 +301,4 @@ TIER THEM (1 ready, 2 needs a hook, 3 fallback rotation) and carry forward unuse
 STRUCTURAL NOTE worth repeating in the document: connectors are good at what is happening TO GeneLabs and poor at what an ORDINARY EMPLOYEE CAN ACT ON. The web sweep carries this series; connectors rank it. Falcon Identity Protection is the exception, because credential attacks map onto password reuse and unexpected MFA prompts.
 Deliver the pipeline with the configured output folder (state the absolute path) alongside the post, every run.
 
-Next available bulletin, hunt and gap IDs are recorded at the end of the dedup log — read them from there rather than assuming.
+Next available bulletin, hunt and gap IDs are recorded at the end of the dedup log and, authoritatively, in `state/next-ids.md` — read them from there rather than assuming.

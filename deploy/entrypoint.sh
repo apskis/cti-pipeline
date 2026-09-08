@@ -56,6 +56,7 @@ fi
 # Output layout: every config/paths.json key resolves under OUTPUT_DIR and is created
 # now, so a wrong path fails here rather than when a finished document is saved.
 python3 scripts/resolve_paths.py
+python3 scripts/update_state.py snapshot
 
 # MCP servers: one stdio server per name in the component's enabled_servers. Keys are
 # already in the environment, so the generated file carries no credential.
@@ -80,10 +81,15 @@ if [ "$COMPONENT" = "reporting" ]; then
     --analysis "$ANALYSIS" --out-dir "$OUTPUT_DIR"
 fi
 
-# Ship output to the cloud's object store
+# Deterministic state: next IDs and a deliverables index from what is on disk, so the
+# next run dedups correctly even if the model forgot to update its log.
+python3 scripts/update_state.py finalize
+
+# Ship output to the cloud's object store (a full copy: sync can skip a rewritten
+# file whose size did not change, and losing a state update costs a whole run).
 case "${CLOUD:-aws}" in
   aws)   : "${OUTPUT_BUCKET:?set OUTPUT_BUCKET}"
-         aws s3 sync "$OUTPUT_DIR" "s3://${OUTPUT_BUCKET}/${COMPONENT}/" --only-show-errors ;;
+         aws s3 cp "$OUTPUT_DIR" "s3://${OUTPUT_BUCKET}/${COMPONENT}/" --recursive --only-show-errors ;;
   azure) : "${STORAGE_ACCOUNT:?}" ; : "${OUTPUT_CONTAINER:?}"
          az login --identity --allow-no-subscriptions >/dev/null
          az storage blob upload-batch -d "$OUTPUT_CONTAINER" -s "$OUTPUT_DIR" \
