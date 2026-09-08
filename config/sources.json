@@ -1,0 +1,19 @@
+{
+  "_comment": "Feed only mode for the bulletin scan on Bedrock (no web search). Structured feeds first; every entry is public and keyless. Filter by publication date before fetching any article.",
+  "structured": [
+    { "name": "CISA Known Exploited Vulnerabilities", "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json", "format": "json" }
+  ],
+  "advisories": [
+    { "name": "CISA Cybersecurity Advisories", "url": "https://www.cisa.gov/cybersecurity-advisories/all.xml", "format": "rss" },
+    { "name": "CISA ICS Advisories", "url": "https://www.cisa.gov/cybersecurity-advisories/ics-advisories.xml", "format": "rss" },
+    { "name": "NCSC UK News", "url": "https://www.ncsc.gov.uk/api/1/services/v1/all-rss-feed.xml", "format": "rss" }
+  ],
+  "news": [
+    { "name": "BleepingComputer", "url": "https://www.bleepingcomputer.com/feed/", "format": "rss" },
+    { "name": "The Record", "url": "https://therecord.media/feed", "format": "rss" },
+    { "name": "SecurityWeek", "url": "https://www.securityweek.com/feed/", "format": "rss" },
+    { "name": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews", "format": "rss" },
+    { "name": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/", "format": "rss" },
+    { "name": "HHS HC3 Alerts", "url": "https://www.hhs.gov/about/news/rss/index.xml", "format": "rss" }
+  ]
+}

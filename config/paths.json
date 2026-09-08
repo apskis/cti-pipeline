@@ -1,0 +1,18 @@
+{
+  "_comment": "Output layout for the containerised run. Every value may use ${OUTPUT_DIR} (default ./out) and ${REPO_ROOT} (default cwd); scripts/resolve_paths.py expands them and creates the folders. On April's machine these keys point at OneDrive folders instead.",
+  "bulletins":            "${OUTPUT_DIR}/bulletins/2026",
+  "hunt_packages":        "${OUTPUT_DIR}/hunts/packages",
+  "hunt_archive":         "${OUTPUT_DIR}/hunts/archive",
+  "exposure_advisories":  "${OUTPUT_DIR}/exposure-advisories",
+  "detection_handoffs":   "${OUTPUT_DIR}/detection-handoffs",
+  "gap_register":         "${OUTPUT_DIR}/registers/telemetry-gap-register.md",
+  "cve_register_dir":     "${OUTPUT_DIR}/registers",
+  "cve_register":         "${OUTPUT_DIR}/registers/CVE_Register_2026.xlsx",
+  "peer_register":        "${OUTPUT_DIR}/registers/Peer_Incident_Register_2026.xlsx",
+  "employee_posts":       "${OUTPUT_DIR}/employee-posts",
+  "awareness_ledger":     "${OUTPUT_DIR}/state/awareness-topic-ledger.md",
+  "awareness_pipeline":   "${OUTPUT_DIR}/state/awareness-topic-pipeline.md",
+  "dedup_log":            "${OUTPUT_DIR}/state/dedup-log.md",
+  "repo_tools":           "${REPO_ROOT}/core/tools",
+  "repo_hunt_tools":      "${REPO_ROOT}/core/tools"
+}

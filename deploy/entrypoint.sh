@@ -40,11 +40,22 @@ CDIR="components/${COMPONENT}"
 [ -d "$CDIR" ] || { echo "unknown COMPONENT=$COMPONENT"; exit 2; }
 TASK="$CDIR/task.md"
 
-# Skills and MCP config are resolved from core/ (CLAUDE_PROJECT_DIR points there).
+# Skills are resolved from core/ (/app/.claude is a symlink to it; CLAUDE_PROJECT_DIR too).
 export CLAUDE_PROJECT_DIR=/app/core
+
+# Output layout: every config/paths.json key resolves under OUTPUT_DIR and is created
+# now, so a wrong path fails here rather than when a finished document is saved.
+export OUTPUT_DIR REPO_ROOT=/app
+python3 scripts/resolve_paths.py
+
+# MCP servers: one stdio server per name in the component's enabled_servers. Keys are
+# already in the environment, so the generated file carries no credential.
+MCP_CONFIG=/app/.mcp.json
+python3 deploy/gen_mcp_config.py --component "$COMPONENT" --repo /app --out "$MCP_CONFIG"
 
 echo "[entrypoint] component=$COMPONENT mode=$MODE cloud=${CLOUD:-aws}"
 claude --print --permission-mode acceptEdits \
+  --mcp-config "$MCP_CONFIG" --strict-mcp-config \
   "Read ${TASK} and run it in full for today. The MODE environment variable is '${MODE}'. Write outputs under ${OUTPUT_DIR}. Report what you saved and where."
 
 # Reporting is the analysis layer only: Claude wrote analysis_result.json, and the
