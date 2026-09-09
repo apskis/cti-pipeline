@@ -32,6 +32,38 @@ to confirm a source detail you need for the document.
   topic named in today's report, `--channel` set, ledger row appended, then rebuild
   `state/awareness-topic-pipeline.md` (STEP 11 of the scan prompt).
 
+## Spec shape: get the keys right or the builder emits an empty shell
+
+`build_hunt.py` and `build_bulletin.py` silently default every key they do not find.
+A spec with the wrong keys produces a document with placeholder text ("TH-26-XX",
+five paragraphs); the driver rejects it and queues it again, so it is wasted work.
+
+- Hunt spec: copy the JSON example in `core/.claude/skills/genelabs-threat-hunt-package/SKILL.md`
+  (search for `"hunt_id": "TH26-14"`). Top level keys are exactly `hunt_id`, `date`,
+  `run_date`, `handoff_note`, `meta`, `hypotheses`, `iocs`, `saved_searches`, `tlp`.
+  `hypotheses` is a LIST of objects, each with `title`, `priority`, `trigger_type`,
+  `able` (actor, behavior, location, evidence), `hypothesis`, `data_sources`, `falcon`
+  (name, event, purpose, cql), `queries` (name, source, purpose, spl), `attack`,
+  `expected`, `sources`. `meta.hunt_title` must equal the filename stem.
+- Bulletin spec: the keys `build_bulletin.py` reads are documented at the top of that
+  script and in the bulletin skill: `report_id`, `date`, `category`, `title`,
+  `audience`, `severity`, `relevance`, `why_this_matters`, `what_happened`,
+  `red_flags`, `questions`, `sources`, `tlp`.
+
+VERIFY EVERY DOCUMENT AFTER BUILDING IT, before reporting it done:
+
+```
+python3 - <<'PY'
+import docx
+d = docx.Document("<out.docx>"); ps = [p.text for p in d.paragraphs if p.text.strip()]
+text = "\n".join(ps); ok = "<ID>" in text and len(ps) >= 30 and "TH-26-XX" not in text
+print(len(ps), "paragraphs;", "OK" if ok else "SHELL: fix the spec keys and rebuild")
+PY
+```
+
+(30 paragraphs for a hunt package, 15 for a bulletin.) A "SHELL" result means the spec
+keys were wrong: fix them and rebuild. Never report a shell as done.
+
 ## Rules
 
 - The branded templates are not shipped; the builders fall back to an unbranded document.
