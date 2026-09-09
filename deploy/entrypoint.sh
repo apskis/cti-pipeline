@@ -71,6 +71,23 @@ claude --print --permission-mode acceptEdits \
   --mcp-config "$MCP_CONFIG" --strict-mcp-config \
   "Read ${TASK} and run it in full for today. The MODE environment variable is '${MODE}'. Write outputs under ${OUTPUT_DIR}. Report what you saved and where."
 
+# Builder passes: a single headless session will not carry a dozen documents, so the
+# scan pass only assigns IDs in the dedup log and each builder pass (fresh context)
+# turns a small batch of them into files, until nothing is pending or the cap is hit.
+BUILD_TASK="$CDIR/task-build.md"
+if [ -f "$BUILD_TASK" ]; then
+  PENDING="$OUTPUT_DIR/state/_work/pending.json"
+  for pass in $(seq 1 "${BUILD_PASSES:-8}"); do
+    python3 scripts/pending_deliverables.py --batch "${BUILD_BATCH:-4}" --out "$PENDING" && rc=0 || rc=$?
+    [ "$rc" -eq 0 ] || break     # 3 = nothing pending
+    echo "[entrypoint] builder pass $pass"
+    claude --print --permission-mode acceptEdits \
+      --settings /app/core/.claude/settings.json \
+      --mcp-config "$MCP_CONFIG" --strict-mcp-config \
+      "Read ${BUILD_TASK} and build every item listed in ${PENDING}. The output folder is ${OUTPUT_DIR}. Report one line per item."
+  done
+fi
+
 # Reporting is the analysis layer only: Claude wrote analysis_result.json, and the
 # deterministic renderer turns it into the branded .docx here (no model call).
 if [ "$COMPONENT" = "reporting" ]; then

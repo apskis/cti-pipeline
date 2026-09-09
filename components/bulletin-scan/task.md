@@ -25,20 +25,26 @@ this file is the task as it ran on Claude Desktop, unchanged.
    all, so the FILE-BASED LOG is always the source. Say so in the run output.
 2. **Delivering files.** There is no `SendUserFile` here. Write to the configured folder
    and state the absolute path. That is the delivery.
-3. **Nobody replies.** This is a scheduled, unattended run. Anything the Desktop version
-   deferred until April answered is done NOW, every run, without asking:
-   - STEP 9 runs automatically. Draft a bulletin for EVERY NEW idea rated CRITICAL or
-     HIGH, and for any own product finding, with "DRAFT for April's review" in the
-     audience line. Save to the bulletins folder under the next CTIYY-NN. An idea that
-     already carries a bulletin ID gets no new bulletin unless this run recorded an
-     UPDATE for it.
-   - STEP 6 runs every run. Create the CVE register workbook if absent, otherwise update
-     it in place, then build the VM priority brief. openpyxl and the Python verification
-     path only, there is no LibreOffice in this runtime. Brief builder:
-     `python3 core/tools/build_priority_brief.py <register.xlsx> <out.docx> core/.claude/skills/genelabs-cti-bulletin`
-   - STEP 8 runs every run. One package per huntable item. The only builder in this
-     runtime is `core/.claude/skills/genelabs-threat-hunt-package/scripts/build_hunt.py`
-     (the `_tools` copy is not shipped), so use it.
+3. **Nobody replies, and you are the SCAN pass.** This is a scheduled, unattended run in
+   two stages. YOU research, maintain the register and the dedup log, and ASSIGN IDs.
+   A separate BUILDER pass runs after you, in a fresh context, and turns every ID you
+   assign into a document (bulletins, hunt packages, the VM brief, the awareness post).
+   So: do not draft the .docx deliverables yourself, and never "defer" or "reserve"
+   anything: assigning the ID IS the instruction to build it.
+   - STEP 9 becomes an assignment. Every NEW idea rated CRITICAL or HIGH, and any own
+     product finding, gets the next CTIYY-NN written into its dedup log entry as
+     `bulletin:CTI26-NN`. An idea that already carries a bulletin ID gets no new one
+     unless this run recorded an UPDATE for it. Put enough in the entry (sources with
+     dates, KEV, exploitation, patch, scale, why it matters) for the builder to work from.
+   - STEP 8 becomes an assignment. Every HUNTABLE item gets `hunt:TH26-NN` in its entry
+     plus one line stating the hypothesis and the telemetry it needs.
+   - STEP 6 stays yours: create the CVE register workbook if absent, otherwise update it
+     in place, with a row for EVERY CVE surfaced, not a "priority" subset. openpyxl and
+     the Python verification path only, there is no LibreOffice here. The VM brief is
+     built by the builder pass from the register's Latest Run tab.
+   - STEP 10 and 11 become an assignment: name today's AWR-YYYY-MM-DD and its topic and
+     channel in the dedup log and the scan report; the builder writes the post and
+     rebuilds the pipeline.
    - CONNECTORS THAT DO NOT EXIST HERE (Falcon, Splunk, InsightVM, Claroty, Intel 471,
      ThreatQ, Rapid7): never skip a deliverable because one is missing. Write "could not
      be assessed: connector not available in this runtime" in the cell, the relevance
@@ -53,10 +59,9 @@ this file is the task as it ran on Claude Desktop, unchanged.
      "Recently covered" and gets no new bulletin, package or register row. An UPDATE
      means a named field moved: KEV listing, exploitation status, patch availability,
      scale, attribution or IOCs.
-   - THERE IS NO TIME LIMIT ON THIS RUN. Never stop with "time constraints" or defer a
-     deliverable to "the next run". Work in this order and finish every item: STEP 6
-     register and brief, STEP 9 bulletins, STEP 8 hunt packages, STEP 10 AWR post,
-     STEP 11 pipeline, STEP 5 dedup log. If a builder fails, fix the spec and retry.
+   - THERE IS NO TIME LIMIT ON THIS RUN. Never stop with "time constraints" or "scope".
+     Work in this order: STEP 1 to 4 research and ranking, STEP 6 register, STEP 5 dedup
+     log with every ID assigned, STEP 7 sources, the scan report.
    - IDs AND COVERAGE ARE COMPUTED FOR YOU. `state/next-ids.md` holds the next bulletin
      and hunt IDs derived from the files on disk, and `state/deliverables-index.md`
      lists every deliverable ever produced. Read both in STEP 1; they win over the dedup
@@ -69,9 +74,8 @@ this file is the task as it ran on Claude Desktop, unchanged.
    - KEEP THE OUTPUT FOLDER CLEAN. The scan report is `reports/scan-YYYY-MM-DD.md` (one
      file per run, no other report names). Scratch scripts and builder spec JSON go under
      `state/_work/`, never the output root.
-   - Print a deliverable checklist at the end: scan report, CVE register, VM brief,
-     bulletins (IDs), hunt packages (IDs), AWR post, pipeline, dedup log. Mark any missing
-     one with the reason.
+   - Print a checklist at the end: scan report, CVE register (row count), dedup log,
+     bulletin IDs assigned, hunt IDs assigned, AWR ID and topic. Nothing else is yours.
 
 ---
 
