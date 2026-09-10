@@ -209,7 +209,11 @@ with the task def, cluster, and the Step 8 network config. Cadences come from ea
 | documentation-sync  | cti-documentation-sync | `0 6 1 * *`         | — |
 
 For `reporting-quarterly`, set the target's `containerOverrides` to
-`environment:[{name:MODE,value:quarterly}]`. Note EventBridge Scheduler cron is 6-field with a
+`environment:[{name:MODE,value:quarterly}]`.
+**Scheduler role trust policy:** condition it on `aws:SourceAccount` only. Scheduler
+pre-validates that it can assume the role during `CreateSchedule`, before the schedule
+ARN exists, so an `ArnLike` on `aws:SourceArn` fails every create with "The execution
+role you provide must allow AWS EventBridge Scheduler to assume the role". Note EventBridge Scheduler cron is 6-field with a
 year and uses `?` for an unspecified day — translate each 5-field cron accordingly (e.g.
 `0 13 * * 1-5` → `cron(0 13 ? * MON-FRI *)`). **STOP** — list the six schedules when done.
 
