@@ -5,8 +5,11 @@ GeneLabs template (assets/hunt_template.docx) for branding. Mirrors April's
 CTI2602 house structure: metadata header table, ABLE hypotheses, per-source
 Splunk tstats query chains (against the accelerated data models in
 references/splunk_datamodels.md) plus CrowdStrike Falcon starters, an IOC
-Inventory table, MITRE ATT&CK & D3FEND mappings, recommended saved searches,
-a findings-classification key, a Coverage & Gaps roll-up, and (for unexecuted packages only) blank execution/outcome sections.
+Inventory table, MITRE ATT&CK & D3FEND mappings and recommended saved searches.
+
+A package is a WORK ORDER: it carries no findings, no verdicts, no classification
+key, no Coverage & Gaps roll-up and no blank execution sections. Those belong to
+the hunt REPORT, written after the hunt has run (2026-08-24, April).
 
 Usage:
     python build_hunt.py spec.json out.docx [path/to/hunt_template.docx]
@@ -56,10 +59,6 @@ CLASS_COLOR = {
     "detection engineering need": "1565C0",
     "informational / context": "00796B", "informational": "00796B",
 }
-
-
-def _class_color(label):
-    return CLASS_COLOR.get(str(label).strip().lower(), GREY)
 
 
 def _shade(p, fill):
@@ -243,45 +242,6 @@ def add_hyperlink(paragraph, url, text):
 _BM = [900]
 
 
-def add_bookmark(paragraph, name):
-    """Wrap a paragraph in a Word bookmark so PAGEREF / internal links can target it."""
-    _BM[0] += 1
-    bid = str(_BM[0])
-    st = OxmlElement('w:bookmarkStart'); st.set(qn('w:id'), bid); st.set(qn('w:name'), name)
-    en = OxmlElement('w:bookmarkEnd'); en.set(qn('w:id'), bid)
-    paragraph._p.insert(0, st); paragraph._p.append(en)
-    return name
-
-
-def add_pageref(paragraph, bookmark, size=9, bold=False):
-    """Insert a PAGEREF field pointing at a bookmark. Word resolves it on field update."""
-    fld = OxmlElement('w:fldSimple')
-    fld.set(qn('w:instr'), ' PAGEREF %s \\h ' % bookmark)
-    r = OxmlElement('w:r'); rPr = OxmlElement('w:rPr')
-    rf = OxmlElement('w:rFonts'); rf.set(qn('w:ascii'), FONT); rf.set(qn('w:hAnsi'), FONT); rPr.append(rf)
-    sz = OxmlElement('w:sz'); sz.set(qn('w:val'), str(int(size * 2))); rPr.append(sz)
-    if bold:
-        b = OxmlElement('w:b'); rPr.append(b)
-    r.append(rPr)
-    t = OxmlElement('w:t'); t.text = "\u2013"; r.append(t)
-    fld.append(r); paragraph._p.append(fld)
-
-
-def add_internal_link(paragraph, bookmark, text, size=9, bold=False, color=BLUE):
-    """Clickable cross-reference to a bookmark inside the same document."""
-    h = OxmlElement('w:hyperlink'); h.set(qn('w:anchor'), bookmark)
-    r = OxmlElement('w:r'); rPr = OxmlElement('w:rPr')
-    for tag, attr, val in (('w:color', 'w:val', color), ('w:u', 'w:val', 'single'),
-                           ('w:sz', 'w:val', str(int(size * 2)))):
-        e = OxmlElement(tag); e.set(qn(attr), val); rPr.append(e)
-    if bold:
-        rPr.append(OxmlElement('w:b'))
-    rf = OxmlElement('w:rFonts'); rf.set(qn('w:ascii'), FONT); rf.set(qn('w:hAnsi'), FONT); rPr.append(rf)
-    r.append(rPr)
-    t = OxmlElement('w:t'); t.text = text; r.append(t)
-    h.append(r); paragraph._p.append(h)
-
-
 def _accent_bar(doc, text, color, size=10.5, fill=None):
     """Finding header: coloured left accent bar + bold coloured title."""
     p = doc.add_paragraph()
@@ -410,177 +370,35 @@ def grid_table(doc, headers, rows, widths=None, header_fill=GENELABS_ORANGE, fon
     return table
 
 
-def meta_table(doc, hid, meta, status):
+def meta_table(doc, hid, meta):
+    """Straight 2-column label/value header.
+
+    Status, Start Date, End Date and Reviewed By were removed on 2026-08-24: all
+    four rendered as placeholders ("Proposed", an empty date, "[Pending Review]").
+    They are outcomes of running the hunt and belong to the report skill.
+    """
     rows = [
-        ["Hunt Title", meta.get("hunt_title", hid), "Status", status],
-        ["Trigger Source", meta.get("trigger_source", ""), "Start Date", meta.get("start_date", "")],
-        ["IOC Type(s)", meta.get("ioc_types", ""), "End Date", meta.get("end_date", "")],
-        ["Campaign/Actor Tags", meta.get("campaign_actor_tags", "N/A"), "Reviewed By", meta.get("reviewed_by", "[Pending Review]")],
+        ["Hunt Title", meta.get("hunt_title", hid)],
+        ["Trigger Source", meta.get("trigger_source", "")],
+        ["IOC Type(s)", meta.get("ioc_types", "")],
+        ["Campaign/Actor Tags", meta.get("campaign_actor_tags", "N/A")],
     ]
     # Optional analyst-role rows — only rendered if any role is explicitly provided.
     role_keys = ("hunt_lead", "scribe", "ti_threatq", "crowdstrike", "proofpoint", "splunk")
-    if any(meta.get(k) for k in role_keys):
-        rows += [
-            ["Hunt Lead", meta.get("hunt_lead", ""), "Scribe", meta.get("scribe", "")],
-            ["TI (ThreatQ)", meta.get("ti_threatq", ""), "CrowdStrike", meta.get("crowdstrike", "")],
-            ["Proofpoint", meta.get("proofpoint", ""), "Splunk", meta.get("splunk", "")],
-        ]
-    t = doc.add_table(rows=0, cols=4); t.style = "Table Grid"
+    labels = {"hunt_lead": "Hunt Lead", "scribe": "Scribe", "ti_threatq": "TI (ThreatQ)",
+              "crowdstrike": "CrowdStrike", "proofpoint": "Proofpoint", "splunk": "Splunk"}
+    rows += [[labels[k], meta[k]] for k in role_keys if meta.get(k)]
+    t = doc.add_table(rows=0, cols=2); t.style = "Table Grid"
     _table_borders(t)
-    for a, b, c, d in rows:
+    for label, val in rows:
         cells = t.add_row().cells
-        for cell, val, bold in ((cells[0], a, True), (cells[1], b, False),
-                                (cells[2], c, True), (cells[3], d, False)):
-            _cell_shade(cell, META_LABEL if (bold and val) else WHITE)
+        for cell, v, bold in ((cells[0], label, True), (cells[1], val, False)):
+            _cell_shade(cell, META_LABEL if bold else WHITE)
             cell.paragraphs[0].text = ""
-            r = cell.paragraphs[0].add_run(val); r.font.name = FONT; r.font.size = Pt(9); r.font.bold = bold
+            r = cell.paragraphs[0].add_run(v); r.font.name = FONT; r.font.size = Pt(9); r.font.bold = bold
+    for row in t.rows:
+        row.cells[0].width = Inches(1.9); row.cells[1].width = Inches(5.0)
     doc.add_paragraph().paragraph_format.space_after = Pt(4)
-
-
-GAP_CLASSES = ("environmental gap", "detection engineering need")
-
-
-def _gap_items(spec):
-    """Explicit spec gaps plus any finding classified as a coverage gap."""
-    items = list(spec.get("gaps", []) or [])
-    seen = {(g.get("title") or "").lower() for g in items}
-    for f in spec.get("findings", []) or []:
-        if (f.get("classification", "") or "").strip().lower() in GAP_CLASSES:
-            if (f.get("title", "") or "").lower() in seen:
-                continue
-            items.append({
-                "title": f.get("title", ""),
-                "category": f.get("type", ""),
-                "classification": f.get("classification", ""),
-                "detail": f.get("evidence", ""),
-                "impact": f.get("impact_rationale", ""),
-                "remedy": f.get("recommendation", ""),
-                "finding_num": f.get("num"),
-            })
-    return items
-
-
-def add_exec_summary(doc, spec):
-    """Overall finding + a linked index of findings with page numbers. Sits directly
-    under the metadata table so the verdict is the first thing read."""
-    ov = spec.get("overall_finding")
-    findings = spec.get("findings", []) or []
-    if not ov and not findings:
-        return
-    _p(doc, "", before=4)
-    h_section(doc, "Investigation Summary")
-    if spec.get("investigation_note"):
-        _p(doc, spec["investigation_note"], size=9, italic=True, color=GREY, after=3)
-    if ov:
-        col = _class_color(ov.get("verdict", ""))
-        p = doc.add_paragraph(); _shade(p, BOX_FILL)
-        p.paragraph_format.space_after = Pt(3); p.paragraph_format.space_before = Pt(2)
-        r1 = p.add_run("Overall Finding:  "); r1.font.name = FONT; r1.font.size = Pt(10); r1.font.bold = True
-        r2 = p.add_run(ov.get("verdict", "")); r2.font.name = FONT; r2.font.size = Pt(10)
-        r2.font.bold = True; r2.font.color.rgb = RGBColor.from_string(col)
-        if ov.get("explanation"):
-            _p(doc, ov["explanation"], size=10, after=4)
-    if not findings:
-        return
-    _p(doc, "Findings index — click a title to jump to the detail, or see the page column.",
-       size=9, italic=True, color=GREY, after=2)
-    headers = ["#", "Finding", "Classification", "Page"]
-    t = doc.add_table(rows=1, cols=len(headers)); t.style = "Table Grid"
-    t.alignment = WD_TABLE_ALIGNMENT.LEFT
-    _table_borders(t)
-    for j, h in enumerate(headers):
-        c = t.rows[0].cells[j]; _cell_shade(c, GENELABS_ORANGE); c.paragraphs[0].text = ""
-        r = c.paragraphs[0].add_run(h); r.font.name = FONT; r.font.size = Pt(9)
-        r.font.bold = True; r.font.color.rgb = RGBColor.from_string(WHITE)
-    for i, f in enumerate(findings):
-        num = f.get("num", i + 1)
-        bm = "FIND%s" % num
-        cells = t.add_row().cells
-        if i % 2 == 1:
-            for c in cells:
-                _cell_shade(c, ZEBRA)
-        cells[0].paragraphs[0].text = ""
-        r = cells[0].paragraphs[0].add_run(str(num)); r.font.name = FONT; r.font.size = Pt(9); r.font.bold = True
-        cells[1].paragraphs[0].text = ""
-        add_internal_link(cells[1].paragraphs[0], bm, f.get("title", ""), size=9)
-        cells[2].paragraphs[0].text = ""
-        cl = f.get("classification", "")
-        rc = cells[2].paragraphs[0].add_run(cl); rc.font.name = FONT; rc.font.size = Pt(9)
-        rc.font.bold = True; rc.font.color.rgb = RGBColor.from_string(_class_color(cl))
-        cells[3].paragraphs[0].text = ""
-        add_pageref(cells[3].paragraphs[0], bm, size=9)
-    for j, w in enumerate([0.4, 3.6, 1.9, 0.5]):
-        for row in t.rows:
-            row.cells[j].width = Inches(w)
-    doc.add_paragraph().paragraph_format.space_after = Pt(2)
-    _p(doc, "Page numbers are Word fields. Press Ctrl+A then F9 to refresh them after opening.",
-       size=8, italic=True, color=GREY, after=4)
-
-
-def add_gaps(doc, spec):
-    """Coverage & Gaps — telemetry, licensing and configuration limits found during the hunt."""
-    items = _gap_items(spec)
-    if not items:
-        return
-    _p(doc, "", before=8)
-    h_section(doc, "Coverage & Gaps — Telemetry, Licensing, Configuration")
-    _p(doc, "Limits encountered during this hunt that constrain what the results can prove. "
-            "These are not negative findings; they are things the hunt could not see.",
-       size=9, italic=True, color=GREY, after=3)
-    rows = []
-    for g in items:
-        ref = ("Finding %s" % g["finding_num"]) if g.get("finding_num") else ""
-        rows.append([g.get("category", ""), g.get("title", ""),
-                     g.get("classification", ""), ref])
-    grid_table(doc, ["Area", "Gap", "Classification", "Ref"], rows,
-               widths=[1.5, 3.4, 1.6, 0.7])
-    for g in items:
-        col = _class_color(g.get("classification", "")) or GREY
-        _accent_bar(doc, g.get("title", ""), col, size=10)
-        if g.get("detail"):
-            _p(doc, g["detail"], size=9, after=2)
-        if g.get("impact"):
-            _p(doc, "Why it matters: ", size=9, bold=True, color=GREY, after=1)
-            _p(doc, g["impact"], size=9, after=2)
-        rem = g.get("remedy")
-        if rem:
-            _p(doc, "To close it:", size=9, bold=True, color=GREY, after=1)
-            if isinstance(rem, list):
-                bullets(doc, rem)
-            else:
-                _p(doc, rem, size=9)
-
-
-def add_findings(doc, spec):
-    """Detailed findings. The verdict and index already appeared in the Investigation Summary."""
-    findings = spec.get("findings", []) or []
-    if not findings:
-        return
-    _p(doc, "", before=8)
-    h_section(doc, "Findings — Detail")
-    for i, f in enumerate(findings, 1):
-        num = f.get("num", i)
-        cl = f.get("classification", "")
-        col = _class_color(cl)
-        p = _accent_bar(doc, "Finding %s — %s" % (num, f.get("title", "")), col, size=10.5, fill=HDR_FILL)
-        add_bookmark(p, "FIND%s" % num)
-        _chip_row(doc, [("Type", f.get("type", "")),
-                        ("Confidence", f.get("confidence", "")),
-                        ("Classification", cl)])
-        for label, key, sz in (("Evidence (Falcon)", "evidence", 9.5),
-                               ("Impact & Classification Rationale", "impact_rationale", 9.5)):
-            if f.get(key):
-                _p(doc, label, size=8, bold=True, color=GREY, after=1, before=3)
-                _p(doc, f[key], size=sz)
-        if f.get("recommendation"):
-            _p(doc, "Recommendation", size=8, bold=True, color=GREY, after=1, before=3)
-            if isinstance(f["recommendation"], list):
-                bullets(doc, f["recommendation"])
-            else:
-                _p(doc, f["recommendation"], size=9.5)
-        if f.get("detection_opportunity"):
-            _p(doc, "Detection Opportunity", size=8, bold=True, color=GREY, after=1, before=3)
-            _p(doc, f["detection_opportunity"], size=9.5)
 
 
 def build(spec, template_path, out_path):
@@ -600,10 +418,7 @@ def build(spec, template_path, out_path):
     h_title(doc, "Threat Hunt Package")
     _p(doc, f"Derived from the CTI daily scan run of {spec.get('run_date', spec.get('date',''))}",
        size=10, italic=True, color=GREY, after=4)
-    meta_table(doc, hid, spec.get("meta", {}), spec.get("status", "Proposed"))
-
-    # Investigated hunts lead with the verdict + a linked findings index.
-    add_exec_summary(doc, spec)
+    meta_table(doc, hid, spec.get("meta", {}))
 
     # How-to-run handoff callout (e.g., open in Claude desktop and investigate via falcon-mcp)
     if spec.get("handoff_note"):
@@ -656,10 +471,10 @@ def build(spec, template_path, out_path):
 
         if hyp.get("attack"):
             h_section(doc, "MITRE ATT&CK & D3FEND")
-            grid_table(doc, ["ATT&CK", "Tactic / Technique", "D3FEND", "Defense Concept", "Coverage"],
+            grid_table(doc, ["ATT&CK", "Tactic / Technique", "D3FEND", "Defense Concept"],
                        [[a.get("id", ""), a.get("tactic_technique", ""), a.get("d3fend", ""),
-                         a.get("defense", ""), a.get("coverage", "")] for a in hyp["attack"]],
-                       widths=[0.8, 2.2, 1.1, 1.7, 1.0])
+                         a.get("defense", "")] for a in hyp["attack"]],
+                       widths=[0.9, 2.6, 1.2, 2.1])
 
         if hyp.get("expected"):
             h_section(doc, "Expected Findings (benign vs. malicious)")
@@ -675,20 +490,6 @@ def build(spec, template_path, out_path):
                 add_hyperlink(p, s["url"], s.get("title", s["url"]))
             else:
                 r = p.add_run(s.get("title", "")); r.font.name = FONT; r.font.size = Pt(10)
-
-        # Blank execution/outcome sections are only useful on an UNEXECUTED package.
-        # Once findings exist they are dead space, so they are suppressed.
-        if not (spec.get("findings") or spec.get("overall_finding")) and spec.get("blank_sections", True):
-            h_section(doc, "Execution Log (to complete)")
-            _p(doc, "Queries run, data range, hosts/users reviewed, evidence exports:", size=10, color=GREY)
-            _p(doc, "________________________________________________", size=10, color="BBBBBB")
-            h_section(doc, "Outcome & Classification (to complete)")
-            _p(doc, "Classification, findings, detections to build, gaps, follow-up hunts:", size=10, color=GREY)
-            _p(doc, "________________________________________________", size=10, color="BBBBBB")
-
-    # Detailed findings, then the coverage/gaps roll-up.
-    add_findings(doc, spec)
-    add_gaps(doc, spec)
 
     # IOC inventory
     if spec.get("iocs"):
@@ -710,23 +511,12 @@ def build(spec, template_path, out_path):
     # table verbatim, so it is suppressed.
     if spec.get("attack_summary") and len(spec.get("hypotheses", [])) > 1:
         h_section(doc, "MITRE ATT&CK & D3FEND — Summary")
-        grid_table(doc, ["ATT&CK", "Tactic / Technique", "D3FEND", "Defense Concept", "Coverage"],
+        grid_table(doc, ["ATT&CK", "Tactic / Technique", "D3FEND", "Defense Concept"],
                    [[a.get("id", ""), a.get("tactic_technique", ""), a.get("d3fend", ""),
-                     a.get("defense", ""), a.get("coverage", "")] for a in spec["attack_summary"]],
-                   widths=[0.8, 2.2, 1.1, 1.7, 1.0])
+                     a.get("defense", "")] for a in spec["attack_summary"]],
+                   widths=[0.9, 2.6, 1.2, 2.1])
 
-    # Classifications key
-    if spec.get("include_classifications", True):
-        h_section(doc, "Findings Classification Key")
-        grid_table(doc, ["Classification", "When to Use"], [
-            ["Confirmed Compromise", "IOC or behavior directly maps to a known threat or exposure in the environment"],
-            ["Suspicious Activity", "Matching indicators or behavior, not yet validated as actively exploited"],
-            ["Benign / False Positive", "Triggered logic, found to be legitimate business or user activity"],
-            ["Inconclusive", "Insufficient telemetry or context to confirm either way"],
-            ["Environmental Gap", "Logging, visibility, or normalization missing (e.g., no normalized telemetry)"],
-            ["Detection Engineering Need", "A detection gap exists that cannot currently be alerted on"],
-            ["Informational / Context", "Insightful but not action-requiring; enrichment only"],
-        ], widths=[1.9, 5.0])
+
 
     _p(doc, "", before=8)
     footer = ("Generated from the CTI daily scan. CQL queries target CrowdStrike Falcon telemetry; "

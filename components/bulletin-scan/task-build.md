@@ -20,7 +20,11 @@ to confirm a source detail you need for the document.
   "DRAFT for April's review". Save as `bulletins/2026/CTI26-NN-Title_Case_Slug.docx`.
   Builder: `python3 core/.claude/skills/genelabs-cti-bulletin/scripts/build_bulletin.py <spec.json> <out.docx>`.
 - **hunt** (`TH26-NN`): the `genelabs-threat-hunt-package` skill, one hypothesis per
-  package. Falcon, Splunk, Claroty and InsightVM are not available here: write "could not
+  package. The in-repo builder is current: it emits no findings, no classification
+  key, no Coverage & Gaps and no blank execution sections, and it ignores the spec
+  keys removed on 2026-08-24, so do not supply `status`, `findings`,
+  `overall_finding`, `gaps`, `include_classifications`, `blank_sections` or
+  `attack[].coverage`. Falcon, Splunk, Claroty and InsightVM are not available here: write "could not
   be assessed: connector not available in this runtime" in scoping, still write the CQL
   and SPL queries with CONTROL and BASELINE, and keep every query rule from the skill.
   Save as `hunts/packages/TH26-NN-Title_Case_Slug.docx`.

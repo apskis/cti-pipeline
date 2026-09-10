@@ -28,9 +28,11 @@ AWR = re.compile(r"\b(AWR-\d{4}-\d{2}-\d{2})\b")
 # A file whose name carries the ID is not enough: a builder fed a spec with the wrong
 # keys emits a hollow document with placeholder text, and that must be rebuilt.
 MIN_PARAS = {"bulletin": 15, "hunt": 30, "awareness": 8}
-# "[Pending Review]" is written by the shipped (pre 2026-08-24) hunt builder even for a
-# complete package, so it is not a shell signal; the missing ID and paragraph count are.
 PLACEHOLDERS = ("TH-26-XX", "TH-26-NN", "CTIYY-NN")
+# Sections April removed from the package format on 2026-08-24. Their presence means a
+# reverted builder or a spec still carrying the old keys, so the document is rebuilt.
+REMOVED_SECTIONS = {"hunt": ("Findings Classification Key", "Coverage & Gaps", "Execution Log",
+                             "Outcome & Classification", "Overall Finding", "Pending Review")}
 
 
 def shell_reason(path: Path, ident: str, kind: str) -> str | None:
@@ -49,7 +51,10 @@ def shell_reason(path: Path, ident: str, kind: str) -> str | None:
     if len(paras) < MIN_PARAS.get(kind, 8):
         return f"only {len(paras)} paragraphs"
     hit = next((ph for ph in PLACEHOLDERS if ph in text), None)
-    return f"placeholder text {hit!r}" if hit else None
+    if hit:
+        return f"placeholder text {hit!r}"
+    gone = next((sec for sec in REMOVED_SECTIONS.get(kind, ()) if sec in text), None)
+    return f"carries removed section {gone!r} (reverted builder or stale spec)" if gone else None
 
 
 def on_disk(pattern: str, roots: list[str], kind: str) -> tuple[set[str], dict[str, str]]:
