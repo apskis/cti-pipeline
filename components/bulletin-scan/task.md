@@ -25,6 +25,57 @@ this file is the task as it ran on Claude Desktop, unchanged.
    all, so the FILE-BASED LOG is always the source. Say so in the run output.
 2. **Delivering files.** There is no `SendUserFile` here. Write to the configured folder
    and state the absolute path. That is the delivery.
+3. **Nobody replies, and you are the SCAN pass.** This is a scheduled, unattended run in
+   two stages. YOU research, maintain the register and the dedup log, and ASSIGN IDs.
+   A separate BUILDER pass runs after you, in a fresh context, and turns every ID you
+   assign into a document (bulletins, hunt packages, the VM brief, the awareness post).
+   So: do not draft the .docx deliverables yourself, and never "defer" or "reserve"
+   anything: assigning the ID IS the instruction to build it.
+   - STEP 9 becomes an assignment. Every NEW idea rated CRITICAL or HIGH, and any own
+     product finding, gets the next CTIYY-NN written into its dedup log entry as
+     `bulletin:CTI26-NN`. An idea that already carries a bulletin ID gets no new one
+     unless this run recorded an UPDATE for it. Put enough in the entry (sources with
+     dates, KEV, exploitation, patch, scale, why it matters) for the builder to work from.
+   - STEP 8 becomes an assignment. Every HUNTABLE item gets `hunt:TH26-NN` in its entry
+     plus one line stating the hypothesis and the telemetry it needs.
+   - STEP 6 stays yours: create the CVE register workbook if absent, otherwise update it
+     in place, with a row for EVERY CVE surfaced, not a "priority" subset. openpyxl and
+     the Python verification path only, there is no LibreOffice here. The VM brief is
+     built by the builder pass from the register's Latest Run tab.
+   - STEP 10 and 11 become an assignment: name today's AWR-YYYY-MM-DD and its topic and
+     channel in the dedup log and the scan report; the builder writes the post and
+     rebuilds the pipeline.
+   - CONNECTORS THAT DO NOT EXIST HERE (Falcon, Splunk, InsightVM, Claroty, Intel 471,
+     ThreatQ, Rapid7): never skip a deliverable because one is missing. Write "could not
+     be assessed: connector not available in this runtime" in the cell, the relevance
+     field or the scoping section, and carry on. CANNOT CONFIRM is a valid "Seen in our
+     logs" verdict.
+   - TEMPLATES: the branded .docx templates are not shipped in this sanitized build, so
+     the builders fall back to an unbranded document. Say so once in the run output.
+   - STATE PERSISTS between runs. The output folder is restored from the object store
+     before you start, so the dedup log, register, bulletins, hunt packages and ledger
+     from earlier runs are on disk. Read them in STEP 1. REPORT ONLY WHAT IS NEW OR
+     MATERIALLY CHANGED: an item already in the dedup log with no changed field goes under
+     "Recently covered" and gets no new bulletin, package or register row. An UPDATE
+     means a named field moved: KEV listing, exploitation status, patch availability,
+     scale, attribution or IOCs.
+   - THERE IS NO TIME LIMIT ON THIS RUN. Never stop with "time constraints" or "scope".
+     Work in this order: STEP 1 to 4 research and ranking, STEP 6 register, STEP 5 dedup
+     log with every ID assigned, STEP 7 sources, the scan report.
+   - IDs AND COVERAGE ARE COMPUTED FOR YOU. `state/next-ids.md` holds the next bulletin
+     and hunt IDs derived from the files on disk, and `state/deliverables-index.md`
+     lists every deliverable ever produced. Read both in STEP 1; they win over the dedup
+     log if the two disagree. Any item whose bulletin or package appears in the index is
+     COVERED.
+   - THE DEDUP LOG IS A DELIVERABLE. Rewrite `state/dedup-log.md` so every entry carries
+     the bulletin and hunt IDs assigned this run, then re-read the file and confirm the
+     IDs are in it before you finish. A log that still says `bulletin:none` for an item
+     you just drafted is a failed run.
+   - KEEP THE OUTPUT FOLDER CLEAN. The scan report is `reports/scan-YYYY-MM-DD.md` (one
+     file per run, no other report names). Scratch scripts and builder spec JSON go under
+     `state/_work/`, never the output root.
+   - Print a checklist at the end: scan report, CVE register (row count), dedup log,
+     bulletin IDs assigned, hunt IDs assigned, AWR ID and topic. Nothing else is yours.
 
 ---
 
@@ -254,4 +305,4 @@ TIER THEM (1 ready, 2 needs a hook, 3 fallback rotation) and carry forward unuse
 STRUCTURAL NOTE worth repeating in the document: connectors are good at what is happening TO GeneLabs and poor at what an ORDINARY EMPLOYEE CAN ACT ON. The web sweep carries this series; connectors rank it. Falcon Identity Protection is the exception, because credential attacks map onto password reuse and unexpected MFA prompts.
 Deliver the pipeline with the configured output folder (state the absolute path) alongside the post, every run.
 
-Next available bulletin, hunt and gap IDs are recorded at the end of the dedup log — read them from there rather than assuming.
+Next available bulletin, hunt and gap IDs are recorded at the end of the dedup log and, authoritatively, in `state/next-ids.md` — read them from there rather than assuming.

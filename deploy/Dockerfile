@@ -25,7 +25,14 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash && rm -rf /var/lib/apt/lis
 
 WORKDIR /app
 COPY . /app
-RUN chmod +x deploy/entrypoint.sh && (uv sync --frozen 2>/dev/null || uv sync || true)
+# Deps via pip: no lockfile is shipped and core/pyproject.toml pins Python 3.13, which
+# this base image does not carry, so `uv sync` never installed anything.
+# The symlink exposes core/.claude (settings + skills) at the project root Claude Code
+# actually reads, which is the cwd (/app).
+RUN pip install --no-cache-dir -r deploy/requirements.txt \
+    && chmod +x deploy/entrypoint.sh scripts/resolve_paths.py deploy/gen_mcp_config.py \
+    && ln -s /app/core/.claude /app/.claude \
+    && echo '{"projects":{"/app":{"hasTrustDialogAccepted":true}}}' > /root/.claude.json
 
 # Model backend defaults to Bedrock; entrypoint sets CLAUDE_CODE_USE_BEDROCK when
 # MODEL_BACKEND=bedrock, or reads CLAUDE_CODE_OAUTH_TOKEN when =subscription.

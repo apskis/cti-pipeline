@@ -39,10 +39,20 @@ say so in the run output rather than silently complying.
 CTI Deliverables\CTI Threat Hunts\Threat Hunt Packages\_tools\build_hunt.py
 ```
 
-Not in this skill directory. A saved skill stores only `SKILL.md`; its directory
-is a read-only cache, so a builder kept there cannot be changed. The workspace
-copy is authoritative and carries the 2026-08-24 edits. The copy still sitting at
-`scripts/build_hunt.py` in the skill cache is the OLD version — do not run it.
+On April's workstation that path is authoritative. **In this repo, use the copy at
+`scripts/build_hunt.py`** — it was brought up to the 2026-08-24 behaviour on
+2026-09-10 and carries every removal listed above. The containerised pipeline has
+no access to the deliverables tree, so the in-repo copy is the one it runs.
+
+Because it was reconstructed from this file rather than copied from the workspace,
+diff the two before trusting them to be identical:
+
+```
+diff "<PACKAGES>/_tools/build_hunt.py" core/.claude/skills/genelabs-threat-hunt-package/scripts/build_hunt.py
+```
+
+`scripts/test_build_hunt.py` is the regression test: it feeds a spec carrying every
+removed key and asserts none of them reaches the document.
 
 ```
 python3 "<PACKAGES>/_tools/build_hunt.py" spec.json out.docx "<skill>/assets/hunt_template.docx"
@@ -520,8 +530,8 @@ removed and must not be supplied. `meta.start_date`, `meta.end_date` and
 - `references/splunk_datamodels.md` — data model to tstats cheat-sheet. The
   MEASURED DATA MODEL FACTS table above overrides it where they disagree.
 - `references/datamodels/*.json` — the raw GeneLabs data models (exact fields).
-- `scripts/build_hunt.py` — **STALE.** The pre-2026-08-24 builder. Use the
-  workspace copy in `_tools` instead.
+- `scripts/build_hunt.py` — current as of 2026-09-10, carries the 2026-08-24
+  removals. `scripts/test_build_hunt.py` guards them.
 
 ## Related skills
 - **`genelabs-splunk-spl`** — the SPL house rules and the linter. Invoke it
