@@ -26,14 +26,17 @@ HASH_FILE = STATE / ".dedup-log.prehash"
 INDEX = STATE / "deliverables-index.md"
 NEXT_IDS = STATE / "next-ids.md"
 
-# id pattern -> (label, glob roots)
+# id pattern per kind. The whole output tree is searched apart from ``state`` (scratch and
+# ledgers), the same rule pending_deliverables.py uses: a builder that saves outside the
+# canonical folder must not make the deliverable invisible to the tally, which is how the
+# index and the next IDs came to disagree with what was actually on disk.
 KINDS = {
-    "bulletin": (re.compile(r"\bCTI(\d{2})-(\d{2})\b"), ["bulletins"]),
-    "hunt": (re.compile(r"\bTH(\d{2})-(\d{2})\b"), ["hunts/packages", "hunts/archive"]),
-    "awareness": (re.compile(r"\bAWR-\d{4}-\d{2}-\d{2}\b"), ["employee-posts"]),
-    "cve_brief": (re.compile(r"\bCVE-VM-\d{4}-\d{2}-\d{2}\b"), ["registers"]),
-    "exposure": (re.compile(r"\bCTI-EXP-[A-Za-z0-9_]+"), ["exposure-advisories"]),
-    "detection": (re.compile(r"\bCTI-DET-[A-Za-z0-9_]+"), ["detection-handoffs"]),
+    "bulletin": re.compile(r"\bCTI(\d{2})-(\d{2})\b"),
+    "hunt": re.compile(r"\bTH(\d{2})-(\d{2})\b"),
+    "awareness": re.compile(r"\bAWR-\d{4}-\d{2}-\d{2}\b"),
+    "cve_brief": re.compile(r"\bCVE-VM-\d{4}-\d{2}-\d{2}\b"),
+    "exposure": re.compile(r"\bCTI-EXP-[A-Za-z0-9_]+"),
+    "detection": re.compile(r"\bCTI-DET-[A-Za-z0-9_]+"),
 }
 
 
@@ -41,18 +44,22 @@ def _hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else ""
 
 
-def _docx_files(roots: list[str]) -> list[Path]:
-    files: list[Path] = []
-    for root in roots:
-        files += sorted((OUT / root).rglob("*.docx")) if (OUT / root).exists() else []
-    return files
+def _docx_files() -> list[Path]:
+    """Every deliverable .docx, skipping state/ so scratch drafts never count as output."""
+    return sorted(f for f in OUT.rglob("*.docx") if f.relative_to(OUT).parts[0] != "state")
 
 
 def collect() -> dict[str, list[tuple[str, Path]]]:
-    """Map kind -> [(id, file)] for every deliverable on disk."""
+    """Map kind -> [(id, file)] for every deliverable on disk, newest copy of an ID first.
+
+    An ID can appear more than once when a builder saved to two folders. Ordering by
+    modification time keeps the most recent copy first, so the index names the one the
+    pipeline wrote last rather than whichever the filesystem happened to yield.
+    """
     found: dict[str, list[tuple[str, Path]]] = {}
-    for kind, (pattern, roots) in KINDS.items():
-        for f in _docx_files(roots):
+    files = sorted(_docx_files(), key=lambda f: f.stat().st_mtime, reverse=True)
+    for kind, pattern in KINDS.items():
+        for f in files:
             m = pattern.search(f.name)
             if m:
                 found.setdefault(kind, []).append((m.group(0), f))
@@ -86,7 +93,8 @@ def write_index(found: dict, today: str) -> list[str]:
             if f"| {rel} |" in existing:
                 continue
             lines.append(f"| {ident} | {kind} | {rel} | {today} |")
-            new.append(ident)
+            if ident not in new:  # a deliverable saved twice is one new deliverable
+                new.append(ident)
     if lines:
         with INDEX.open("a") as fh:
             fh.write("\n".join(lines) + "\n")
@@ -106,7 +114,14 @@ def finalize() -> int:
             for ident in new:
                 fh.write(f"- {today} | produced {ident} (see state/deliverables-index.md)\n")
     HASH_FILE.unlink(missing_ok=True)
-    print(f"[state] deliverables on disk: " + ", ".join(f"{k}={len(v)}" for k, v in sorted(found.items())))
+    # count distinct IDs, not files: one deliverable saved to two folders is still one
+    print("[state] deliverables on disk: "
+          + ", ".join(f"{k}={len({i for i, _ in v})}" for k, v in sorted(found.items())))
+    for kind, items in sorted(found.items()):
+        dupes = {i for i, _ in items if sum(1 for j, _ in items if j == i) > 1}
+        for ident in sorted(dupes):
+            where = [f.relative_to(OUT).as_posix() for i, f in items if i == ident]
+            print(f"[state] {ident} ({kind}) has {len(where)} copies, newest first: {where}")
     print(f"[state] new this run: {new or 'none'}; next ids -> {NEXT_IDS}")
     return 0
 
