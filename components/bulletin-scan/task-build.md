@@ -35,6 +35,9 @@ to confirm a source detail you need for the document.
 - **awareness** (`AWR-YYYY-MM-DD`): the `genelabs-employee-awareness-blog` skill with the
   topic named in today's report, `--channel` set, ledger row appended, then rebuild
   `state/awareness-topic-pipeline.md` (STEP 11 of the scan prompt).
+  Save as `employee-posts/AWR-YYYY-MM-DD-Title_Case_Slug.docx`. That folder is the
+  `employee_posts` key in `config/paths.json` and the only place the driver treats as home;
+  a post saved anywhere else is reported as off path on every later pass.
 
 ## Spec shape: get the keys right or the builder emits an empty shell
 
@@ -72,9 +75,15 @@ keys were wrong: fix them and rebuild. Never report a shell as done.
 
 - The branded templates are not shipped; the builders fall back to an unbranded document.
   That is expected. Say so once.
-- Spec JSON and scratch scripts go under `state/_work/`, never the output root.
+- Spec JSON and scratch scripts go under `state/_work/`, never the output root. WRITE THEM
+  WITH `python3` (`python3 - <<'PY' ... PY` or `python3 -c`), which is the permitted way to
+  create a file here. `cat > file <<EOF` is NOT permitted and the call is refused, which has
+  cost whole passes; if a heredoc is refused, switch to `python3`, do not give up on the item.
 - The filename must contain the ID exactly as given. Do not renumber, do not invent new
   IDs, do not touch entries in the dedup log other than to correct a filename.
 - Build every item in the batch. If one builder call fails, fix the spec and retry; only
-  when it cannot be built at all, write `state/_work/<ID>.failed.md` saying why.
+  when it cannot be built at all, write `state/_work/<ID>.failed.md` saying why. That marker
+  takes the item out of the batch for the rest of this run, so write it only when you have
+  genuinely exhausted the options above: it is the difference between one wasted slot and a
+  slot wasted in every remaining pass. The next run clears the markers and retries.
 - Finish with one line per item: ID, path written, or the reason it failed.
