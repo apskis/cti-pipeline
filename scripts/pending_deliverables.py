@@ -33,6 +33,9 @@ PLACEHOLDERS = ("TH-26-XX", "TH-26-NN", "CTIYY-NN")
 # reverted builder or a spec still carrying the old keys, so the document is rebuilt.
 REMOVED_SECTIONS = {"hunt": ("Findings Classification Key", "Coverage & Gaps", "Execution Log",
                              "Outcome & Classification", "Overall Finding", "Pending Review")}
+# Where task-build.md tells the builder to save each kind, from config/paths.json. Used only
+# to report a document saved somewhere else; it is still counted as built.
+CANONICAL = {"bulletin": "bulletins", "hunt": "hunts", "awareness": "employee-posts"}
 
 
 def shell_reason(path: Path, ident: str, kind: str) -> str | None:
@@ -57,21 +60,48 @@ def shell_reason(path: Path, ident: str, kind: str) -> str | None:
     return f"carries removed section {gone!r} (reverted builder or stale spec)" if gone else None
 
 
-def on_disk(pattern: str, roots: list[str], kind: str) -> tuple[set[str], dict[str, str]]:
-    """IDs with a complete document, plus IDs whose document is a shell (with the reason)."""
-    ids: set[str] = set(); shells: dict[str, str] = {}
+def on_disk(pattern: str, kind: str) -> tuple[set[str], dict[str, str], dict[str, str]]:
+    """IDs with a complete document, IDs whose document is a shell, and IDs saved off path.
+
+    The whole output tree is searched apart from ``state`` (scratch and ledgers). Searching
+    only the canonical folder made a builder that saved elsewhere look like it had built
+    nothing, so the ID was queued again in every pass and burned a batch slot each time.
+    A document found off path still counts; the stray path is reported so the drift is
+    visible instead of silent.
+    """
+    ids: set[str] = set(); shells: dict[str, str] = {}; strays: dict[str, str] = {}
     rx = re.compile(pattern)
-    for root in roots:
-        for f in (OUT / root).rglob("*.docx") if (OUT / root).exists() else []:
-            m = rx.search(f.name)
-            if not m:
-                continue
-            why = shell_reason(f, m.group(0), kind)
-            if why:
-                shells[m.group(0)] = f"{f.relative_to(OUT)}: {why}"
-            else:
-                ids.add(m.group(0))
-    return ids, shells
+    for f in OUT.rglob("*.docx"):
+        rel = f.relative_to(OUT)
+        if rel.parts[0] == "state":
+            continue
+        m = rx.search(f.name)
+        if not m:
+            continue
+        why = shell_reason(f, m.group(0), kind)
+        if why:
+            shells.setdefault(m.group(0), f"{rel}: {why}")
+            continue
+        ids.add(m.group(0))
+        if not str(rel).startswith(CANONICAL[kind]):
+            strays[m.group(0)] = str(rel)
+    # a complete document anywhere beats a shell somewhere else
+    return ids, {k: v for k, v in shells.items() if k not in ids}, strays
+
+
+def blocked_reason(ident: str) -> str | None:
+    """The builder's own 'cannot build' marker for this run, or None.
+
+    task-build.md tells the builder to write ``state/_work/<ID>.failed.md`` when an item
+    cannot be built at all. Honouring it stops that item consuming a slot in every
+    remaining pass. The entrypoint clears the markers before the loop, so the block lasts
+    one run and the next run retries from scratch.
+    """
+    marker = OUT / "state" / "_work" / f"{ident}.failed.md"
+    if not marker.exists():
+        return None
+    first = next((ln.strip() for ln in marker.read_text().splitlines() if ln.strip()), "")
+    return first[:200] or "no reason given"
 
 
 def entries(text: str) -> list[str]:
@@ -102,10 +132,12 @@ def main() -> int:
         print("[pending] no dedup log; nothing to build"); return 3
 
     text = DEDUP.read_text()
-    have_b, shell_b = on_disk(r"CTI\d{2}-\d{2}", ["bulletins"], "bulletin")
-    have_h, shell_h = on_disk(r"TH\d{2}-\d{2}", ["hunts/packages", "hunts/archive"], "hunt")
-    have_a, shell_a = on_disk(r"AWR-\d{4}-\d{2}-\d{2}", ["employee-posts"], "awareness")
+    have_b, shell_b, stray_b = on_disk(r"CTI\d{2}-\d{2}", "bulletin")
+    have_h, shell_h, stray_h = on_disk(r"TH\d{2}-\d{2}", "hunt")
+    have_a, shell_a, stray_a = on_disk(r"AWR-\d{4}-\d{2}-\d{2}", "awareness")
     shells = {**shell_b, **shell_h, **shell_a}
+    for ident, where in {**stray_b, **stray_h, **stray_a}.items():
+        print(f"[pending] {ident} built outside its folder: {where} (counted, but fix the save path)")
 
     items: list[dict] = []
     seen: set[str] = set()
@@ -128,7 +160,11 @@ def main() -> int:
     if not (OUT / "registers" / f"{brief}.docx").exists() and (OUT / "registers" / "CVE_Register_2026.xlsx").exists():
         items.append({"id": brief, "kind": "cve_brief", "evidence": "build from registers/CVE_Register_2026.xlsx, Latest Run tab"})
 
+    blocked = {i["id"]: r for i in items if (r := blocked_reason(i["id"]))}
+    items = [i for i in items if i["id"] not in blocked]
     remaining = len(items)
+    for ident, why in blocked.items():
+        print(f"[pending] {ident} skipped this run, builder could not build it: {why}")
     # bulletins and hunts carry the most work; brief and awareness are cheap, keep them in the first batch
     order = {"cve_brief": 0, "awareness": 1, "bulletin": 2, "hunt": 3}
     items.sort(key=lambda i: order[i["kind"]])
@@ -142,7 +178,9 @@ def main() -> int:
         batch.append(item); weight += w
     summary = ", ".join(f"{i['kind']}={sum(1 for x in items if x['kind']==i['kind'])}" for i in {x["kind"]: x for x in items}.values())
     if not batch:
-        print("[pending] nothing pending: every ID in the dedup log has a file on disk"); return 3
+        tail = f"; {len(blocked)} blocked this run: {sorted(blocked)}" if blocked else ""
+        print(f"[pending] nothing left to build: every ID in the dedup log has a file on disk{tail}")
+        return 3
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps({"today": args.today, "remaining": remaining, "batch": batch}, indent=2))
     rebuilds = [i["id"] for i in items if i.get("rebuild")]

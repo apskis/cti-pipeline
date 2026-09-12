@@ -77,6 +77,10 @@ claude --print --permission-mode acceptEdits \
 BUILD_TASK="$CDIR/task-build.md"
 if [ -f "$BUILD_TASK" ]; then
   PENDING="$OUTPUT_DIR/state/_work/pending.json"
+  # A .failed.md marker takes an item out of the batch for the rest of the run so it stops
+  # consuming a slot in every pass. Clearing them here keeps that block to one run: today's
+  # run always retries what yesterday's could not build.
+  rm -f "$OUTPUT_DIR"/state/_work/*.failed.md 2>/dev/null || true
   for pass in $(seq 1 "${BUILD_PASSES:-8}"); do
     python3 scripts/pending_deliverables.py --batch "${BUILD_BATCH:-4}" --out "$PENDING" && rc=0 || rc=$?
     [ "$rc" -eq 0 ] || break     # 3 = nothing pending
