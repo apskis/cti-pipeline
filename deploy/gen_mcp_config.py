@@ -2,15 +2,19 @@
 """Write a Claude Code MCP config for one component.
 
 Reads ``enabled_servers`` from ``components/<name>/component.yaml`` and emits a
-``.mcp.json`` that launches the matching threatpipe server over stdio. Servers
-read their API keys from the environment the task was started with, so no
-credential is written here. Names with no local server (``search`` in the POC)
-are skipped with a note so the run output says which sources were unavailable.
+``.mcp.json`` that launches the matching server over stdio. A name resolves to a
+threatpipe script first, then to an entry in ``core/.mcp.json`` (third party servers
+such as ``aws-api``, pinned there so local runs and the pipeline launch the same
+version). Servers read their keys from the environment the task was started with,
+so no credential is written here. Names with no server (``search`` in the POC) are
+skipped with a note so the run output says which sources were unavailable.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
+import re
 import sys
 from pathlib import Path
 
@@ -31,17 +35,43 @@ SERVER_SCRIPTS: dict[str, str] = {
 }
 
 
-def build_config(enabled: list[str], threatpipe: Path) -> tuple[dict, list[str]]:
+_ENV_REF = re.compile(r"\$\{(\w+)(?::-([^}]*))?\}")
+
+
+def _expand(value: str) -> str:
+    """Resolve ``${VAR}`` and ``${VAR:-default}`` the way Claude Code does for .mcp.json.
+
+    Done here so the generated file is concrete and does not depend on how the CLI
+    treats references in a ``--mcp-config`` file.
+    """
+    return _ENV_REF.sub(lambda m: os.environ.get(m.group(1)) or (m.group(2) or ""), value)
+
+
+def load_external(core_mcp: Path) -> dict[str, dict]:
+    """Return the third party server entries declared in ``core/.mcp.json``."""
+    if not core_mcp.is_file():
+        return {}
+    return json.loads(core_mcp.read_text()).get("mcpServers", {})
+
+
+def build_config(
+    enabled: list[str], threatpipe: Path, external: dict[str, dict] | None = None
+) -> tuple[dict, list[str]]:
     """Return (mcp config, skipped names) for the requested servers."""
+    external = external or {}
     servers: dict[str, dict] = {}
     skipped: list[str] = []
     for name in enabled:
         script = SERVER_SCRIPTS.get(name)
-        if script is None or not (threatpipe / script).is_file():
+        if script is not None and (threatpipe / script).is_file():
+            # the script's own dir lands on sys.path, so its bare ``_shared`` import works
+            servers[name] = {"command": sys.executable, "args": [str(threatpipe / script)]}
+        elif name in external:
+            entry = dict(external[name])
+            entry["env"] = {k: _expand(v) for k, v in entry.get("env", {}).items()}
+            servers[name] = entry
+        else:
             skipped.append(name)
-            continue
-        # the script's own dir lands on sys.path, so its bare ``_shared`` import works
-        servers[name] = {"command": sys.executable, "args": [str(threatpipe / script)]}
     return {"mcpServers": servers}, skipped
 
 
@@ -55,7 +85,10 @@ def main() -> int:
     manifest = args.repo / "components" / args.component / "component.yaml"
     data = yaml.safe_load(manifest.read_text()) or {}
     enabled = list(data.get("enabled_servers") or [])
-    config, skipped = build_config(enabled, args.repo / "core" / "threatpipe")
+    core = args.repo / "core"
+    config, skipped = build_config(
+        enabled, core / "threatpipe", load_external(core / ".mcp.json")
+    )
 
     args.out.write_text(json.dumps(config, indent=2) + "\n")
     print(f"[mcp] {args.component}: enabled={sorted(config['mcpServers'])} "
