@@ -66,8 +66,19 @@ and grounding gates live in the `genelabs-cti-report` skill.
       OUTPUT_BUCKET=<bucket> deploy/entrypoint.sh
 
 ## Run one component locally
-    COMPONENT=bulletin-scan ANTHROPIC_MODEL=<bedrock-profile> CLOUD=aws \
-      OUTPUT_BUCKET=<bucket> deploy/entrypoint.sh
+Fully on your machine, on your Max plan, with no cloud account involved (`CLOUD=local`
+skips the S3 restore and upload; the mounted `out/` folder keeps state between runs):
+
+    claude setup-token                      # once; copy the token
+    docker build -f deploy/Dockerfile -t cti-pipeline .
+    docker run --rm -v "$PWD/out:/app/out" \
+      -e COMPONENT=bulletin-scan -e CLOUD=local \
+      -e MODEL_BACKEND=subscription -e ANTHROPIC_MODEL=opus \
+      -e CLAUDE_CODE_OAUTH_TOKEN -e NVD_API_KEY -e OTX_API_KEY \
+      cti-pipeline
+
+Export the token and keys in your shell first; `-e NAME` with no value passes them through
+without writing them anywhere. Swap `COMPONENT` for any other component.
 
 ## Build once, deploy N times
     docker build -f deploy/Dockerfile -t cti-pipeline:poc .

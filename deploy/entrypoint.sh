@@ -2,7 +2,7 @@
 # One entrypoint, all components.
 #   COMPONENT       selects components/<name>/task.md
 #   MODEL_BACKEND   bedrock | subscription  (which model runtime)
-#   CLOUD           aws | azure             (where output is shipped)
+#   CLOUD           aws | azure | local     (where output is shipped; local keeps it in OUTPUT_DIR)
 # Secrets arrive as ENV (Secrets Manager on AWS / Key Vault on Azure); the run
 # scripts prefer env per-credential, so no vault is contacted. Do NOT set KEY_VAULT_URL.
 set -euo pipefail
@@ -149,6 +149,9 @@ case "${CLOUD:-aws}" in
          az login --identity --allow-no-subscriptions >/dev/null
          az storage blob upload-batch -d "$OUTPUT_CONTAINER" -s "$OUTPUT_DIR" \
             --account-name "$STORAGE_ACCOUNT" --auth-mode login --overwrite true ;;
+  # local: OUTPUT_DIR is a folder mounted from your machine, so state already persists
+  # between runs and nothing is restored or shipped. No cloud account is touched.
+  local) echo "[entrypoint] CLOUD=local: output kept in ${OUTPUT_DIR}" ;;
   *) echo "unknown CLOUD=${CLOUD}"; exit 2 ;;
 esac
-echo "[entrypoint] done; output shipped to ${CLOUD:-aws}"
+echo "[entrypoint] done (cloud=${CLOUD:-aws})"
