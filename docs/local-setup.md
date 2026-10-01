@@ -103,6 +103,19 @@ Keep in mind that a Max plan has rolling usage limits shared with your own inter
 use, and it is a personal subscription: fine for running your own work on demand, not a
 substitute for an organisation's API or Bedrock account on a real deployment.
 
+## Windows notes
+
+- **Docker Desktop** needs WSL 2; the installer offers to enable it. Start Docker Desktop
+  before running anything (the whale icon must say "running").
+- **Claude Code** for the token: `irm https://claude.ai/install.ps1 | iex` in PowerShell,
+  or `npm install -g @anthropic-ai/claude-code` if you already have Node.js.
+- **Script blocked** ("running scripts is disabled on this system"): run once
+  `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, then retry.
+- **Line endings** are handled for you: `.gitattributes` keeps shell scripts LF, the
+  Dockerfile strips stray CRs, and `run-local.ps1` removes the CRs Notepad adds to `.env`.
+- **Unzipping the state export**: right click, Extract All, and pick the repo folder so
+  you get `cti-pipeline\out\bulletin-scan\...`, not `out\out\...`.
+
 ## Troubleshooting
 
 | Symptom | Fix |

@@ -21,9 +21,16 @@ if ($Build -or $LASTEXITCODE -ne 0) {
   if ($LASTEXITCODE -ne 0) { throw "docker build failed" }
 }
 
+# Notepad saves .env with CRLF, and docker --env-file keeps the trailing CR in each
+# value, which silently corrupts the token. Pass docker an LF copy instead.
+$EnvFile = Join-Path $env:TEMP "cti-pipeline.env"
+[IO.File]::WriteAllText($EnvFile, ((Get-Content .env -Raw) -replace "`r", ""))
+
 $Out = Join-Path (Get-Location) "out\$Component"
 New-Item -ItemType Directory -Force -Path $Out | Out-Null
-docker run --rm --env-file .env `
+docker run --rm --env-file $EnvFile `
   -e COMPONENT=$Component -e MODE=$Mode -e CLOUD=local `
   -v "${Out}:/app/out" $Image
-Write-Host "output: out\$Component\"
+$Code = $LASTEXITCODE
+Remove-Item $EnvFile -ErrorAction SilentlyContinue
+Write-Host "output: out\$Component\ (exit $Code)"
