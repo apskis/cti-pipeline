@@ -27,13 +27,15 @@ to confirm a source detail you need for the document.
   `attack[].coverage`. Falcon, Splunk, Claroty and InsightVM are not available here: write "could not
   be assessed: connector not available in this runtime" in scoping, still write the CQL
   and SPL queries with CONTROL and BASELINE, and keep every query rule from the skill.
+  Apply the QUERY RULES and the VERIFY step in `components/bulletin-scan/formats.md` too.
   Save as `hunts/packages/TH26-NN-Title_Case_Slug.docx`.
   Builder: `python3 core/.claude/skills/genelabs-threat-hunt-package/scripts/build_hunt.py <spec.json> <out.docx>`.
 - **cve_brief** (`CVE-VM-YYYY-MM-DD`):
   `python3 core/tools/build_priority_brief.py registers/CVE_Register_2026.xlsx registers/CVE-VM-YYYY-MM-DD.docx core/.claude/skills/genelabs-cti-bulletin`
   If the builder rejects the register, fix the register cell it names and rerun.
 - **awareness** (`AWR-YYYY-MM-DD`): the `genelabs-employee-awareness-blog` skill with the
-  topic named in today's report, `--channel` set, ledger row appended, then rebuild
+  topic named in today's report, the writing rules in `components/bulletin-scan/formats.md`,
+  `--channel` set, ledger row appended, then rebuild
   `state/awareness-topic-pipeline.md` (STEP 11 of the scan prompt).
   Save as `employee-posts/AWR-YYYY-MM-DD-Title_Case_Slug.docx`. That folder is the
   `employee_posts` key in `config/paths.json` and the only place the driver treats as home;
