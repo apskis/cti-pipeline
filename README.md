@@ -66,8 +66,18 @@ and grounding gates live in the `genelabs-cti-report` skill.
       OUTPUT_BUCKET=<bucket> deploy/entrypoint.sh
 
 ## Run one component locally
-    COMPONENT=bulletin-scan ANTHROPIC_MODEL=<bedrock-profile> CLOUD=aws \
-      OUTPUT_BUCKET=<bucket> deploy/entrypoint.sh
+Fully on your machine, on your Claude plan, with no cloud account involved. Setup takes
+about ten minutes; every step is in [`docs/local-setup.md`](docs/local-setup.md).
+
+    cp .env.example .env                    # add your Claude token and feed keys
+    scripts/pull-cloud-state.sh             # once: continue from the cloud's state
+    scripts/run-local.sh bulletin-scan      # PowerShell: .\scripts\run-local.ps1 bulletin-scan
+
+## AWS reference
+- [`docs/aws-architecture.html`](docs/aws-architecture.html): one page diagram of a run, costs, local vs cloud.
+- [`docs/aws-setup-guide.md`](docs/aws-setup-guide.md): every AWS piece explained, in build order,
+  plus what to change for a real deployment.
+- [`deploy/aws/deploy-with-claude-code.md`](deploy/aws/deploy-with-claude-code.md): the runbook Claude Code executes.
 
 ## Build once, deploy N times
     docker build -f deploy/Dockerfile -t cti-pipeline:poc .

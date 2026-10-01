@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CTI Pipeline on AWS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reference sheet. Header, the run diagram full width, then cost and local vs cloud side by side. */
+:root{
+  --bg:#f5f6f4; --panel:#ffffff; --fg:#1d2328; --muted:#5d6872; --line:#c9cfd3;
+  --frame:#8e99a2; --hot:#b45309; --hot-soft:#fdf1e3; --ok:#2f6f4f;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181b; --panel:#1c2227; --fg:#e4e8eb; --muted:#9aa5ae; --line:#36404a;
+  --frame:#6b7781; --hot:#f2a65a; --hot-soft:#2e2216; --ok:#7cc4a0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14181b; --panel:#1c2227; --fg:#e4e8eb; --muted:#9aa5ae; --line:#36404a;
+  --frame:#6b7781; --hot:#f2a65a; --hot-soft:#2e2216; --ok:#7cc4a0; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--body)}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:28px 48px;display:grid;gap:28px}
+header{display:grid;gap:6px}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:600 clamp(26px,4vw,36px)/1.15 var(--display);margin:0;text-wrap:balance}
+h2{font:600 20px/1.25 var(--display);margin:0 0 10px;text-wrap:balance}
+p{margin:0;max-width:68ch}
+.lede{color:var(--muted)}
+figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px}
+.scroll{overflow-x:auto}
+svg.diagram{display:block;width:100%;min-width:760px;height:auto;color:var(--fg);font-family:var(--body)}
+figcaption{margin-top:12px;color:var(--muted);font-size:14px;max-width:80ch}
+.box{fill:var(--panel);stroke:var(--fg);stroke-width:1.2}
+.step{fill:var(--bg);stroke:var(--line);stroke-width:1}
+.frame{fill:none;stroke:var(--frame);stroke-width:1;stroke-dasharray:5 4}
+.hotbox{fill:var(--hot-soft);stroke:var(--hot);stroke-width:1.8}
+.edge{stroke:var(--fg);stroke-width:1.2;fill:none}
+.edge.hot{stroke:var(--hot);stroke-width:1.8}
+.t{fill:var(--fg);font-size:13px}
+.th{fill:var(--fg);font-size:14px;font-weight:600}
+.ts{fill:var(--muted);font-size:11.5px}
+.tm{fill:var(--muted);font-size:11px;font-family:var(--mono)}
+.tl{fill:var(--fg);font-size:11px;font-family:var(--mono)}
+.thot{fill:var(--hot);font-size:12px;font-weight:600;font-family:var(--mono)}
+.ah{fill:var(--fg)} .ah.hot{fill:var(--hot)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px;min-width:0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hot td{color:var(--hot);font-weight:600}
+.note{margin-top:12px;color:var(--muted);font-size:14px}
+code,pre{font-family:var(--mono);font-size:13px}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:12px;overflow-x:auto;margin:10px 0 0;line-height:1.5}
+ol{margin:8px 0 0;padding-left:20px;display:grid;gap:6px}
+.pill{display:inline-block;font:500 11px var(--mono);padding:1px 7px;border-radius:99px;border:1px solid currentColor}
+.pill.ok{color:var(--ok)} .pill.hot{color:var(--hot)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">GeneLabs CTI · account 574625227402 · us-east-1</div>
+  <h1>CTI Pipeline on AWS</h1>
+  <p class="lede">How one scheduled run moves through AWS, where the money goes, and what changes when you run the same container on your own machine instead.</p>
+</header>
+
+<figure>
+  <div class="scroll">
+  <svg class="diagram" viewBox="0 0 1000 610" role="img" aria-label="EventBridge Scheduler starts one Fargate Spot task per run. The task restores state from S3, runs a Claude Code scan on Bedrock Sonnet, builder passes on Bedrock Haiku, then ships output back to S3. Secrets Manager injects API keys, ECR supplies the image built by CodeBuild, and logs with cost lines go to CloudWatch.">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="ahhot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah hot" d="M0,0 L10,5 L0,10 z"/></marker>
+    </defs>
+
+    <!-- Trigger -->
+    <rect class="box" x="20" y="70" width="170" height="150" rx="4"/>
+    <text class="th" x="34" y="94">EventBridge Scheduler</text>
+    <text class="tm" x="34" y="116">bulletin  Mon Wed Fri</text>
+    <text class="tm" x="34" y="134">perimeter Mon</text>
+    <text class="tm" x="34" y="152">report    Mon + quarterly</text>
+    <text class="tm" x="34" y="170">doc sync  1st of month</text>
+    <text class="tm" x="34" y="188">console   disabled</text>
+    <text class="ts" x="34" y="208">times in 13:00 UTC</text>
+
+    <!-- VPC and cluster frames -->
+    <rect class="frame" x="220" y="30" width="460" height="400" rx="6"/>
+    <text class="tm" x="232" y="48">default VPC · public subnet · egress only, no inbound</text>
+    <rect class="frame" x="240" y="62" width="420" height="352" rx="6"/>
+    <text class="tm" x="252" y="80">ECS cluster cti-pipeline · Fargate Spot</text>
+
+    <!-- Task -->
+    <rect class="box" x="260" y="92" width="380" height="304" rx="4"/>
+    <text class="th" x="276" y="116">One task per run</text>
+    <text class="ts" x="276" y="134">1 vCPU · 2 GB · exits when done, so nothing idles</text>
+
+    <rect class="step" x="276" y="148" width="348" height="38" rx="3"/>
+    <text class="t" x="290" y="172">1  Restore state from S3</text>
+    <rect class="hotbox" x="276" y="194" width="348" height="38" rx="3"/>
+    <text class="t" x="290" y="218">2  Scan pass · Claude Code on Sonnet 4.5</text>
+    <rect class="hotbox" x="276" y="240" width="348" height="38" rx="3"/>
+    <text class="t" x="290" y="264">3  Builder passes ×2 · Haiku 4.5</text>
+    <rect class="step" x="276" y="286" width="348" height="38" rx="3"/>
+    <text class="t" x="290" y="310">4  Render docs · update dedup state</text>
+    <rect class="step" x="276" y="332" width="348" height="38" rx="3"/>
+    <text class="t" x="290" y="356">5  Ship output to S3</text>
+
+    <!-- Scheduler to task -->
+    <line class="edge" x1="190" y1="145" x2="258" y2="145" marker-end="url(#ah)"/>
+    <text class="tl" x="196" y="137">RunTask</text>
+
+    <!-- Right column -->
+    <rect class="hotbox" x="720" y="70" width="260" height="122" rx="4"/>
+    <text class="th" x="736" y="94">Amazon Bedrock</text>
+    <text class="t" x="736" y="116">Sonnet 4.5 · scan and analysis</text>
+    <text class="t" x="736" y="136">Haiku 4.5 · builders, doc sync</text>
+    <text class="thot" x="736" y="176">$133.31 · last 30 days</text>
+
+    <rect class="box" x="720" y="216" width="260" height="106" rx="4"/>
+    <text class="th" x="736" y="240">Public sources</text>
+    <text class="t" x="736" y="262">NVD · CISA KEV · OTX</text>
+    <text class="t" x="736" y="282">Shodan · ICS advisories</text>
+    <text class="ts" x="736" y="306">via MCP servers inside the task</text>
+
+    <rect class="box" x="720" y="346" width="260" height="70" rx="4"/>
+    <text class="th" x="736" y="370">CloudWatch Logs</text>
+    <text class="ts" x="736" y="392">/ecs/cti-pipeline · 30 day retention</text>
+
+    <!-- Task to right column -->
+    <path class="edge hot" d="M624,213 L706,213"/>
+    <path class="edge hot" d="M624,259 L706,259 L706,131 L718,131" marker-end="url(#ahhot)"/>
+    <text class="tl" x="648" y="240">invoke</text>
+    <path class="edge" d="M640,300 L700,300 L700,270 L718,270" marker-end="url(#ah)"/>
+    <text class="tl" x="646" y="292">HTTPS</text>
+    <line class="edge" x1="640" y1="380" x2="718" y2="380" marker-end="url(#ah)"/>
+    <text class="tl" x="646" y="372">[cost] lines</text>
+
+    <!-- Bottom row -->
+    <rect class="box" x="20" y="480" width="170" height="104" rx="4"/>
+    <text class="th" x="34" y="504">CodeBuild</text>
+    <text class="ts" x="34" y="524">builds deploy/Dockerfile</text>
+    <text class="ts" x="34" y="542">from source.zip in the</text>
+    <text class="ts" x="34" y="558">build bucket</text>
+
+    <rect class="box" x="230" y="480" width="150" height="104" rx="4"/>
+    <text class="th" x="244" y="504">ECR</text>
+    <text class="ts" x="244" y="524">cti-pipeline:latest</text>
+    <text class="tm" x="244" y="568">$0.42</text>
+
+    <rect class="box" x="400" y="480" width="150" height="104" rx="4"/>
+    <text class="th" x="414" y="504">Secrets Manager</text>
+    <text class="ts" x="414" y="524">NVD, OTX, Shodan keys</text>
+    <text class="tm" x="414" y="568">$2.11</text>
+
+    <rect class="box" x="570" y="480" width="150" height="104" rx="4"/>
+    <text class="th" x="584" y="504">S3 output bucket</text>
+    <text class="ts" x="584" y="524">deliverables + state,</text>
+    <text class="ts" x="584" y="540">versioned</text>
+    <text class="tm" x="584" y="568">$0.24</text>
+
+    <text class="tm" x="760" y="504">Fargate compute</text>
+    <text class="tm" x="760" y="522">$3.27 · now on Spot</text>
+
+    <!-- Bottom to task -->
+    <line class="edge" x1="190" y1="532" x2="228" y2="532" marker-end="url(#ah)"/>
+    <text class="tl" x="194" y="524">push</text>
+    <line class="edge" x1="305" y1="478" x2="305" y2="398" marker-end="url(#ah)"/>
+    <text class="tl" x="311" y="452">pull image</text>
+    <line class="edge" x1="475" y1="478" x2="475" y2="398" marker-end="url(#ah)"/>
+    <text class="tl" x="481" y="452">keys as env</text>
+    <line class="edge" x1="615" y1="478" x2="615" y2="398" marker-end="url(#ah)"/>
+    <text class="tl" x="560" y="440">restore</text>
+    <line class="edge" x1="655" y1="398" x2="655" y2="478" marker-end="url(#ah)"/>
+    <text class="tl" x="661" y="440">ship</text>
+  </svg>
+  </div>
+  <figcaption>Each run is a short task: the scheduler starts it, it restores state from S3, spends almost all of its cost on the two Bedrock steps (orange), and ships the result back to S3 before exiting. Nothing runs between runs. The execution role pulls the image, reads secrets and writes logs; the task role may only call Bedrock and the output bucket.</figcaption>
+</figure>
+
+<div class="grid2">
+  <section class="card">
+    <h2>Where the money went</h2>
+    <table>
+      <thead><tr><th>Pipeline service, Sep 1 to Oct 1</th><th style="text-align:right">Cost</th></tr></thead>
+      <tbody>
+        <tr class="hot"><td>Bedrock, Claude Sonnet 4.5</td><td class="num">$133.31</td></tr>
+        <tr><td>ECS Fargate</td><td class="num">$3.27</td></tr>
+        <tr><td>Secrets Manager</td><td class="num">$2.11</td></tr>
+        <tr><td>ECR</td><td class="num">$0.42</td></tr>
+        <tr><td>S3</td><td class="num">$0.24</td></tr>
+        <tr><td><strong>Pipeline total</strong></td><td class="num"><strong>$139.35</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="note">Model tokens are 96% of the bill, so the model backend decides the cost, not the host. The load balancer, RDS and VPC charges in the same account (about $41) belong to the separate cti-desk app and are not part of this diagram.</p>
+  </section>
+
+  <section class="card">
+    <h2>Same container, local or cloud</h2>
+    <table>
+      <thead><tr><th>Piece</th><th>Cloud</th><th>Local</th></tr></thead>
+      <tbody>
+        <tr><td>Trigger</td><td>EventBridge cron</td><td>You run it</td></tr>
+        <tr><td>Compute</td><td>Fargate Spot</td><td>Docker on your machine</td></tr>
+        <tr><td>Model</td><td>Bedrock, per token <span class="pill hot">billed</span></td><td>Your Max plan <span class="pill ok">included</span></td></tr>
+        <tr><td>State</td><td>S3 bucket</td><td><code>out/&lt;component&gt;/</code></td></tr>
+        <tr><td>Keys</td><td>Secrets Manager</td><td>Your shell env</td></tr>
+        <tr><td>Switch</td><td><code>CLOUD=aws</code></td><td><code>CLOUD=local</code></td></tr>
+      </tbody>
+    </table>
+    <pre>cp .env.example .env               # token + feed keys
+scripts/pull-cloud-state.sh        # once
+scripts/run-local.sh bulletin-scan</pre>
+  </section>
+</div>
+
+<section class="card">
+  <h2>Turning the cloud back on</h2>
+  <p>If you pause the five schedules and run locally, everything above stays in place and an idle setup costs a few dollars a month for secrets and image storage. To resume:</p>
+  <ol>
+    <li>Rebuild the image from <code>main</code> with the <code>cti-pipeline-build</code> CodeBuild project.</li>
+    <li>Confirm the task definitions use <code>MODEL_BACKEND=bedrock</code>, Sonnet for the scan and Haiku for <code>BUILD_MODEL</code>.</li>
+    <li>Enable the five schedules in the <code>cti-pipeline</code> group.</li>
+    <li>Run one bulletin scan by hand and read its <code>[cost]</code> line in CloudWatch before trusting the cron.</li>
+  </ol>
+  <p class="note">Every step explained: <code>docs/aws-setup-guide.md</code>. Running locally: <code>docs/local-setup.md</code>.</p>
+</section>
+</div>
+</body>
+</html>

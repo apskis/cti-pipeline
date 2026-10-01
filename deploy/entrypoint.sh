@@ -2,7 +2,7 @@
 # One entrypoint, all components.
 #   COMPONENT       selects components/<name>/task.md
 #   MODEL_BACKEND   bedrock | subscription  (which model runtime)
-#   CLOUD           aws | azure             (where output is shipped)
+#   CLOUD           aws | azure | local     (where output is shipped; local keeps it in OUTPUT_DIR)
 # Secrets arrive as ENV (Secrets Manager on AWS / Key Vault on Azure); the run
 # scripts prefer env per-credential, so no vault is contacted. Do NOT set KEY_VAULT_URL.
 set -euo pipefail
@@ -109,6 +109,7 @@ run_claude scan \
 # scan pass only assigns IDs in the dedup log and each builder pass (fresh context)
 # turns a small batch of them into files, until nothing is pending or the cap is hit.
 BUILD_TASK="$CDIR/task-build.md"
+BUILD_FAILED=0
 if [ -f "$BUILD_TASK" ]; then
   PENDING="$OUTPUT_DIR/state/_work/pending.json"
   # A .failed.md marker takes an item out of the batch for the rest of the run so it stops
@@ -121,8 +122,15 @@ if [ -f "$BUILD_TASK" ]; then
     python3 scripts/pending_deliverables.py --batch "${BUILD_BATCH:-4}" --out "$PENDING" && rc=0 || rc=$?
     [ "$rc" -eq 0 ] || break     # 3 = nothing pending
     echo "[entrypoint] builder pass $pass model=$BUILD_MODEL"
-    run_claude "build-$pass" --model "$BUILD_MODEL" \
-      "Read ${BUILD_TASK} and build every item listed in ${PENDING}. The output folder is ${OUTPUT_DIR}. Report one line per item."
+    # A failed builder session must not abort the job: the scan's register and dedup log
+    # are already written, and exiting here would skip finalize and the upload, losing a
+    # paid scan. Stop building, ship what exists, and fail the job at the end instead.
+    if ! run_claude "build-$pass" --model "$BUILD_MODEL" \
+      "Read ${BUILD_TASK} and build every item listed in ${PENDING}. The output folder is ${OUTPUT_DIR}. Report one line per item."; then
+      echo "[entrypoint] builder pass $pass failed; remaining items stay pending for the next run"
+      BUILD_FAILED=1
+      break
+    fi
   done
 fi
 
@@ -149,6 +157,14 @@ case "${CLOUD:-aws}" in
          az login --identity --allow-no-subscriptions >/dev/null
          az storage blob upload-batch -d "$OUTPUT_CONTAINER" -s "$OUTPUT_DIR" \
             --account-name "$STORAGE_ACCOUNT" --auth-mode login --overwrite true ;;
+  # local: OUTPUT_DIR is a folder mounted from your machine, so state already persists
+  # between runs and nothing is restored or shipped. No cloud account is touched.
+  local) echo "[entrypoint] CLOUD=local: output kept in ${OUTPUT_DIR}" ;;
   *) echo "unknown CLOUD=${CLOUD}"; exit 2 ;;
 esac
-echo "[entrypoint] done; output shipped to ${CLOUD:-aws}"
+echo "[entrypoint] done (cloud=${CLOUD:-aws})"
+# Surface a builder failure only after the state is safe, so alerts still fire.
+if [ "$BUILD_FAILED" -ne 0 ]; then
+  echo "[entrypoint] exiting 3: a builder pass failed (see the [cost] line with is_error=True)"
+  exit 3
+fi

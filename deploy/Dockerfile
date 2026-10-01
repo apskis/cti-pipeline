@@ -29,6 +29,9 @@ COPY . /app
 # this base image does not carry, so `uv sync` never installed anything.
 # The symlink exposes core/.claude (settings + skills) at the project root Claude Code
 # actually reads, which is the cwd (/app).
+# Strip CR from shell scripts in case the build context came from a Windows checkout
+# without .gitattributes applied; a CRLF entrypoint fails with 'bash\r: not found'.
+RUN find /app -name '*.sh' -exec sed -i 's/\r$//' {} +
 RUN pip install --no-cache-dir -r deploy/requirements.txt \
     && chmod +x deploy/entrypoint.sh scripts/resolve_paths.py deploy/gen_mcp_config.py \
     && ln -s /app/core/.claude /app/.claude \

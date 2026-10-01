@@ -1,0 +1,14 @@
+# Keep secrets, local state and build noise out of the image. A local `docker build`
+# would otherwise copy .env (API keys, Claude token) and out/ (deliverables) into it.
+.git
+.env
+.env.*
+!.env.example
+out/
+logs/
+*.log
+__pycache__/
+.venv/
+.ruff_cache/
+deploy/aws/generated/
+deploy/azure/generated/
