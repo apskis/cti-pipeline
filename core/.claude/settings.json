@@ -29,7 +29,9 @@
       "mcp__enrich__*",
       "mcp__claroty__*",
       "mcp__ics-advisories__*",
-      "mcp__hisac__*"
+      "mcp__hisac__*",
+      "mcp__aws-api__suggest_aws_commands",
+      "mcp__aws-api__call_aws"
     ],
     "deny": [
       "Bash(rm:*)",
