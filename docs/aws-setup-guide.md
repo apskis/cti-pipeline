@@ -76,8 +76,14 @@ aws bedrock-runtime converse --region us-east-1 \
   --inference-config '{"maxTokens":5}'
 ```
 
-A reply containing "ok" means you are set. An `AccessDeniedException` means model access
-needs enabling (first time Anthropic use on an account asks for a short use case form).
+A reply containing "ok" means you are set. Run it **once per model, as an admin**
+(the root user or a role with `aws-marketplace:Subscribe` and
+`aws-marketplace:ViewSubscriptions`): the first call to a model creates the account's
+AWS Marketplace subscription for it, and the pipeline's task role is deliberately not
+allowed to do that. Until it is done, every call fails with an `AccessDeniedException`
+naming those Marketplace actions, and the POC hit exactly this on its first Haiku run.
+First time Anthropic use on an account also asks for a short use case form in the Bedrock
+console.
 
 ## Step 1. Container registry (ECR)
 
