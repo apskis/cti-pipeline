@@ -16,21 +16,38 @@ cd /app
 export MODE
 mkdir -p "$OUTPUT_DIR"
 
+# program-console is a plain Python dashboard refresh. Starting a Claude session for it
+# cost a full model run every hour and did nothing the script cannot, so it runs the
+# script directly. The collector is not shipped in this sanitized build yet, so until it
+# is, the job exits cleanly instead of paying for a session that can only fail.
+if [ "$COMPONENT" = "program-console" ]; then
+  if [ -x bin/refresh-console.sh ]; then
+    exec bash bin/refresh-console.sh
+  fi
+  echo "[entrypoint] program-console: bin/refresh-console.sh not shipped in this image; nothing to do (no model call)"
+  exit 0
+fi
+
 # --- Model backend selection -------------------------------------------------
 # bedrock:      Claude on Amazon Bedrock. AWS creds come from the task role (no key).
 #               ANTHROPIC_MODEL must be a Bedrock inference-profile id.
 # subscription: Claude Code on a Pro/Max plan via a long-lived OAuth token
 #               (from `claude setup-token`). Set ANTHROPIC_MODEL=opus to pin Opus.
+# BUILD_MODEL:  model for the builder passes, which fill templates from a finished scan
+#               and do not need the scan model. Defaults to Haiku 4.5 on either backend;
+#               set BUILD_MODEL="$ANTHROPIC_MODEL" to build with the scan model again.
 case "$MODEL_BACKEND" in
   bedrock)
     : "${ANTHROPIC_MODEL:?set ANTHROPIC_MODEL to a Bedrock inference-profile id}"
     : "${AWS_REGION:=us-east-1}"
     export CLAUDE_CODE_USE_BEDROCK=1
+    : "${BUILD_MODEL:=us.anthropic.claude-haiku-4-5-20251001-v1:0}"
     echo "[entrypoint] model backend: Bedrock  model=$ANTHROPIC_MODEL region=$AWS_REGION"
     ;;
   subscription)
     : "${CLAUDE_CODE_OAUTH_TOKEN:?set CLAUDE_CODE_OAUTH_TOKEN (from 'claude setup-token') for subscription mode}"
     unset CLAUDE_CODE_USE_BEDROCK || true
+    : "${BUILD_MODEL:=haiku}"
     echo "[entrypoint] model backend: Claude subscription${ANTHROPIC_MODEL:+  model=$ANTHROPIC_MODEL}"
     ;;
   *) echo "unknown MODEL_BACKEND=$MODEL_BACKEND (use bedrock|subscription)"; exit 2 ;;
@@ -63,12 +80,29 @@ python3 scripts/update_state.py snapshot
 MCP_CONFIG=/app/.mcp.json
 python3 deploy/gen_mcp_config.py --component "$COMPONENT" --repo /app --out "$MCP_CONFIG"
 
+# run_claude LABEL [claude args...]: one headless session. JSON output carries the run's
+# cost and turn count, so every session logs one [cost] line to CloudWatch and appends
+# to state/cost-log.jsonl, which ships to the object store with the rest of the state.
+# On the subscription backend the dollar figure is what the run would cost at API
+# prices, not a bill. A failing session still fails the job, as before.
+COST_LOG="$OUTPUT_DIR/state/cost-log.jsonl"
+run_claude() {
+  local label="$1"; shift
+  local out rc=0
+  out="$(mktemp)"
+  claude --print --output-format json --permission-mode acceptEdits \
+    --settings /app/core/.claude/settings.json \
+    --mcp-config "$MCP_CONFIG" --strict-mcp-config "$@" > "$out" || rc=$?
+  COMPONENT="$COMPONENT" MODE="$MODE" LABEL="$label" RC="$rc" \
+    python3 deploy/log_cost.py "$out" "$COST_LOG" || true
+  rm -f "$out"
+  return "$rc"
+}
+
 echo "[entrypoint] component=$COMPONENT mode=$MODE cloud=${CLOUD:-aws}"
 # --settings loads the repo allow/deny list explicitly: headless runs have no trust
 # dialog, and an untrusted workspace's .claude/settings.json permissions are ignored.
-claude --print --permission-mode acceptEdits \
-  --settings /app/core/.claude/settings.json \
-  --mcp-config "$MCP_CONFIG" --strict-mcp-config \
+run_claude scan \
   "Read ${TASK} and run it in full for today. The MODE environment variable is '${MODE}'. Write outputs under ${OUTPUT_DIR}. Report what you saved and where."
 
 # Builder passes: a single headless session will not carry a dozen documents, so the
@@ -81,13 +115,13 @@ if [ -f "$BUILD_TASK" ]; then
   # consuming a slot in every pass. Clearing them here keeps that block to one run: today's
   # run always retries what yesterday's could not build.
   rm -f "$OUTPUT_DIR"/state/_work/*.failed.md 2>/dev/null || true
-  for pass in $(seq 1 "${BUILD_PASSES:-8}"); do
+  # Two passes of four by default: whatever is left stays pending in the dedup log and
+  # the next run builds it, so a low cap delays documents rather than losing them.
+  for pass in $(seq 1 "${BUILD_PASSES:-2}"); do
     python3 scripts/pending_deliverables.py --batch "${BUILD_BATCH:-4}" --out "$PENDING" && rc=0 || rc=$?
     [ "$rc" -eq 0 ] || break     # 3 = nothing pending
-    echo "[entrypoint] builder pass $pass"
-    claude --print --permission-mode acceptEdits \
-      --settings /app/core/.claude/settings.json \
-      --mcp-config "$MCP_CONFIG" --strict-mcp-config \
+    echo "[entrypoint] builder pass $pass model=$BUILD_MODEL"
+    run_claude "build-$pass" --model "$BUILD_MODEL" \
       "Read ${BUILD_TASK} and build every item listed in ${PENDING}. The output folder is ${OUTPUT_DIR}. Report one line per item."
   done
 fi
