@@ -32,10 +32,10 @@ Values go into Secrets Manager (AWS) or Key Vault (Azure), entered by April. Nev
 ## Components and cadence
 | Component | Cadence | Sources (POC) |
 |---|---|---|
-| bulletin-scan (Collect) | weekdays | open feeds, news scraper, NVD |
+| bulletin-scan (Collect) | Mon/Wed/Fri | open feeds, news scraper, NVD |
 | perimeter-scan (Watch) | weekly | Shodan |
 | reporting (Report) | weekly + quarterly | the above, aggregated (Claude does the analysis) |
-| program-console (Measure) | hourly | its own KPI data |
+| program-console (Measure) | daily, not deployed yet (collector not shipped) | its own KPI data |
 | documentation-sync (Govern) | monthly | the repo's doc set |
 | threat-hunting (Investigate) | daily | Splunk (BOTS data) — **deferred until Splunk is up** |
 

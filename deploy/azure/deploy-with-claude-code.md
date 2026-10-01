@@ -40,7 +40,8 @@ az account set --subscription 3110f85f-14ad-4094-aa61-98712d65cd9a
 az version
 ```
 Confirm April already has (or creates now, in AWS) an IAM user with only
-`bedrock:InvokeModel` + `InvokeModelWithResponseStream` on the Sonnet model, and its access
+`bedrock:InvokeModel` + `InvokeModelWithResponseStream` on the Sonnet and Haiku 4.5 models
+(Haiku runs the builder passes and documentation-sync), and its access
 key ready to paste into Key Vault in Step 5. **STOP**.
 
 ## Step 1 — Variables
@@ -111,21 +112,24 @@ Container Apps Jobs carry their own cron, so there is no separate scheduler. Cre
 Schedule-triggered job per row, all sharing: `--image $ACR.azurecr.io/cti-pipeline:latest`,
 `--registry-server $ACR.azurecr.io` + `--registry-identity` = the identity, `--mi-user-assigned`
 = the identity, Key Vault secret refs, and common env COMPONENT / MODEL_BACKEND=bedrock /
-CLOUD=azure / ANTHROPIC_MODEL=$MODEL / AWS_REGION=$AWSREGION / STORAGE_ACCOUNT=$STORAGE /
+CLOUD=azure / ANTHROPIC_MODEL=$MODEL / BUILD_MODEL=us.anthropic.claude-haiku-4-5-20251001-v1:0 /
+AWS_REGION=$AWSREGION / STORAGE_ACCOUNT=$STORAGE /
 OUTPUT_CONTAINER=$CONTAINER. **Every** job also gets the AWS Bedrock creds
 (`AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` from Key Vault), because every component calls the
 model. Per component:
 
 | job | COMPONENT | MODE | cron | data-source secrets |
 |---|---|---|---|---|
-| cti-bulletin-scan       | bulletin-scan      | weekly    | `0 13 * * 1-5`      | nvd, otx |
+| cti-bulletin-scan       | bulletin-scan      | weekly    | `0 13 * * 1,3,5`    | nvd, otx |
 | cti-perimeter-scan      | perimeter-scan     | weekly    | `0 13 * * 1`        | shodan, nvd, otx |
 | cti-reporting-weekly    | reporting          | weekly    | `0 13 * * 1`        | nvd, otx |
 | cti-reporting-quarterly | reporting          | quarterly | `0 13 1 1,4,7,10 *` | nvd, otx |
-| cti-program-console     | program-console    | weekly    | `0 * * * *`         | (none) |
 | cti-documentation-sync  | documentation-sync | weekly    | `0 6 1 * *`         | (none) |
 
-reporting is two jobs (each job carries a single cron), differing only by `MODE`. Write each
+reporting is two jobs (each job carries a single cron), differing only by `MODE`.
+`cti-documentation-sync` sets ANTHROPIC_MODEL to the Haiku id above. program-console is not
+deployed: its collector is not shipped in this build, and the entrypoint exits for it without
+a model call. If an earlier deploy created `cti-program-console`, delete it. Write each
 `az containerapp job create` to `generated/` and show `cti-bulletin-scan` first. **STOP** —
 once approved, create the rest the same way. threat-hunting is deferred (Step 10).
 

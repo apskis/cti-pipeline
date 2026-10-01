@@ -25,6 +25,24 @@ Sanitized GeneLabs reference build. Deploys to AWS or Azure from the same image.
 Claude Code supports Bedrock and Vertex, not Azure, so on Azure compute the Bedrock
 backend still calls Bedrock cross-cloud.
 
+## Cost controls
+Model tokens are most of the bill, so the defaults keep them down:
+- **Builder passes on Haiku.** `BUILD_MODEL` (default Haiku 4.5 on either backend) runs the
+  template filling passes; the scan keeps `ANTHROPIC_MODEL`. Set `BUILD_MODEL=$ANTHROPIC_MODEL`
+  to undo. `BUILD_PASSES` (default 2) and `BUILD_BATCH` (default 4) cap builder sessions per
+  run; anything left builds on the next run.
+- **No model for program-console.** It is a plain Python refresh, so the entrypoint never
+  starts a Claude session for it.
+- **Cost per run is logged.** Every session prints a `[cost]` line (cost, turns, tokens,
+  cache reads) and appends it to `state/cost-log.jsonl`, which ships with the run state.
+  On `subscription` the dollar figure is the API price equivalent, not a bill.
+- **POC cadence.** bulletin-scan runs Mon/Wed/Fri; its research window starts at the previous
+  scan report, so the skipped days are still covered.
+- **Lean scan prompt.** Rules for connectors the cloud run does not enable live in
+  `components/bulletin-scan/connectors.md`, and document format rules in `formats.md`, so
+  they are only read when needed.
+- **Fargate Spot** for the scheduled tasks (see the AWS deploy guide).
+
 ## Secrets
 Injected as env vars by the platform (Secrets Manager on AWS, Key Vault on Azure); the
 run scripts prefer env per-credential, so no vault is contacted. Never commit secrets.

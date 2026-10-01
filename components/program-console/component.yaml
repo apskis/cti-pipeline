@@ -1,4 +1,6 @@
 name: program-console
-cadence: "0 * * * *"         # hourly
+cadence: "5 21 * * *"        # daily 17:05 ET, after the day's scan and hunt (see task.md)
+# Not scheduled in the cloud yet: the dashboard collector is not shipped in this build,
+# so the entrypoint exits without a model call. Schedule it once bin/refresh-console.sh lands.
 enabled_servers: []          # dashboard refresh is plain python; no MCP needed
 output_prefix: console
