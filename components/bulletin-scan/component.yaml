@@ -1,4 +1,4 @@
 name: bulletin-scan
-cadence: "0 13 * * 1-5"      # weekday 09:00 ET (13:00 UTC)
+cadence: "0 13 * * 1,3,5"    # Mon/Wed/Fri 09:00 ET (13:00 UTC); POC cadence, the research window covers the gap days
 enabled_servers: [search, nvd, enrich, ics]
 output_prefix: bulletins

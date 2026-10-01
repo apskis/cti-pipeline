@@ -26,6 +26,8 @@ at every **STOP**. This is a POC: prefer simple, least privilege, and idempotent
 - Account: `574625227402`  •  Region: `us-east-1`
 - Model backend: **bedrock**, model = `us.anthropic.claude-sonnet-4-5-20250929-v1:0`
   (Opus is not available on this account; Sonnet 4.5 is confirmed invokable.)
+- Builder passes and documentation-sync run on **Haiku 4.5** (`us.anthropic.claude-haiku-4-5-20251001-v1:0`),
+  a fraction of Sonnet's price, because they fill templates rather than research.
 - Image: built from `deploy/Dockerfile` at repo root. Entry `deploy/entrypoint.sh`
   selects the component by `COMPONENT` and the backend by `MODEL_BACKEND`.
 - First component to prove the plumbing: **bulletin-scan** (needs open feeds, NVD, no Splunk).
@@ -47,6 +49,8 @@ aws bedrock-runtime converse --region us-east-1 \
   --messages '[{"role":"user","content":[{"text":"say ok"}]}]' \
   --inference-config '{"maxTokens":5}'
 ```
+Confirm Haiku 4.5 invokes too (same command, `--model-id us.anthropic.claude-haiku-4-5-20251001-v1:0`).
+If model access for Haiku is not enabled, enable it in the Bedrock console first.
 **STOP** — report preflight before continuing.
 
 ## Step 1 — Variables
@@ -55,6 +59,7 @@ Set these in your shell (adapt to PowerShell if needed):
 ACCOUNT=574625227402
 REGION=us-east-1
 MODEL=us.anthropic.claude-sonnet-4-5-20250929-v1:0
+BUILD_MODEL=us.anthropic.claude-haiku-4-5-20251001-v1:0
 ECR=cti-pipeline
 BUCKET=cti-pipeline-out-$ACCOUNT
 CLUSTER=cti-pipeline
@@ -138,6 +143,9 @@ Create two roles trusted by `ecs-tasks.amazonaws.com`. Write the JSON to
   - `arn:aws:bedrock:$REGION:$ACCOUNT:inference-profile/us.anthropic.claude-sonnet-4-5-20250929-v1:0`
   - `arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0`
     (the `us.` profile is cross-region; it needs the foundation-model ARN in the routed regions).
+  - `arn:aws:bedrock:$REGION:$ACCOUNT:inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0`
+  - `arn:aws:bedrock:*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0`
+    (Haiku runs the builder passes and documentation-sync).
 - `s3:PutObject` on `arn:aws:s3:::$BUCKET/*`.
 Show both policy documents. **STOP** — confirm before creating.
 
@@ -150,27 +158,36 @@ aws logs put-retention-policy --log-group-name $LOGS --retention-in-days 30 --re
 ## Step 7 — ECS cluster + one task definition per component
 ```
 aws ecs create-cluster --cluster-name $CLUSTER --region $REGION 2>/dev/null || true
+# Fargate Spot is about 70% cheaper than Fargate for these short batch jobs. A reclaimed
+# task loses that run, and the next scheduled run picks up from the restored state.
+aws ecs put-cluster-capacity-providers --cluster $CLUSTER --region $REGION \
+  --capacity-providers FARGATE FARGATE_SPOT \
+  --default-capacity-provider-strategy capacityProvider=FARGATE_SPOT,weight=1
 ```
 Register one Fargate task def per component. All share: FARGATE, awsvpc, cpu 1024, memory
 2048, executionRoleArn=`cti-pipeline-exec`, taskRoleArn=`cti-pipeline-task`, one container
 `cti` from the ECR image, `logConfiguration` → `$LOGS` (stream-prefix = the component), and
 common env: COMPONENT / MODEL_BACKEND=bedrock / CLOUD=aws / AWS_REGION=$REGION /
-ANTHROPIC_MODEL=$MODEL / OUTPUT_BUCKET=$BUCKET / MODE=weekly. Per component:
+ANTHROPIC_MODEL=$MODEL / BUILD_MODEL=$BUILD_MODEL / OUTPUT_BUCKET=$BUCKET / MODE=weekly.
+Exception: `cti-documentation-sync` sets ANTHROPIC_MODEL=$BUILD_MODEL (Haiku), since its monthly
+sync is mechanical. Builder passes are capped by `BUILD_PASSES` (default 2) and
+`BUILD_BATCH` (default 4); leftovers build on the next run. Per component:
 
 | task def | COMPONENT | secrets (Secrets Manager) |
 |---|---|---|
 | cti-bulletin-scan      | bulletin-scan      | NVD, OTX |
 | cti-perimeter-scan     | perimeter-scan     | SHODAN, NVD, OTX |
 | cti-reporting          | reporting          | NVD, OTX |
-| cti-program-console    | program-console    | (none) |
 | cti-documentation-sync | documentation-sync | (none) |
 
 MODE only affects reporting; keep it `weekly` on the task def and override to `quarterly` on
-the quarterly schedule (Step 10). program-console and documentation-sync take no external
-keys but still run the model, so they rely on the task role for Bedrock. threat-hunting is
+the quarterly schedule (Step 10). documentation-sync takes no external keys but still runs
+the model, so it relies on the task role for Bedrock. program-console is not deployed: its
+dashboard collector is not shipped in this build, and the entrypoint exits for it without a
+model call. threat-hunting is
 deferred (Step 11). Write each task def JSON to `generated/` and register with
 `aws ecs register-task-definition`. **STOP** — show `cti-bulletin-scan` first; once approved,
-register the other four the same way.
+register the other three the same way.
 
 ## Step 8 — Networking
 Use the default VPC for the POC:
@@ -184,7 +201,7 @@ needs a public subnet + `assignPublicIp=ENABLED` to reach Bedrock and the feeds.
 ## Step 9 — Smoke test (bulletin-scan) and verify
 Prove the plumbing with one on-demand run before wiring schedules:
 ```
-aws ecs run-task --cluster $CLUSTER --launch-type FARGATE \
+aws ecs run-task --cluster $CLUSTER --capacity-provider-strategy capacityProvider=FARGATE_SPOT,weight=1 \
   --task-definition cti-bulletin-scan --count 1 --region $REGION \
   --network-configuration "awsvpcConfiguration={subnets=[<one public subnet>],securityGroups=[<sg>],assignPublicIp=ENABLED}"
 aws logs tail $LOGS --follow --region $REGION      # Ctrl-C when the task exits
@@ -196,16 +213,17 @@ green run produced a bulletin in S3.
 ## Step 10 — Schedules for every component (EventBridge Scheduler)
 Create a schedule group `cti-pipeline`, a scheduler role (`ecs:RunTask` + `iam:PassRole` on
 the two task roles), then one schedule per row (FlexibleTimeWindow OFF), target = ECS RunTask
-with the task def, cluster, and the Step 8 network config. Cadences come from each
+with the task def, cluster, the Step 8 network config, and
+`CapacityProviderStrategy=[{capacityProvider:FARGATE_SPOT,weight:1}]` (no `LaunchType`; the two
+are mutually exclusive). Cadences come from each
 `component.yaml`:
 
 | schedule | task def | cron (UTC) | override |
 |---|---|---|---|
-| bulletin-scan       | cti-bulletin-scan      | `0 13 * * 1-5`      | — |
+| bulletin-scan       | cti-bulletin-scan      | `0 13 * * 1,3,5`    | — |
 | perimeter-scan      | cti-perimeter-scan     | `0 13 * * 1`        | — |
 | reporting-weekly    | cti-reporting          | `0 13 * * 1`        | — |
 | reporting-quarterly | cti-reporting          | `0 13 1 1,4,7,10 *` | containerOverrides MODE=quarterly |
-| program-console     | cti-program-console    | `0 * * * *`         | — |
 | documentation-sync  | cti-documentation-sync | `0 6 1 * *`         | — |
 
 For `reporting-quarterly`, set the target's `containerOverrides` to
@@ -215,7 +233,9 @@ pre-validates that it can assume the role during `CreateSchedule`, before the sc
 ARN exists, so an `ArnLike` on `aws:SourceArn` fails every create with "The execution
 role you provide must allow AWS EventBridge Scheduler to assume the role". Note EventBridge Scheduler cron is 6-field with a
 year and uses `?` for an unspecified day — translate each 5-field cron accordingly (e.g.
-`0 13 * * 1-5` → `cron(0 13 ? * MON-FRI *)`). **STOP** — list the six schedules when done.
+`0 13 * * 1,3,5` → `cron(0 13 ? * MON,WED,FRI *)`). **STOP** — list the five schedules when done.
+If an earlier deploy created a `program-console` schedule, delete it (it paid for a model
+session every hour); if it created the bulletin schedule as MON-FRI, update it to MON,WED,FRI.
 
 ## Step 11 — threat-hunting (deferred until Splunk)
 threat-hunting needs a live Splunk (dev license pending). When it is up: store `SPLUNK_URL`

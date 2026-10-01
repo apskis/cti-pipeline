@@ -1,0 +1,47 @@
+# Bulletin scan: deliverable format rules
+
+Read this when you write one of these documents: an exposure advisory, a detection
+handoff, a hunt package or the awareness post. The scan pass only assigns IDs; the
+builder pass (`task-build.md`) reads this. Text below is moved verbatim from `task.md`.
+
+*** EXPOSURE FINDINGS PRODUCE TWO SEPARATE DOCUMENTS. READ BOTH SKILL.md FILES FIRST; THE FORMATS CHANGED ON 2026-08-27. ***
+
+  THE ADVISORY ("genelabs-exposure-advisory") IS A ONE PAGE MAIN BODY. April: "Current reports are too long and repetitive; the group agreed a concise one-pager is the better format for stakeholder distribution." Page one is: a five-row control block, a summary callout, THREE Why We Care bullets with bolded lead-in sentences, and ONE Action/Owner/Detail table of four or five rows, one sentence each. That is all.
+  FOUR THINGS WERE REMOVED AND MUST NOT RETURN: the Risk table (its argument lives at A.6 as a figure); Bottom Line (it restated the summary); the Severity row (the verdict is off page one entirely); and Technical Detail (A.1 carries the external record verbatim — the two facts a stakeholder needs moved into the summary, and this was the cut that made one page work).
+  THE APPENDIX IS DESIGNED TO BE SCANNED. A.0 opens it with a CHAIN-OF-REASONING DIAGRAM (`_tools\reasoning_diagram.py`) where COLOUR CARRIES EPISTEMIC STATUS: measured, inferred, ruled out (struck through but still readable), open. THE RULED-OUT NODES ARE THE POINT — an argument showing only what it concluded reads as advocacy; one showing what it tested and rejected reads as analysis. Keep the spine straight and hang falsifications off it. Always render the legend beneath.
+  A.6 IS SEVERITY AS A FIGURE plus two short paragraphs, not six paragraphs of prose.
+  A.7 IS A REPRODUCTION WALKTHROUGH. April: "there needs to be a step-by-step guide for an analyst to reproduce themselves to come to the same findings." Numbered steps IN THE ORDER AN ANALYST SHOULD RUN THEM, each: what to run · EXPECT <the specific numbers> · ESTABLISHES <what follows> · DOES NOT ESTABLISH <the limit>. Run the LEGITIMATE BASELINE BEFORE the suspicious traffic — an analyst who meets the scan evidence first tends to conclude the service should not be public, which may be wrong. Include the FALSIFICATION steps even where they weaken the finding, and the step that found the finding. WHERE THE ORIGINAL DID NOT RECORD A QUERY, SAY SO rather than inventing one.
+  EVERY CLAIM CARRIES A {{En}} SUPERSCRIPT into A.7. Set `evidence_appendix_title` to "Appendix A.7 — Reproduce this yourself: an analyst walkthrough". Build order: builder → `apply_inline_bold.py` → `insert_figures.py` → `apply_evidence_citations.py` LAST. Re-cite any entry the pass reports unused.
+  WHEN IT WILL NOT FIT, REMOVE A SECTION, DO NOT SHAVE WORDS: cut a bullet whose content is in an action row; merge action rows sharing an owner; move argument to A.6; drop the caption. Cap the table at five rows and carry the remainder to "A.8 Further actions, with owners", stating they are NOT cancelled.
+  VERIFICATION TRAPS THAT PRODUCE WRONG ANSWERS: headings render LETTERSPACED so "Bottom Line" extracts as "B o t t o m  L i n e"; a CROSS-REFERENCE IS NOT A HEADING ("Full reasoning in Appendix A.6" in a caption made the appendix look a page early — a FALSE PASS); the FOOTER IS NOT PAGE CONTENT; and "page two must begin with APPENDIX A" wrongly fails a document whose appendix heading correctly sits at the foot of page one. ASSERT THAT NO BODY SECTION APPEARS ON PAGE TWO, over styled HEADINGS, never raw text position.
+  OPEN QUESTION, RECORDED RATHER THAN GUESSED: April has not settled who the advisory is distributed to. Until she does, page one is written for the NAMED ASSET OWNER. Do not add a severity verdict back for a leadership reader, and do not strip internal detail for a wide list. Raise it rather than assuming.
+
+  THE DETECTION HAND-OFF ("genelabs-detection-handoff") IS A SEPARATE DOCUMENT FOR SECURITY MONITORING, and the split is LIFECYCLE not audience: an advisory closes when the asset is fixed, a detection outlives it. On 27 Aug a detection written fleet wide found seven scanning sources unrelated to the asset in the advisory.
+  PSEUDO-DETECTIONS ONLY. April: "use pseudo detections instead - what logs needed, behavior, dont give exact detections, allow the analyst to create the search the way they want." NO QUERIES. Each carries: the behaviour · the LOGS AND FIELDS needed, naming both the data model and the raw index · the DISCRIMINATOR with the measurement behind it · known false positives · what CTI OBSERVED testing it.
+  EVERY DETECTION STILL CARRIES A MEASURED OBSERVATION — dropping the query does not mean dropping the evidence. The builder refuses to ship one without it.
+  NO PICTURES. April removed them on 27 Aug; a `figure` key is ignored.
+  Prefer FLEET-WIDE to asset-scoped. Derive thresholds from measured data and SHOW THE WORKING, state the expected alert volume, and tell them what to do if your numbers do not reproduce. TUNE BY EXCLUSION, never by raising a threshold. The BLOCKED section names the TG-NN gap and lists WHAT BECOMES DETECTABLE once it closes — that is what turns a register row into something somebody funds.
+  Save to `<Exposure advisories>\Detection Hand-offs`, id CTI-DET-<AssetSlug>, referenced from the advisory's callout and action table.
+
+HUNT PACKAGE RULES (STEP 8):
+ONE PACKAGE PER HYPOTHESIS via "genelabs-threat-hunt-package". OMIT `attack_summary`. A PACKAGE IS A WORK ORDER — no findings, verdicts, classifications or blank execution sections.
+QUERY RULES — measured, hard constraints:
+1. NEVER an unscoped fleet-wide ProcessRollup2 query; fleet volume is ~3.8M events per 15 minutes. Every one MUST carry in(ComputerName, values=[...]).
+2. LEAD WITH NETWORK OR DNS for fleet-wide scoping, then scope process queries to the output, stating the dependency in each `purpose`.
+3. DO NOT QUERY DetectionSummaryEvent (GAP-06) — use falcon_search_detections.
+4. QUALIFY DETECTION TECHNIQUE FILTERS with product:'epp' or a data_domain.
+5. INCLUDE A CONTROL QUERY per hypothesis proving the source returns data at all.
+6. INCLUDE A BASELINE / PREVALENCE QUERY with a distinct host count. Most often missed.
+7. CAP RESULT SIZE with sort(..., limit=N).
+8. NO PER-CVE PATCH STATE — write it as a manual InsightVM console step.
+9. Maximum 14 day lookback.
+10. Exclude the top process-volume hosts: <host-a>, <host-b>, <host-c>.
+11. BEWARE EPHEMERAL SOURCE-PORT COLLISIONS — two unrelated ports with an IDENTICAL distinct-destination count is ephemeral allocation (TH26-04A, TH26-13). THE LOOKALIKE THAT IS NOT THIS: one source hitting many destinations on ONE port with an identical per-target count is a scanner's fixed probe budget, a real finding. Say which you are looking at.
+12. *** SPL MUST PASS THE LINTER. Data model FIRST, raw index as fallback, and every raw index query carries a sourcetype. Write the fallback INTO the package with its own `purpose` explaining when to reach for it. ***
+Package rules: CQL LEADS in `falcon`, Splunk SPL FOLLOWS in `queries` and is REQUIRED. `data_sources` lists BOTH. `saved_searches` named THYYNN_<slug>. Builder is `<Hunt packages>\_tools\build_hunt.py`. METADATA HEADER is exactly FOUR fields in a 2-column table. ATT&CK TABLE IS FOUR COLUMNS. Defang external IOCs; where none were published say so as a NEGATIVE INDICATOR row. `handoff_note` exactly: "Open this package in the Claude desktop app with falcon-mcp connected and reply 'investigate' — Claude runs the CQL across the fleet (last 14 days), corroborates with the Splunk tstats, checks Falcon detections and custom IOCs, rules on the hypothesis, and files the completed record using the genelabs-threat-hunt-report skill. Findings are NOT recorded in this package." NEVER fabricate findings.
+VERIFY EACH .docx PROGRAMMATICALLY: ProcessRollup2 blocks carry in(ComputerName; every sort( has a limit=; CONTROL and BASELINE present with a distinct host count; DetectionSummaryEvent only in do-not-use warnings; one hypothesis; no foreign hunt ID in an executable block or saved-search name (prose references are legitimate); no forbidden data models in executable queries; hunt_title matches the filename stem; metadata table exactly 2 columns; ATT&CK exactly 4; and none of "Status", "Start Date", "End Date", "Reviewed By", "Pending Review", "Proposed", "Execution Log", "Outcome & Classification", "Findings Classification Key", "Coverage & Gaps", "Investigation Result", "Overall Finding", "Coverage". Group contiguous Consolas paragraphs before asserting. Report the result.
+
+AWARENESS POST RULES (STEP 10):
+TWO FORMATS, CHOOSE ONE AND SAY WHY. "genelabs-employee-awareness-blog" is the DEFAULT — 350-450 words, two pages, standfirst, custom illustrations, pull quote, actions card. April: "less wordy, with pictures, more like a blog." Use the long form "genelabs-employee-awareness" only when the topic needs the reader to hold several things at once.
+DISCLOSURE: you MAY say "our threat intelligence team is tracking this". You may NOT say what we run, see or found. Reassurance yes, posture no.
+IF THE GATE DEMANDS AN INSTRUCTION THAT MAKES NO SENSE FOR THE DAY'S CHANNEL, THE GATE IS WRONG — fix the gate rather than distorting the writing. That has happened three times, always the same defect: a check written against one example document treating a different structure as absence rather than difference.
