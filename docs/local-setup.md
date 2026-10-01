@@ -52,6 +52,9 @@ everything as new:
 scripts/pull-cloud-state.sh           # PowerShell: .\scripts\pull-cloud-state.ps1
 ```
 
+No AWS CLI? Unzip a state export (a zip whose top folder is `out/`) in the repo root
+instead; the result is the same `out/<component>/` layout.
+
 This only reads from S3. Do it **after** the last cloud run you care about and **before**
 pausing the schedules, so nothing is lost in between.
 
