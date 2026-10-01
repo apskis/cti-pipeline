@@ -168,7 +168,8 @@ Register one Fargate task def per component. All share: FARGATE, awsvpc, cpu 102
 2048, executionRoleArn=`cti-pipeline-exec`, taskRoleArn=`cti-pipeline-task`, one container
 `cti` from the ECR image, `logConfiguration` → `$LOGS` (stream-prefix = the component), and
 common env: COMPONENT / MODEL_BACKEND=bedrock / CLOUD=aws / AWS_REGION=$REGION /
-ANTHROPIC_MODEL=$MODEL / BUILD_MODEL=$BUILD_MODEL / OUTPUT_BUCKET=$BUCKET / MODE=weekly.
+ANTHROPIC_MODEL=$MODEL / BUILD_MODEL=$BUILD_MODEL /
+ANTHROPIC_SMALL_FAST_MODEL=$BUILD_MODEL / ANTHROPIC_DEFAULT_HAIKU_MODEL=$BUILD_MODEL / OUTPUT_BUCKET=$BUCKET / MODE=weekly.
 Exception: `cti-documentation-sync` sets ANTHROPIC_MODEL=$BUILD_MODEL (Haiku), since its monthly
 sync is mechanical. Builder passes are capped by `BUILD_PASSES` (default 2) and
 `BUILD_BATCH` (default 4); leftovers build on the next run. Per component:

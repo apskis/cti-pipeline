@@ -66,19 +66,18 @@ and grounding gates live in the `genelabs-cti-report` skill.
       OUTPUT_BUCKET=<bucket> deploy/entrypoint.sh
 
 ## Run one component locally
-Fully on your machine, on your Max plan, with no cloud account involved (`CLOUD=local`
-skips the S3 restore and upload; the mounted `out/` folder keeps state between runs):
+Fully on your machine, on your Claude plan, with no cloud account involved. Setup takes
+about ten minutes; every step is in [`docs/local-setup.md`](docs/local-setup.md).
 
-    claude setup-token                      # once; copy the token
-    docker build -f deploy/Dockerfile -t cti-pipeline .
-    docker run --rm -v "$PWD/out:/app/out" \
-      -e COMPONENT=bulletin-scan -e CLOUD=local \
-      -e MODEL_BACKEND=subscription -e ANTHROPIC_MODEL=opus \
-      -e CLAUDE_CODE_OAUTH_TOKEN -e NVD_API_KEY -e OTX_API_KEY \
-      cti-pipeline
+    cp .env.example .env                    # add your Claude token and feed keys
+    scripts/pull-cloud-state.sh             # once: continue from the cloud's state
+    scripts/run-local.sh bulletin-scan      # PowerShell: .\scripts\run-local.ps1 bulletin-scan
 
-Export the token and keys in your shell first; `-e NAME` with no value passes them through
-without writing them anywhere. Swap `COMPONENT` for any other component.
+## AWS reference
+- [`docs/aws-architecture.html`](docs/aws-architecture.html): one page diagram of a run, costs, local vs cloud.
+- [`docs/aws-setup-guide.md`](docs/aws-setup-guide.md): every AWS piece explained, in build order,
+  plus what to change for a real deployment.
+- [`deploy/aws/deploy-with-claude-code.md`](deploy/aws/deploy-with-claude-code.md): the runbook Claude Code executes.
 
 ## Build once, deploy N times
     docker build -f deploy/Dockerfile -t cti-pipeline:poc .
