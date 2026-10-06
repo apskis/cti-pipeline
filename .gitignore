@@ -6,3 +6,5 @@ __pycache__/
 .venv/
 deploy/aws/generated/
 deploy/azure/generated/
+# generated per component by deploy/gen_mcp_config.py on every run
+.mcp.json

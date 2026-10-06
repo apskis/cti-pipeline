@@ -115,8 +115,8 @@ def finalize() -> int:
                 fh.write(f"- {today} | produced {ident} (see state/deliverables-index.md)\n")
     HASH_FILE.unlink(missing_ok=True)
     # count distinct IDs, not files: one deliverable saved to two folders is still one
-    print("[state] deliverables on disk: "
-          + ", ".join(f"{k}={len({i for i, _ in v})}" for k, v in sorted(found.items())))
+    tally = ", ".join(f"{k}={len({i for i, _ in v})}" for k, v in sorted(found.items()))
+    print(f"[state] deliverables on disk: {tally or 'none yet'}")
     for kind, items in sorted(found.items()):
         dupes = {i for i, _ in items if sum(1 for j, _ in items if j == i) > 1}
         for ident in sorted(dupes):
