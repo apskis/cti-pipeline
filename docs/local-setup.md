@@ -42,21 +42,41 @@ Fill in `CLAUDE_CODE_OAUTH_TOKEN` and whichever feed keys you have (NVD, OTX, Sh
 free). An empty key just skips that source; the run says so in its output.
 `ANTHROPIC_MODEL=opus` uses Opus on Max; set `sonnet` if you hit plan limits.
 
-## 4. Copy the cloud state (once, optional)
+## 4. Seed the prior state (once, strongly recommended)
 
-The cloud keeps each component's dedup log, registers, next IDs and past deliverables in
-S3. Copy them down so the first local run reports only what is new, instead of treating
-everything as new:
+Each component's dedup log, registers, next IDs and past deliverables decide what a run
+treats as already done. Seed them and the first local run reports only what is new;
+skip this and it re-drafts bulletins that already exist, with new IDs.
+
+**From a zip export.** This is the route for the AWS deployment that ran until
+2026-10-06: it was torn down, bucket included, so there is nothing left to sync from.
+The export holds 99 bulletins, 29 hunt packages, both register workbooks and every state
+ledger.
+
+The zip's top level is the component folders themselves (`bulletin-scan/`,
+`reporting/`, ...), so extract it **into `out/`**, not into the repo root:
 
 ```
-scripts/pull-cloud-state.sh           # PowerShell: .\scripts\pull-cloud-state.ps1
+mkdir -p out && unzip -o cti-pipeline-output.zip -d out
 ```
 
-No AWS CLI? Unzip a state export (a zip whose top folder is `out/`) in the repo root
-instead; the result is the same `out/<component>/` layout.
+```powershell
+New-Item -ItemType Directory -Force out | Out-Null
+Expand-Archive -Path cti-pipeline-output.zip -DestinationPath out -Force
+```
 
-This only reads from S3. Do it **after** the last cloud run you care about and **before**
-pausing the schedules, so nothing is lost in between.
+Check it landed right: `out/bulletin-scan/state/dedup-log.md` should exist. If you instead
+see `bulletin-scan/` in the repo root, it went one level too high; move those folders into
+`out/`.
+
+**From a live bucket**, if you have another deployment running:
+
+```
+scripts/pull-cloud-state.sh my-bucket      # PowerShell: .\scripts\pull-cloud-state.ps1 -Bucket my-bucket
+```
+
+Read only on the AWS side. Do it **after** the last cloud run you care about and
+**before** pausing the schedules, so nothing is lost in between.
 
 ## 5. Run a component
 
