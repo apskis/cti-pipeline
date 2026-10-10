@@ -15,8 +15,11 @@ $Image = "cti-pipeline:local"
 if (-not (Test-Path .env)) { throw "missing .env: copy .env.example to .env and fill it in" }
 if (-not (Test-Path "components\$Component")) { throw "unknown component: $Component" }
 
-docker image inspect $Image *> $null
-if ($Build -or $LASTEXITCODE -ne 0) {
+# `docker image inspect` reports a missing image on stderr, and Windows PowerShell 5.1
+# turns redirected native stderr into a terminating error under "Stop", so the first run
+# died here instead of building. Listing prints nothing for a missing image.
+$HaveImage = [bool](docker image ls -q $Image)
+if ($Build -or -not $HaveImage) {
   docker build -f deploy/Dockerfile -t $Image .
   if ($LASTEXITCODE -ne 0) { throw "docker build failed" }
 }
