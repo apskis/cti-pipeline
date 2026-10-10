@@ -20,16 +20,19 @@ from pathlib import Path
 
 OUT = Path(os.environ.get("OUTPUT_DIR", "out")).resolve()
 DEDUP = OUT / "state" / "dedup-log.md"
-BULLETIN = re.compile(r"bulletin:\s*(CTI\d{2}-\d{2})")
-HUNT = re.compile(r"hunt:\s*(TH\d{2}-\d{2})")
+# Sequence numbers are two digits or more: a fixed \d{2} read CTI26-105 as CTI26-10, found
+# that on disk, and so never queued any bulletin past 99.
+BULLETIN_ID = r"CTI\d{2}-\d{2,}"
+HUNT_ID = r"TH\d{2}-\d{2,}"
+BULLETIN = re.compile(rf"bulletin:\s*({BULLETIN_ID})")
+HUNT = re.compile(rf"hunt:\s*({HUNT_ID})")
 AWR = re.compile(r"\b(AWR-\d{4}-\d{2}-\d{2})\b")
 
 
 # A file whose name carries the ID is not enough: a builder fed a spec with the wrong
 # keys emits a hollow document with placeholder text, and that must be rebuilt.
 MIN_PARAS = {"bulletin": 15, "hunt": 30, "awareness": 8}
-PLACEHOLDERS = ("TH-26-XX", "TH-26-NN", "CTIYY-NN")
-# Sections April removed from the package format on 2026-08-24. Their presence means a
+PLACEHOLDERS = ("TH-26-XX", "TH-26-NN", "CTIYY-NN")# Sections April removed from the package format on 2026-08-24. Their presence means a
 # reverted builder or a spec still carrying the old keys, so the document is rebuilt.
 REMOVED_SECTIONS = {"hunt": ("Findings Classification Key", "Coverage & Gaps", "Execution Log",
                              "Outcome & Classification", "Overall Finding", "Pending Review")}
@@ -52,8 +55,7 @@ def shell_reason(path: Path, ident: str, kind: str) -> str | None:
     if ident not in text:
         return f"ID {ident} not in document text"
     if len(paras) < MIN_PARAS.get(kind, 8):
-        return f"only {len(paras)} paragraphs"
-    hit = next((ph for ph in PLACEHOLDERS if ph in text), None)
+        return f"only {len(paras)} paragraphs"    hit = next((ph for ph in PLACEHOLDERS if ph in text), None)
     if hit:
         return f"placeholder text {hit!r}"
     gone = next((sec for sec in REMOVED_SECTIONS.get(kind, ()) if sec in text), None)
@@ -132,8 +134,8 @@ def main() -> int:
         print("[pending] no dedup log; nothing to build"); return 3
 
     text = DEDUP.read_text()
-    have_b, shell_b, stray_b = on_disk(r"CTI\d{2}-\d{2}", "bulletin")
-    have_h, shell_h, stray_h = on_disk(r"TH\d{2}-\d{2}", "hunt")
+    have_b, shell_b, stray_b = on_disk(BULLETIN_ID, "bulletin")
+    have_h, shell_h, stray_h = on_disk(HUNT_ID, "hunt")
     have_a, shell_a, stray_a = on_disk(r"AWR-\d{4}-\d{2}-\d{2}", "awareness")
     shells = {**shell_b, **shell_h, **shell_a}
     for ident, where in {**stray_b, **stray_h, **stray_a}.items():
