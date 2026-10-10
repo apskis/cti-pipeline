@@ -32,7 +32,8 @@ AWR = re.compile(r"\b(AWR-\d{4}-\d{2}-\d{2})\b")
 # A file whose name carries the ID is not enough: a builder fed a spec with the wrong
 # keys emits a hollow document with placeholder text, and that must be rebuilt.
 MIN_PARAS = {"bulletin": 15, "hunt": 30, "awareness": 8}
-PLACEHOLDERS = ("TH-26-XX", "TH-26-NN", "CTIYY-NN")# Sections April removed from the package format on 2026-08-24. Their presence means a
+PLACEHOLDERS = ("TH-26-XX", "TH-26-NN", "CTIYY-NN")
+BULLET_CHARS = "▪•-– \t "# Sections April removed from the package format on 2026-08-24. Their presence means a
 # reverted builder or a spec still carrying the old keys, so the document is rebuilt.
 REMOVED_SECTIONS = {"hunt": ("Findings Classification Key", "Coverage & Gaps", "Execution Log",
                              "Outcome & Classification", "Overall Finding", "Pending Review")}
@@ -55,7 +56,12 @@ def shell_reason(path: Path, ident: str, kind: str) -> str | None:
     if ident not in text:
         return f"ID {ident} not in document text"
     if len(paras) < MIN_PARAS.get(kind, 8):
-        return f"only {len(paras)} paragraphs"    hit = next((ph for ph in PLACEHOLDERS if ph in text), None)
+        return f"only {len(paras)} paragraphs"
+    # A list field given as one string used to render one bullet per character: hundreds
+    # of paragraphs, so it sailed past the minimum above while being unreadable.
+    lone = sum(1 for p in paras if len(p.strip(BULLET_CHARS)) <= 1)
+    if lone > len(paras) // 2:
+        return f"{lone} of {len(paras)} paragraphs are a single character (a list field was a string)"    hit = next((ph for ph in PLACEHOLDERS if ph in text), None)
     if hit:
         return f"placeholder text {hit!r}"
     gone = next((sec for sec in REMOVED_SECTIONS.get(kind, ()) if sec in text), None)

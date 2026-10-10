@@ -57,7 +57,9 @@ five paragraphs); the driver rejects it and queues it again, so it is wasted wor
 - Bulletin spec: the keys `build_bulletin.py` reads are documented at the top of that
   script and in the bulletin skill: `report_id`, `date`, `category`, `title`,
   `audience`, `severity`, `relevance`, `why_this_matters`, `what_happened`,
-  `red_flags`, `questions`, `sources`, `tlp`.
+  `red_flags`, `questions`, `sources`, `tlp`. `why_this_matters`, `what_happened` and
+  `red_flags` are LISTS of strings, one bullet or paragraph each (three or more), never
+  one long string.
 
 VERIFY EVERY DOCUMENT AFTER BUILDING IT, before reporting it done:
 
