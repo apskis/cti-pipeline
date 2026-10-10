@@ -133,10 +133,17 @@ STEP 1 — Establish today's date and load context. Determine the current date (
 *** BUILD THE COVERAGE PICTURE BEFORE RESEARCHING — all SEVEN. Folders on disk are ground truth; logs are a convenience. ***
   (a) the CVE register workbook; (b) CTI Bulletins\2026 including Published and Unpublished — highest CTIYY-NN gives the next ID; (c) Threat Hunt Packages — highest THYY-NN; (d) the hunt archive and falcon-hunt log — a hunt marked Complete is ALREADY EXECUTED; (e) the awareness topic ledger; (f) the EXPOSURE ADVISORIES folder — update in place, never raise a second for the same asset; (g) the awareness topic PIPELINE.
 
-*** BEDROCK: THE WebSearch TOOL DOES NOT EXIST HERE. ***
-STEP 2 below says "sweep reputable vendor-neutral security news". On Bedrock you cannot
-search. Do ONE of these and SAY IN THE RUN OUTPUT WHICH ONE YOU DID:
-  (a) SEARCH MODE - use the `search` MCP server if it is configured and keyed.
+*** SEARCH DEPENDS ON THE BACKEND. CHECK YOUR TOOL LIST. ***
+STEP 2 below says "sweep reputable vendor-neutral security news". On Bedrock the WebSearch
+tool does not exist; on a Claude plan it does and is permitted. Do ONE of these and SAY IN
+THE RUN OUTPUT WHICH ONE YOU DID:
+  (a) SEARCH MODE - when WebSearch (or a keyed `search` MCP server) is in your tool list.
+      START FROM THE FEED DIGEST described in (b), which is free, then search only for
+      what the feeds cannot give you: the four priority sectors (genomics / DNA sequencing,
+      biotech / life sciences, healthcare / medical devices, IT supply chain / cloud),
+      the organisations in the peer watchlist, and a second source for any item you are
+      about to rate CRITICAL or HIGH. Keep it to about TEN searches a run and say how many
+      you ran. If a search is refused, say so and carry on in FEED-ONLY MODE.
   (b) FEED-ONLY MODE - THE FEEDS ARE ALREADY FETCHED FOR YOU. Before this session started
       the entrypoint fetched every feed in `config/sources.json`, filtered it to the window
       and wrote `state/_work/feed-digest.md`: a status table, then one line per in-window
