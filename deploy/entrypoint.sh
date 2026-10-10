@@ -100,6 +100,17 @@ run_claude() {
 }
 
 echo "[entrypoint] component=$COMPONENT mode=$MODE cloud=${CLOUD:-aws}"
+
+# Feed digest: fetching the feeds and filtering them to the window needs no judgement, and
+# doing it inside the scan session cost a turn per feed with the whole context re-read each
+# time. Fetch them here instead; the scan reads one file. The old digest is removed first so
+# a failed prefetch leaves nothing stale, and the scan then fetches the feeds itself.
+if [ "$COMPONENT" = "bulletin-scan" ]; then
+  FEED_DIGEST="$OUTPUT_DIR/state/_work/feed-digest.md"
+  rm -f "$FEED_DIGEST"
+  python3 scripts/fetch_feeds.py --out "$FEED_DIGEST" \
+    || echo "[entrypoint] feed prefetch failed; the scan will fetch the feeds itself"
+fi
 # --settings loads the repo allow/deny list explicitly: headless runs have no trust
 # dialog, and an untrusted workspace's .claude/settings.json permissions are ignored.
 run_claude scan \
