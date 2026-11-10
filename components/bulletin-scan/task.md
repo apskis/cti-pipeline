@@ -62,8 +62,9 @@ this file is the task as it ran on Claude Desktop, unchanged.
    - KEEP THE OUTPUT FOLDER CLEAN. The scan report is `reports/scan-YYYY-MM-DD.md` (one
      file per run, no other report names). Scratch scripts and builder spec JSON go under
      `state/_work/`, never the output root.
-   - Print a checklist at the end: scan report, CVE register (row count), dedup log,
-     bulletin IDs assigned, hunt IDs assigned, AWR ID and topic. Nothing else is yours.
+   - Print a checklist at the end: scan mode and web searches run (count; in SEARCH MODE
+     zero is a failed run), scan report, CVE register (row count), dedup log, bulletin
+     IDs assigned, hunt IDs assigned, AWR ID and topic. Nothing else is yours.
 
 ---
 
@@ -137,13 +138,25 @@ STEP 1 — Establish today's date and load context. Determine the current date (
 STEP 2 below says "sweep reputable vendor-neutral security news". On Bedrock the WebSearch
 tool does not exist; on a Claude plan it does and is permitted. Do ONE of these and SAY IN
 THE RUN OUTPUT WHICH ONE YOU DID:
-  (a) SEARCH MODE - when WebSearch (or a keyed `search` MCP server) is in your tool list.
-      START FROM THE FEED DIGEST described in (b), which is free, then search only for
-      what the feeds cannot give you: the four priority sectors (genomics / DNA sequencing,
-      biotech / life sciences, healthcare / medical devices, IT supply chain / cloud),
-      the organisations in the peer watchlist, and a second source for any item you are
-      about to rate CRITICAL or HIGH. Keep it to about TEN searches a run and say how many
-      you ran. If a search is refused, say so and carry on in FEED-ONLY MODE.
+  (a) SEARCH MODE: when WebSearch (or a keyed `search` MCP server) is in your tool list.
+      START FROM THE FEED DIGEST described in (b), which is free. Then run the PEER AND
+      SECTOR SWEEP below. IT IS REQUIRED, NOT OPTIONAL. The digest cannot contain a story
+      its feeds do not carry, so a digest that looks complete is never a reason to skip
+      the sweep. On 2026-11-10 the scan skipped it "by choice" and missed two pharma data
+      leaks (Vertex Pharmaceuticals, Dompé) that the weekly report found by searching.
+      The sweep is at least:
+        * one search per priority sector for breaches, ransomware and data leaks in the
+          window: genomics / DNA sequencing, biotech / life sciences and pharma,
+          healthcare / medical devices, IT supply chain / cloud;
+        * one or more searches over the peer watchlist names (several names per query);
+        * a second source for any item you are about to rate CRITICAL or HIGH.
+      About TEN searches a run in total. List every query in the scan report's Sources
+      section and give the count in the run output and the final checklist. ZERO SEARCHES
+      IN SEARCH MODE IS A FAILED RUN. If a search is refused, say so, name the queries that
+      did not run, and carry on in FEED-ONLY MODE for the rest.
+      A breach the sweep finds at an organisation not on the watchlist is still reported,
+      in the MEDIUM list or as a bulletin idea on its merits. STEP 5B decides whether it
+      also gets a Peer Incident Register row.
   (b) FEED-ONLY MODE - THE FEEDS ARE ALREADY FETCHED FOR YOU. Before this session started
       the entrypoint fetched every feed in `config/sources.json`, filtered it to the window
       and wrote `state/_work/feed-digest.md`: a status table, then one line per in-window
