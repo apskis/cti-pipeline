@@ -48,7 +48,9 @@ def _read(path: Path) -> str | None:
 def feeds_stage(logs_dir: Path, day: date) -> Stage:
     for log in sorted(logs_dir.glob(f"bulletin-scan*{day.isoformat()}*.log")):
         if m := FEEDS_LINE.search(_read(log) or ""):
-            items, ok, total, failed = int(m[3]), int(m[4]), int(m[5]), m[6].strip()
+            items, ok, total = int(m[3]), int(m[4]), int(m[5])
+            # the log prints a Python list repr: ['A (HTTP 404)', 'B']
+            failed = m[6].replace("'", "").replace('"', "").strip()
             status = "ok" if ok == total else "warn"
             note = f"Failed: {failed}" if failed else "Every feed answered"
             return Stage("feeds", "Feeds", f"{items} items, {ok} of {total} up", status, note)

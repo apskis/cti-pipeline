@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Colour tokens. Components use the Tailwind names below (bg-surface, text-muted, ...),
+   never raw hex, so dark mode is one block of overrides. */
+@theme {
+  --color-page: #f7f6f2;
+  --color-surface: #ffffff;
+  --color-raised: #f1efe8;
+  --color-line: #e3e1d9;
+  --color-ink: #1f1f1d;
+  --color-muted: #5f5e5a;
+  --color-faint: #888780;
+  --color-ok-bg: #eaf3de;
+  --color-ok-ink: #27500a;
+  --color-warn-bg: #faeeda;
+  --color-warn-ink: #633806;
+  --color-fail-bg: #fcebeb;
+  --color-fail-ink: #791f1f;
+  --color-unknown-bg: #f1efe8;
+  --color-unknown-ink: #444441;
+  --color-series-scan: #7f77dd;
+  --color-series-build: #1d9e75;
+  --color-series-report: #d85a30;
+  --color-series-other: #888780;
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-page: #161615;
+    --color-surface: #1f1f1d;
+    --color-raised: #2a2a28;
+    --color-line: #3a3a37;
+    --color-ink: #ecebe6;
+    --color-muted: #b4b2a9;
+    --color-faint: #888780;
+    --color-ok-bg: #173404;
+    --color-ok-ink: #c0dd97;
+    --color-warn-bg: #412402;
+    --color-warn-ink: #fac775;
+    --color-fail-bg: #501313;
+    --color-fail-ink: #f7c1c1;
+    --color-unknown-bg: #2c2c2a;
+    --color-unknown-ink: #d3d1c7;
+  }
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}

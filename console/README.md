@@ -4,7 +4,42 @@ A local, read only view of what the pipeline produced: runs, stages, costs and e
 deliverable. It reads `out/` and `logs/`, never writes to them, and makes no model calls.
 It is not part of the pipeline image (`.dockerignore` leaves `console/` out).
 
-Status: the backend API is in place. The React front end comes next.
+Status: the backend API and the overview page are in place. The report reader, run
+detail and CVE table come next.
+
+## Run it
+
+Two terminals. Start the backend first, then the front end, then open
+`http://127.0.0.1:5173`.
+
+```
+cd console/backend
+.venv\Scripts\python -m cti_console
+```
+
+```
+cd console/frontend
+npm install
+npm run dev
+```
+
+## Front end
+
+React 18 with TypeScript, built with Vite, styled with Tailwind v4, data through
+TanStack Query, the chart through Chart.js. Vite proxies `/api` to the backend on
+`127.0.0.1:8765`, so the browser only ever talks to one origin.
+
+The overview page shows the headline numbers, how the last scan ran (six stages, each
+with a status word as well as a colour) and the model cost per day. If the backend is
+not running it says how to start it and offers a retry.
+
+| Command | Does |
+|---|---|
+| `npm run dev` | Dev server on `127.0.0.1:5173` |
+| `npm test` | Vitest |
+| `npm run typecheck` | TypeScript, no output |
+| `npm run lint` | ESLint |
+| `npm run build` | Production build into `dist/` |
 
 ## Backend
 
