@@ -100,6 +100,18 @@ at API prices, to report that they have nothing to do. Leave them out of any sch
 `bulletin-scan` runs up to `BUILD_PASSES` builder passes (default 2, four items each).
 Set `BUILD_PASSES=8` in `.env` to clear a backlog in one run.
 
+To build a backlog the last scan left without paying for another scan, skip the scan
+for one run. Both settings come from your shell and override `.env`:
+
+```
+SKIP_SCAN=1 BUILD_PASSES=12 scripts/run-local.sh bulletin-scan
+```
+
+```powershell
+$env:SKIP_SCAN = "1"; $env:BUILD_PASSES = "12"; .\scripts\run-local.ps1 bulletin-scan
+Remove-Item Env:SKIP_SCAN, Env:BUILD_PASSES
+```
+
 ## 6. Check the result
 
 - The log ends with a `[cost]` line per Claude session. On your plan the dollar figure is

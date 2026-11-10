@@ -31,8 +31,14 @@ $EnvFile = Join-Path $env:TEMP "cti-pipeline.env"
 
 $Out = Join-Path (Get-Location) "out\$Component"
 New-Item -ItemType Directory -Force -Path $Out | Out-Null
+# One-off overrides from the shell win over .env, e.g. $env:SKIP_SCAN=1 to build only.
+$Extra = @()
+foreach ($Name in "SKIP_SCAN", "BUILD_PASSES") {
+  $Value = [Environment]::GetEnvironmentVariable($Name)
+  if ($Value) { $Extra += @("-e", "$Name=$Value") }
+}
 docker run --rm --env-file $EnvFile `
-  -e COMPONENT=$Component -e MODE=$Mode -e CLOUD=local `
+  -e COMPONENT=$Component -e MODE=$Mode -e CLOUD=local @Extra `
   -v "${Out}:/app/out" $Image
 $Code = $LASTEXITCODE
 Remove-Item $EnvFile -ErrorAction SilentlyContinue

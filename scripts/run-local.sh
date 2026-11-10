@@ -18,7 +18,12 @@ if [ "${2:-}" = "--build" ] || ! docker image inspect "$IMAGE" >/dev/null 2>&1; 
 fi
 
 mkdir -p "out/$COMPONENT"
+# One-off overrides from the shell win over .env, e.g. SKIP_SCAN=1 to build only.
+EXTRA=()
+for name in SKIP_SCAN BUILD_PASSES; do
+  [ -n "${!name:-}" ] && EXTRA+=(-e "$name=${!name}")
+done
 docker run --rm --env-file .env \
-  -e COMPONENT="$COMPONENT" -e MODE="${MODE:-weekly}" -e CLOUD=local \
+  -e COMPONENT="$COMPONENT" -e MODE="${MODE:-weekly}" -e CLOUD=local ${EXTRA[@]+"${EXTRA[@]}"} \
   -v "$PWD/out/$COMPONENT:/app/out" "$IMAGE"
 echo "output: out/$COMPONENT/"
