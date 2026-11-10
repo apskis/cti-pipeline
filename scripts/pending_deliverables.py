@@ -61,7 +61,8 @@ def shell_reason(path: Path, ident: str, kind: str) -> str | None:
     # of paragraphs, so it sailed past the minimum above while being unreadable.
     lone = sum(1 for p in paras if len(p.strip(BULLET_CHARS)) <= 1)
     if lone > len(paras) // 2:
-        return f"{lone} of {len(paras)} paragraphs are a single character (a list field was a string)"    hit = next((ph for ph in PLACEHOLDERS if ph in text), None)
+        return f"{lone} of {len(paras)} paragraphs are a single character (a list field was a string)"
+    hit = next((ph for ph in PLACEHOLDERS if ph in text), None)
     if hit:
         return f"placeholder text {hit!r}"
     gone = next((sec for sec in REMOVED_SECTIONS.get(kind, ()) if sec in text), None)
