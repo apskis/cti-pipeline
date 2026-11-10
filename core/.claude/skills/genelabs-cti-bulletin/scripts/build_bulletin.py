@@ -465,6 +465,31 @@ def _as_list(value):
     return [value] if isinstance(value, str) else list(value)
 
 
+def _audience_items(entry) -> tuple[str, list]:
+    """(audience, items) from any shape a spec gives a team entry. "" means no team.
+
+    Builder passes have written questions as plain strings instead of [team, question]
+    pairs. Reading a string as a pair made letter 0 the team and letter 1 the question,
+    so "Does GeneLabs ..." rendered as "D:" and "o". 37 bulletins shipped that way
+    before the shell check caught it. A plain string is now one question with no team.
+    """
+    if isinstance(entry, dict):
+        return entry.get("audience", ""), _as_list(entry.get("items"))
+    if isinstance(entry, str):
+        return "", [entry]
+    entry = list(entry)
+    if len(entry) >= 2:
+        return entry[0], _as_list(entry[1])
+    return "", entry
+
+
+def _warn_unlabelled(section: str, count: int) -> None:
+    """Say on stderr that the spec gave no team, so the builder can see the house rule slipped."""
+    if count:
+        print(f"WARN: {count} {section} entr{'y' if count == 1 else 'ies'} had no team label;"
+              " rendered as plain bullets. Name a team per the skill.", file=sys.stderr)
+
+
 def add_bullets(doc, items):
     for it in _as_list(items):
         p = _bullet(doc)
@@ -495,12 +520,15 @@ def add_detail_table(doc, rows):
 
 
 def add_recommended_actions(doc, groups):
-    for g in groups:
-        if isinstance(g, (list, tuple)):
-            g = {"audience": g[0], "items": list(g[1]) if isinstance(g[1], (list, tuple)) else [g[1]]}
-        aud = g.get("audience", "")
-        target = g.get("target")
-        items = g.get("items", [])
+    unlabelled = 0
+    for g in _as_list(groups):
+        aud, items = _audience_items(g)
+        target = g.get("target") if isinstance(g, dict) else None
+        if not aud:
+            unlabelled += len(items)
+            for it in items:
+                _cite(_bullet(doc), it, size=10, color=ABBEY)
+            continue
         label = aud + (f" (target: {target})" if target else "")
         if len(items) == 1:
             p = _bullet(doc)
@@ -514,6 +542,7 @@ def add_recommended_actions(doc, groups):
             for it in items:
                 b = _bullet(doc)
                 _cite(b, it, size=10, color=ABBEY)
+    _warn_unlabelled("recommended_actions", unlabelled)
 
 
 def add_questions(doc, questions):
@@ -523,15 +552,12 @@ def add_questions(doc, questions):
     bulleted beneath it. A team holding a single question renders inline on one
     bullet, matching the published house bulletins. Accepts either the flat
     [[team, question], ...] pair form or the grouped
-    [{"audience": ..., "items": [...]}, ...] form.
+    [{"audience": ..., "items": [...]}, ...] form. A plain string is a question with
+    no team: it renders as a bullet with no label and a warning on stderr.
     """
     order, grouped = [], {}
-    for entry in questions:
-        if isinstance(entry, dict):
-            aud = entry.get("audience", "")
-            items = entry.get("items", [])
-        else:
-            aud, items = entry[0], [entry[1]]
+    for entry in _as_list(questions):
+        aud, items = _audience_items(entry)
         if aud not in grouped:
             order.append(aud)
             grouped[aud] = []
@@ -540,9 +566,13 @@ def add_questions(doc, questions):
     # more than one question, every team gets its own label line - otherwise a
     # single-question team renders as one more bullet under the previous team's
     # list and reads as if it belonged to that team.
-    stacked = any(len(grouped[a]) > 1 for a in order)
+    stacked = any(len(grouped[a]) > 1 for a in order if a)
     for aud in order:
         items = grouped[aud]
+        if not aud:
+            for it in items:
+                _cite(_bullet(doc), it, size=10, color=ABBEY)
+            continue
         if not stacked:
             p = _bullet(doc)
             p.paragraph_format.space_before = Pt(5)
@@ -555,6 +585,7 @@ def add_questions(doc, questions):
             for it in items:
                 b = _bullet(doc)
                 _cite(b, it, size=10, color=ABBEY)
+    _warn_unlabelled("questions", len(grouped.get("", [])))
 
 
 def add_abbreviations(doc, entries):
