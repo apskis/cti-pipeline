@@ -8,6 +8,12 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Git Bash on Windows rewrites anything that looks like a POSIX path before docker sees
+# it. The -v "host:/app/out" mount below came out as a new empty folder named
+# "out/<component>;C", so a run on 2026-11-10 saw no state and built nothing.
+# Turning the rewrite off is harmless on macOS and Linux, where the variable means nothing.
+export MSYS_NO_PATHCONV=1
+
 COMPONENT="${1:?usage: scripts/run-local.sh <component> [--build]}"
 IMAGE=cti-pipeline:local
 [ -f .env ] || { echo "missing .env: copy .env.example to .env and fill it in"; exit 2; }
