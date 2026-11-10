@@ -31,8 +31,10 @@ NEXT_IDS = STATE / "next-ids.md"
 # canonical folder must not make the deliverable invisible to the tally, which is how the
 # index and the next IDs came to disagree with what was actually on disk.
 KINDS = {
-    "bulletin": re.compile(r"\bCTI(\d{2})-(\d{2})\b"),
-    "hunt": re.compile(r"\bTH(\d{2})-(\d{2})\b"),
+    # two digits or more: with a fixed \d{2} a file named CTI26-105 matched nothing, so it
+    # was left out of the index and the next ID stayed at 100
+    "bulletin": re.compile(r"\bCTI(\d{2})-(\d{2,})\b"),
+    "hunt": re.compile(r"\bTH(\d{2})-(\d{2,})\b"),
     "awareness": re.compile(r"\bAWR-\d{4}-\d{2}-\d{2}\b"),
     "cve_brief": re.compile(r"\bCVE-VM-\d{4}-\d{2}-\d{2}\b"),
     "exposure": re.compile(r"\bCTI-EXP-[A-Za-z0-9_]+"),

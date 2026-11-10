@@ -1,4 +1,7 @@
 name: documentation-sync
 cadence: "0 6 1 * *"         # monthly, 1st
+# Leave unscheduled for now: the plan documents, cti.config.json and the skill's helper
+# scripts are not shipped in this sanitized build, so every run is a paid no-op that
+# reports "nothing to reconcile". Schedule it once those inputs are mounted or seeded.
 enabled_servers: []
 output_prefix: docs

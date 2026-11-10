@@ -30,6 +30,10 @@ yourself.
    (`search`, `nvd`, `enrich`, `ics` in the POC), gather this period's intelligence:
    - `nvd` + `enrich`: recent/critical CVEs, CISA KEV membership, EPSS scores.
    - `search`: curated OSINT — peer incidents, campaigns, actor activity (news scraper).
+     There is no `search` server in the POC. On a Claude plan the built in WebSearch tool
+     is permitted instead: use it for exactly this, about ten searches a run, and cite
+     each page you rely on in `osint_sources_used`. On Bedrock neither exists; omit what
+     you cannot source.
    - `ics`: OT/ICS advisories relevant to lab and manufacturing environments.
    - In production this component also reads `intel471` (breach/actor) and `falcon`
      (CrowdStrike targeting); if those servers are enabled, use them. If they are not,

@@ -453,8 +453,20 @@ def add_section_heading(doc, text):
     return p
 
 
+def _as_list(value):
+    """A spec field that should be a list of strings, tolerating a bare string.
+
+    Builder passes sometimes write a whole section as one string. Iterating that
+    rendered one bullet per character, which shipped in most bulletins before the
+    paragraph count made anyone look.
+    """
+    if value is None:
+        return []
+    return [value] if isinstance(value, str) else list(value)
+
+
 def add_bullets(doc, items):
-    for it in items:
+    for it in _as_list(items):
         p = _bullet(doc)
         _cite(p, it, size=10, color=ABBEY)
 
@@ -698,7 +710,7 @@ def build(spec, template_path, out_path, wordmark_path=None):
         add_section_heading(doc, "Why This Matters")
         add_bullets(doc, spec["why_this_matters"])
     add_section_heading(doc, "What Happened")
-    for para in spec.get("what_happened", []):
+    for para in _as_list(spec.get("what_happened")):
         p = _para(doc, space_after=7)
         _cite(p, para, size=10, color=ABBEY)
     if spec.get("red_flags") or spec.get("red_flags_intro"):

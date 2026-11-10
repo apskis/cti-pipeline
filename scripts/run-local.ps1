@@ -15,8 +15,11 @@ $Image = "cti-pipeline:local"
 if (-not (Test-Path .env)) { throw "missing .env: copy .env.example to .env and fill it in" }
 if (-not (Test-Path "components\$Component")) { throw "unknown component: $Component" }
 
-docker image inspect $Image *> $null
-if ($Build -or $LASTEXITCODE -ne 0) {
+# `docker image inspect` reports a missing image on stderr, and Windows PowerShell 5.1
+# turns redirected native stderr into a terminating error under "Stop", so the first run
+# died here instead of building. Listing prints nothing for a missing image.
+$HaveImage = [bool](docker image ls -q $Image)
+if ($Build -or -not $HaveImage) {
   docker build -f deploy/Dockerfile -t $Image .
   if ($LASTEXITCODE -ne 0) { throw "docker build failed" }
 }
@@ -28,8 +31,14 @@ $EnvFile = Join-Path $env:TEMP "cti-pipeline.env"
 
 $Out = Join-Path (Get-Location) "out\$Component"
 New-Item -ItemType Directory -Force -Path $Out | Out-Null
+# One-off overrides from the shell win over .env, e.g. $env:SKIP_SCAN=1 to build only.
+$Extra = @()
+foreach ($Name in "SKIP_SCAN", "BUILD_PASSES") {
+  $Value = [Environment]::GetEnvironmentVariable($Name)
+  if ($Value) { $Extra += @("-e", "$Name=$Value") }
+}
 docker run --rm --env-file $EnvFile `
-  -e COMPONENT=$Component -e MODE=$Mode -e CLOUD=local `
+  -e COMPONENT=$Component -e MODE=$Mode -e CLOUD=local @Extra `
   -v "${Out}:/app/out" $Image
 $Code = $LASTEXITCODE
 Remove-Item $EnvFile -ErrorAction SilentlyContinue

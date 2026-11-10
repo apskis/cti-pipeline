@@ -14,6 +14,7 @@
       "Bash(aws bedrock list-inference-profiles:*)",
       "Bash(aws sts get-caller-identity:*)",
       "WebFetch",
+      "WebSearch",
       "mcp__falcon-mcp__falcon_search_*",
       "mcp__falcon-mcp__falcon_get_*",
       "mcp__falcon-mcp__falcon_aggregate_*",
@@ -29,6 +30,7 @@
       "mcp__enrich__*",
       "mcp__claroty__*",
       "mcp__ics-advisories__*",
+      "mcp__ics__*",
       "mcp__hisac__*",
       "mcp__aws-api__suggest_aws_commands",
       "mcp__aws-api__call_aws"

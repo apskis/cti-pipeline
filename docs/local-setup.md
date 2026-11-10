@@ -90,9 +90,27 @@ The first run builds the image (a few minutes). Later runs reuse it; add `--buil
 | Component            | Cloud cadence      | Notes                                  |
 |----------------------|--------------------|----------------------------------------|
 | `bulletin-scan`      | Mon, Wed, Fri      | Needs NVD and OTX keys for best output |
-| `perimeter-scan`     | Monday             | Needs the Shodan key                   |
-| `reporting`          | Monday + quarterly | `MODE=quarterly` for the quarterly brief |
-| `documentation-sync` | 1st of the month   |                                        |
+| `perimeter-scan`     | Monday             | Needs the Shodan key. No-op until it shares an advisories folder with `bulletin-scan` |
+| `reporting`          | Monday + quarterly | `MODE=quarterly` for the quarterly brief (PowerShell `-Mode quarterly`) |
+| `documentation-sync` | 1st of the month   | No-op until the plan documents and `cti.config.json` are supplied |
+
+The two no-op components still start a Claude session, about a dollar of plan usage each
+at API prices, to report that they have nothing to do. Leave them out of any schedule.
+
+`bulletin-scan` runs up to `BUILD_PASSES` builder passes (default 2, four items each).
+Set `BUILD_PASSES=8` in `.env` to clear a backlog in one run.
+
+To build a backlog the last scan left without paying for another scan, skip the scan
+for one run. Both settings come from your shell and override `.env`:
+
+```
+SKIP_SCAN=1 BUILD_PASSES=12 scripts/run-local.sh bulletin-scan
+```
+
+```powershell
+$env:SKIP_SCAN = "1"; $env:BUILD_PASSES = "12"; .\scripts\run-local.ps1 bulletin-scan
+Remove-Item Env:SKIP_SCAN, Env:BUILD_PASSES
+```
 
 ## 6. Check the result
 
@@ -116,8 +134,10 @@ The machine has to be on at the run time.
 
 - **macOS / Linux** (`crontab -e`), Mon/Wed/Fri 09:00:
   `0 9 * * 1,3,5 cd /path/to/cti-pipeline && scripts/run-local.sh bulletin-scan >> logs/bulletin.log 2>&1`
-- **Windows**: Task Scheduler, action `powershell.exe`, arguments
-  `-File C:\path\to\cti-pipeline\scripts\run-local.ps1 bulletin-scan`.
+- **Windows**: run `.\scripts\register-schedule.ps1` once. It creates two tasks under
+  `CTI Pipeline` in Task Scheduler: `bulletin-scan` Mon/Wed/Fri 09:00 and weekly
+  `reporting` Mon 11:00. Each starts Docker Desktop if needed and logs to
+  `logs\<component>-<mode>-<date>.log`. Remove them with `-Remove`.
 
 Keep in mind that a Max plan has rolling usage limits shared with your own interactive
 use, and it is a personal subscription: fine for running your own work on demand, not a
@@ -142,5 +162,5 @@ substitute for an organisation's API or Bedrock account on a real deployment.
 |---|---|
 | `set CLAUDE_CODE_OAUTH_TOKEN` | `.env` is missing the token, or has quotes around it |
 | Says it switched Opus to Sonnet | Known Max token tier bug; set `ANTHROPIC_MODEL=sonnet` or re-run `claude setup-token` |
-| Everything reported as new | Step 4 was skipped; run `pull-cloud-state` and re-run |
+| Everything reported as new | Step 4 was skipped; extract the state zip into `out/` and re-run |
 | `unknown CLOUD=` | Old image; rebuild with `--build` |

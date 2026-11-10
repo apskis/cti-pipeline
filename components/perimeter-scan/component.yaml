@@ -1,4 +1,7 @@
 name: perimeter-scan
 cadence: "0 13 * * 1"        # weekly Monday
+# Leave unscheduled for now: it rolls up open exposure advisories from its own output
+# folder, which nothing writes to (bulletin-scan raises advisories under its own folder),
+# so every run is a paid no-op. Schedule it once the two share an advisories folder.
 enabled_servers: [shodan, enrich, nvd]
 output_prefix: perimeter
