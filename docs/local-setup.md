@@ -134,8 +134,10 @@ The machine has to be on at the run time.
 
 - **macOS / Linux** (`crontab -e`), Mon/Wed/Fri 09:00:
   `0 9 * * 1,3,5 cd /path/to/cti-pipeline && scripts/run-local.sh bulletin-scan >> logs/bulletin.log 2>&1`
-- **Windows**: Task Scheduler, action `powershell.exe`, arguments
-  `-File C:\path\to\cti-pipeline\scripts\run-local.ps1 bulletin-scan`.
+- **Windows**: run `.\scripts\register-schedule.ps1` once. It creates two tasks under
+  `CTI Pipeline` in Task Scheduler: `bulletin-scan` Mon/Wed/Fri 09:00 and weekly
+  `reporting` Mon 11:00. Each starts Docker Desktop if needed and logs to
+  `logs\<component>-<mode>-<date>.log`. Remove them with `-Remove`.
 
 Keep in mind that a Max plan has rolling usage limits shared with your own interactive
 use, and it is a personal subscription: fine for running your own work on demand, not a
