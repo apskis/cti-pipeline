@@ -42,6 +42,22 @@ REMOVED_SECTIONS = {"hunt": ("Findings Classification Key", "Coverage & Gaps", "
 CANONICAL = {"bulletin": "bulletins", "hunt": "hunts", "awareness": "employee-posts"}
 
 
+# A list field given as one string renders one paragraph per character. When the whole
+# body broke, that was hundreds of paragraphs and a "more than half" rule caught it. When
+# only one section broke (the 2026-11-10 bulletins: "Questions to Ask" came out as "D:",
+# "o", "r"), it was 3 to 7 of about 30 paragraphs and passed. A finished document has no
+# reason to carry even one such paragraph, so allow two for odd layout and flag the third.
+MAX_LONE_CHARS = 2
+
+
+def count_lone_chars(paras: list[str]) -> int:
+    """Paragraphs that are one character once bullets and a trailing colon are stripped.
+
+    The colon matters: a broken audience heading renders as "D:" rather than "D".
+    """
+    return sum(1 for p in paras if len(p.strip(BULLET_CHARS).rstrip(":").strip()) <= 1)
+
+
 def shell_reason(path: Path, ident: str, kind: str) -> str | None:
     """Return why the document is a shell, or None when it looks complete."""
     try:
@@ -57,10 +73,8 @@ def shell_reason(path: Path, ident: str, kind: str) -> str | None:
         return f"ID {ident} not in document text"
     if len(paras) < MIN_PARAS.get(kind, 8):
         return f"only {len(paras)} paragraphs"
-    # A list field given as one string used to render one bullet per character: hundreds
-    # of paragraphs, so it sailed past the minimum above while being unreadable.
-    lone = sum(1 for p in paras if len(p.strip(BULLET_CHARS)) <= 1)
-    if lone > len(paras) // 2:
+    lone = count_lone_chars(paras)
+    if lone > MAX_LONE_CHARS:
         return f"{lone} of {len(paras)} paragraphs are a single character (a list field was a string)"
     hit = next((ph for ph in PLACEHOLDERS if ph in text), None)
     if hit:
