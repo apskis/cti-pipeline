@@ -18,14 +18,14 @@ Liberation Sans, metrically compatible with Arial.
 from PIL import Image, ImageDraw, ImageFont
 import glob, os
 
-ORANGE      = (255, 113,   9)
-ORANGE_DEEP = (224,  95,   0)
-TINT        = (255, 244, 232)
-ABBEY       = ( 68,  70,  72)
+ORANGE      = ( 22, 125,  97)   # Emerald #167D61 (name kept so callers need no change)
+ORANGE_DEEP = ( 16,  59,  50)   # Forest #103B32
+TINT        = (234, 243, 238)   # Mist #EAF3EE
+ABBEY       = ( 32,  44,  41)   # Charcoal #202C29
 GREY        = (103, 103, 101)
 MUTED       = (170, 170, 168)
-LIGHT       = (244, 244, 244)
-RULE        = (217, 217, 217)
+LIGHT       = (244, 249, 246)   # pale Mist #F4F9F6
+RULE        = (162, 191, 174)   # Sage #A2BFAE
 WHITE       = (255, 255, 255)
 GREEN       = ( 46, 125,  50)
 RED         = (198,  40,  40)
