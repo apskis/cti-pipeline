@@ -64,6 +64,7 @@ def test_summary_tiles_and_stages(settings: Settings) -> None:
     assert s["total_cost_usd"] == 20.7
     stages = {st["key"]: st for st in s["stages"]}  # type: ignore[union-attr]
     assert stages["feeds"]["status"] == "warn"
+    assert stages["feeds"]["note"] == "Failed: HHS HC3 Alerts (HTTP 404)"
     assert stages["feeds"]["value"] == "189 items, 9 of 10 up"
     assert stages["scan"]["value"] == "19 min, 7 searches"
     assert stages["triage"]["value"] == "2 new IDs"
