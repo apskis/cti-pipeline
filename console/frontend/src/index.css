@@ -3,8 +3,8 @@
 /* GeneLabs brand tokens, from the brand kit: Forest #103B32, Emerald #167D61,
    Sage #A2BFAE, Mist #EAF3EE, Charcoal #202C29. Components use the Tailwind names
    (bg-surface, text-accent, ...), never raw hex, so a theme is one block of overrides.
-   Dark mode lifts Emerald to #3FB48C, because the brand Emerald is too dark to read on a
-   dark page. Status colours stay red, amber and green: they carry meaning. */
+   Dark mode is Charcoal on a near black charcoal page, with Emerald lifted to #3FB48C,
+   because the brand Emerald is too dark to read on a dark page. Status colours stay red, amber and green: they carry meaning. */
 @theme {
   --color-page: #f4f8f6;
   --color-surface: #ffffff;
@@ -38,19 +38,19 @@
 /* Dark follows the system unless the theme switch says otherwise (data-theme on <html>). */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-page: #0e1a17;
-    --color-surface: #15241f;
-    --color-raised: #1d3029;
-    --color-line: #2c433b;
+    --color-page: #121716;
+    --color-surface: #202c29;
+    --color-raised: #293632;
+    --color-line: #35423e;
     --color-ink: #eaf3ee;
-    --color-muted: #a9c2b5;
-    --color-faint: #86a094;
+    --color-muted: #b3bfbb;
+    --color-faint: #8d9a96;
     --color-brand: #eaf3ee;
     --color-accent: #3fb48c;
     --color-accent-hover: #5cc69f;
     --color-on-accent: #0b1512;
-    --color-accent-soft: #1f3a31;
-    --color-accent-soft-ink: #cde5d8;
+    --color-accent-soft: #2b3b36;
+    --color-accent-soft-ink: #d6ebe0;
     --color-rung: #7fa593;
     --color-ok-bg: #173404;
     --color-ok-ink: #c0dd97;
@@ -58,29 +58,29 @@
     --color-warn-ink: #fac775;
     --color-fail-bg: #501313;
     --color-fail-ink: #f7c1c1;
-    --color-unknown-bg: #22332d;
-    --color-unknown-ink: #cbd6d1;
+    --color-unknown-bg: #2a3532;
+    --color-unknown-ink: #cfd8d5;
     --color-series-scan: #3fb48c;
     --color-series-build: #a2bfae;
     --color-series-report: #d7ebe0;
-    --color-series-other: #6f837b;
+    --color-series-other: #7d8a86;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --color-page: #0e1a17;
-  --color-surface: #15241f;
-  --color-raised: #1d3029;
-  --color-line: #2c433b;
+  --color-page: #121716;
+  --color-surface: #202c29;
+  --color-raised: #293632;
+  --color-line: #35423e;
   --color-ink: #eaf3ee;
-  --color-muted: #a9c2b5;
-  --color-faint: #86a094;
+  --color-muted: #b3bfbb;
+  --color-faint: #8d9a96;
   --color-brand: #eaf3ee;
   --color-accent: #3fb48c;
   --color-accent-hover: #5cc69f;
   --color-on-accent: #0b1512;
-  --color-accent-soft: #1f3a31;
-  --color-accent-soft-ink: #cde5d8;
+  --color-accent-soft: #2b3b36;
+  --color-accent-soft-ink: #d6ebe0;
   --color-rung: #7fa593;
   --color-ok-bg: #173404;
   --color-ok-ink: #c0dd97;
@@ -88,12 +88,12 @@
   --color-warn-ink: #fac775;
   --color-fail-bg: #501313;
   --color-fail-ink: #f7c1c1;
-  --color-unknown-bg: #22332d;
-  --color-unknown-ink: #cbd6d1;
+  --color-unknown-bg: #2a3532;
+  --color-unknown-ink: #cfd8d5;
   --color-series-scan: #3fb48c;
   --color-series-build: #a2bfae;
   --color-series-report: #d7ebe0;
-  --color-series-other: #6f837b;
+  --color-series-other: #7d8a86;
   color-scheme: dark;
 }
 

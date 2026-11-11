@@ -96,7 +96,8 @@ Sage, Mist, Charcoal) as colour tokens in `src/index.css`.
 - **Light, dark or system.** The switch in the header is remembered in this browser.
   System follows Windows. `public/theme-init.js` applies a saved choice before the page
   draws, so it never flashes the other theme.
-- **Dark mode** uses a deep Forest page with Mist text. Emerald is lifted to `#3FB48C`,
+- **Dark mode** is Charcoal `#202C29` cards on a near black charcoal page, with Mist text.
+  Emerald is lifted to `#3FB48C`,
   because the brand Emerald is too dark to read on a dark page.
 - **Contrast.** Every text colour meets WCAG AA (4.5:1) on the surfaces it sits on, in both
   themes; chart colours meet 3:1 against the card, with a hairline between segments.
