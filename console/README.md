@@ -4,8 +4,8 @@ A local, read only view of what the pipeline produced: runs, stages, costs and e
 deliverable. It reads `out/` and `logs/`, never writes to them, and makes no model calls.
 It is not part of the pipeline image (`.dockerignore` leaves `console/` out).
 
-Status: the backend API, the overview page and the report reader are in place. Run
-detail and the CVE table come next.
+Status: the backend API, the overview page, the report reader, run detail and the CVE
+table are in place. Demo polish comes next.
 
 ## Run it
 
@@ -38,10 +38,20 @@ title. Picking one opens it in the reader, rendered from its `.docx`, with a but
 download the original. A report has its own link, such as `#/reports/CTI26-137`, for a
 demo script or a bookmark.
 
+The Runs page lists every run, newest first. Picking one shows its sessions with time,
+turns and cost, the six stages for a bulletin scan, the documents saved while it ran
+(each a link into the reader) and the run report the component left, such as
+`reports/scan-<date>.md`. A run has its own link, such as
+`#/runs/bulletin-scan-20261110T145714`.
+
+The CVEs page is the CVE register as a table: newest first, then highest CVSS. It can
+narrow to exploited CVEs or those on CISA KEV, and a KEV deadline that has passed is
+marked. Bulletin and hunt IDs link into the reader.
+
 ### Showing documents safely
 
-Report HTML is built from documents full of links and text the pipeline copied from the
-web, so it is treated as hostile:
+Report HTML, from a `.docx` or a run report in Markdown, is built from text the pipeline
+copied from the web, so it is treated as hostile:
 
 - The front end runs it through DOMPurify, keeping plain document markup only. Scripts,
   event handlers, styles and frames are removed. Links open in a new tab with no access
@@ -49,6 +59,8 @@ web, so it is treated as hostile:
 - A Content Security Policy, set in `vite.config.ts`, lets the page load nothing from
   anywhere but itself. `npm run preview` serves the built page with the strict policy.
   `npm run dev` relaxes it just enough for Vite's inline refresh script and styles.
+- Markdown run reports are rendered with raw HTML switched off, so any HTML in them
+  arrives as plain text, and then go through DOMPurify like the rest.
 - The API sends `default-src 'none'` on every answer, so nothing it returns can run.
 
 | Command | Does |
@@ -95,12 +107,14 @@ purpose: the output is internal threat intelligence and the API has no login.
 | `/api/health` | `{"status": "ok"}` |
 | `/api/summary` | Counts per kind, CVEs tracked, total model cost, the last scan run and its six stages |
 | `/api/runs?component=&limit=` | Runs, newest first, each with its sessions and cost |
+| `/api/runs/{id}` | One run: its sessions, stages, documents saved while it ran, and its run report as HTML |
+| `/api/cves` | The CVE register's rows, without the SPL and CQL columns |
 | `/api/deliverables?kind=&status=&q=&limit=` | One entry per ID: kind, title, path under `out/`, first seen, status |
 | `/api/deliverables/{id}/html` | The same entry plus the document as HTML, made with mammoth |
 | `/api/deliverables/{id}/file` | The original `.docx`, as a download |
 
-An ID must look like one (letters, digits and hyphens), and the file must sit inside
-`out/`, or the answer is 404. A bold paragraph on its own outside a table becomes a
+An ID must look like one (letters, digits and hyphens; a run ID is the component and its
+start time), and the file must sit inside `out/`, or the answer is 404. A bold paragraph on its own outside a table becomes a
 heading in the HTML, because the pipeline writes its headings that way.
 
 ### Where the numbers come from
@@ -112,6 +126,12 @@ heading in the HTML, because the pipeline writes its headings that way.
   patterns in `scripts/update_state.py`. The newest copy of an ID wins.
 - **Broken or not:** `shell_reason` from `scripts/pending_deliverables.py`, on the kinds
   the pipeline checks (bulletins, hunts, awareness posts). Other kinds show `unchecked`.
+- **Documents saved during a run:** files of that component whose modification time falls
+  between the run's start and five minutes after its end. A later rebuild saves files
+  again, so an older run can show fewer than it once wrote; the page says so.
+- **CVEs:** the newest `CVE_Register_*.xlsx`, sheet `CVE Register`, read only. "Exploited"
+  is read from the register's free text exploitation status. A bulletin or hunt cell is
+  linked only when it holds a real ID, because a few older rows are shifted a column.
 - **Stages:** the run's log in `logs/`, its `reports/scan-<date>.md` and the dedup log.
   When a source is missing or silent the stage says `unknown`, never a guess.
 

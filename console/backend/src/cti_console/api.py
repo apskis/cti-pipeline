@@ -13,6 +13,8 @@ from .config import Settings
 from .deliverables import Deliverable, scan
 from .pipeline import load_rules
 from .reader import render_docx
+from .register import latest_register, read_register
+from .rundetail import find_run, run_detail
 from .summary import build_summary, collect_runs
 
 # The Vite dev server. Nothing else may call the API from a browser.
@@ -20,6 +22,8 @@ FRONTEND_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
 MAX_LIMIT = 1000
 # Pipeline IDs (CTI26-137, TH26-54, CVE-VM-2026-11-10) and console IDs (WK-2026-46).
 ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9-]{1,39}$"
+# Run IDs are made here: component then start time, bulletin-scan-20261110T145714.
+RUN_PATTERN = r"^[a-z][a-z-]{1,40}-\d{8}T\d{6}$"
 DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 # The API only ever returns data and files. Nothing it sends should run or be framed.
 API_CSP = "default-src 'none'; frame-ancestors 'none'"
@@ -60,6 +64,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     ) -> list[dict[str, object]]:
         found = [r for r in collect_runs(settings) if component in (None, r.component)]
         return [r.to_dict() for r in reversed(found[-limit:])]
+
+    @app.get("/api/runs/{ident}")
+    def run(ident: str = PathParam(pattern=RUN_PATTERN)) -> dict[str, object]:
+        found = find_run(settings, ident)
+        if found is None:
+            raise HTTPException(404, f"No run {ident}")
+        return run_detail(settings, *found)
+
+    @app.get("/api/cves")
+    def cves() -> dict[str, object]:
+        register = latest_register(settings.out_dir)
+        rows = read_register(register) if register else None
+        return {
+            "register": register.relative_to(settings.out_dir).as_posix() if register else None,
+            "cves": [c.to_dict() for c in rows or []],
+        }
 
     @app.get("/api/deliverables")
     def deliverables_list(

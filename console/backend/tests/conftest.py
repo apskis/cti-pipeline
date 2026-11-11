@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 import docx
@@ -85,6 +85,10 @@ def _documents(out: Path) -> None:
     stamp = datetime(2026, 11, 9, 12, 0).timestamp()
     for path in (brief, weekly):
         os.utime(path, (stamp, stamp))
+    # saved by the builder during the run day's scan run (19:41 to 20:06 UTC)
+    built = datetime(2026, 11, 10, 20, 4, tzinfo=UTC).timestamp()
+    path = out / "bulletin-scan/bulletins/2026/CTI26-02-Broken_Bulletin.docx"
+    os.utime(path, (built, built))
 
 
 def _state_files(out: Path) -> None:
@@ -106,7 +110,9 @@ def _state_files(out: Path) -> None:
     reports = out / "bulletin-scan/reports"
     reports.mkdir(parents=True)
     (reports / f"scan-{DAY}.md").write_text(
-        "- Scan mode: SEARCH MODE. Web searches run: 7\n", encoding="utf-8"
+        "# Scan\n\n- Scan mode: SEARCH MODE. Web searches run: 7\n\n"
+        "| Item | Tier |\n|---|---|\n| Old | VULN |\n\n<script>alert(1)</script>\n",
+        encoding="utf-8",
     )
 
 
@@ -115,10 +121,45 @@ def _register(out: Path) -> None:
     sheet = book.active
     sheet.title = "CVE Register"
     sheet.append(["CVE Register 2026"])
-    sheet.append(["CVE / Advisory ID", "Vendor"])
-    sheet.append(["CVE-2026-0001", "Acme"])
-    sheet.append(["CVE / Advisory ID", "Vendor"])  # the real register repeats its header
-    sheet.append(["CVE-2026-0002", "Acme"])
+    header = [
+        "CVE / Advisory ID",
+        "Vendor",
+        "CVSS",
+        "KEV Added",
+        "Exploitation Status",
+        "Hunt ID",
+        "Bulletin ID",
+        "Date Added",
+        "Validation SPL",
+    ]
+    sheet.append(header)
+    sheet.append(
+        [
+            "CVE-2026-0001",
+            "Acme",
+            "9.8 CRITICAL",
+            "2026-11-09",
+            "ITW (CISA KEV)",
+            "TH26-01",
+            "CTI26-01",
+            "2026-11-10",
+            "index=x",
+        ]
+    )
+    sheet.append(header)  # the real register repeats its header
+    sheet.append(
+        [
+            "CVE-2026-0002",
+            "Acme",
+            "n/a",
+            "n/a",
+            "No known ITW",
+            "JUDGEMENT High (shifted row)",
+            "none",
+            "2026-10-10",
+            "index=y",
+        ]
+    )
     path = out / "bulletin-scan/registers/CVE_Register_2026.xlsx"
     path.parent.mkdir(parents=True, exist_ok=True)
     book.save(path)
