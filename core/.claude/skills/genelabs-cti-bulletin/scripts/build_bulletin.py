@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """
 Build an GeneLabs-branded CTI bulletin .docx from a JSON content spec, using the
-bundled template (assets/bulletin_template.docx) as the branding anchor.
+bundled template (assets/bulletin_template.docx) as the branding anchor when it
+exists.
 
-The template carries the GeneLabs "Enterprise Information Security / Cyber
-Threat Intelligence" banner in its document header, so cloning it preserves the
-house look. This script writes the body in the GeneLabs corporate identity
-(GeneLabs orange accents, Abbey body text, corporate grey meta), renders inline
+The template carries the GeneLabs Cyber Threat Intelligence banner in its
+document header, so cloning it preserves the house look. When the template is
+not shipped, the builder starts from a blank document and puts the GeneLabs
+header image (assets/genelabs_cti_header.png) in the page header itself. This
+script writes the body in the GeneLabs brand palette (Emerald accents, Forest
+small headings, Charcoal body text, corporate grey meta), renders inline
 citations as superscript, hyperlinks the Sources list, and rebuilds the page
-footer with the genelabs wordmark, TLP marking, DOC # field, live page numbers
+footer with the GeneLabs logo, TLP marking, DOC # field, live page numbers
 and the copyright line.
 
 Section flow follows the published house order (see CTI-26-07):
@@ -20,8 +23,8 @@ Section flow follows the published house order (see CTI-26-07):
 Usage:
     python build_bulletin.py content.json out.docx [path/to/bulletin_template.docx]
 
-The wordmark asset (assets/genelabs_wordmark_grey.png) is resolved relative to
-this script; pass a fourth argument to override it.
+The footer logo (assets/genelabs_logo.png) is resolved relative to this
+script; pass a fourth argument to override it.
 
 content.json schema (all keys optional except report_id, date, category, title,
 severity, relevance, what_happened, sources):
@@ -71,15 +74,16 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-# ---- GeneLabs corporate palette -------------------------------------------
-ORANGE      = "FF7109"   # GeneLabs orange, sampled from the corporate deck rule
-ORANGE_DEEP = "E05F00"   # deepened orange for small text
-ABBEY       = "444648"   # GeneLabs Abbey, body and headline text
-GREY        = "676765"   # corporate grey, wordmark and footer meta
-RULE        = "D9D9D9"   # light grey: Word keeps it light on a dark canvas (verified)
-LABEL_FILL  = "F4F4F4"
-CALLOUT_FILL= "FFF4E8"
-LINK_BLUE   = "1565C0"
+# ---- GeneLabs corporate palette (brand kit v1.0) ----------------------------
+# Legacy names are kept so importers (priority brief, awareness) keep working.
+ORANGE      = "167D61"   # GeneLabs Emerald: rules and accents
+ORANGE_DEEP = "103B32"   # GeneLabs Forest: small heading text
+ABBEY       = "202C29"   # GeneLabs Charcoal: body and headline text
+GREY        = "676765"   # corporate grey, footer meta
+RULE        = "A2BFAE"   # GeneLabs Sage: light rules (dark canvas check was done on the old grey, not Sage)
+LABEL_FILL  = "EAF3EE"   # GeneLabs Mist
+CALLOUT_FILL= "EAF3EE"   # GeneLabs Mist
+LINK_BLUE   = "167D61"   # hyperlinks render in Emerald
 FONT        = "Arial"
 
 # Published bulletin category legend (unchanged)
@@ -708,24 +712,62 @@ def set_base_style(doc):
         rf.set(qn(a), FONT)
 
 
-DEFAULT_WORDMARK = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                "..", "assets", "genelabs_wordmark_grey.png")
+_ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets")
+DEFAULT_WORDMARK = os.path.join(_ASSETS, "genelabs_logo.png")
+DEFAULT_HEADER = os.path.join(_ASSETS, "genelabs_cti_header.png")
+HEADER_ASPECT = 230.0 / 1800.0   # height / width of the header image
+HEADER_MAX_WIDTH = Inches(7.0)
 
 
-def build(spec, template_path, out_path, wordmark_path=None):
+def add_header_image(doc, header_path=None):
+    """Put the GeneLabs CTI header image in the page header of every section.
+
+    About 7.0 in wide, or the text width when that is narrower, aspect kept.
+    The top margin grows only when the image would not otherwise fit.
+    Returns False, and changes nothing, when the image is missing.
+    """
+    header_path = header_path or DEFAULT_HEADER
+    if not os.path.exists(header_path):
+        return False
+    for section in doc.sections:
+        text_width = section.page_width - section.left_margin - section.right_margin
+        width = min(int(text_width), int(HEADER_MAX_WIDTH))
+        header = section.header
+        header.is_linked_to_previous = False
+        for child in list(header._element):
+            if child.tag != qn('w:sdt'):
+                header._element.remove(child)
+        p = header.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.paragraph_format.space_after = Pt(0)
+        p.add_run().add_picture(header_path, width=width)
+        if section.header_distance > Inches(0.4):
+            section.header_distance = Inches(0.4)
+        needed = section.header_distance + int(width * HEADER_ASPECT) + Inches(0.35)
+        if section.top_margin < needed:
+            section.top_margin = needed
+    return True
+
+
+def build(spec, template_path, out_path, wordmark_path=None, header_path=None):
     wordmark_path = wordmark_path or DEFAULT_WORDMARK
     abbrevs = spec.get("abbreviations") or []
     _GLOSSARY["terms"] = sorted(
         [(a[0] if isinstance(a, (list, tuple)) else a.get("term", "")) for a in abbrevs],
         key=len, reverse=True)
     _GLOSSARY["linked"] = set()
-    # The branded template is not shipped in the sanitized build; an unbranded
-    # document still lets the pipeline deliver the content for review.
+    # The branded template is not shipped in the sanitized build. Without it the
+    # builder starts from a blank document and adds the GeneLabs header image
+    # itself; a template, when present, carries its own header and is kept as is.
     if os.path.exists(template_path):
         doc = Document(template_path)
     else:
-        print(f"template not found ({template_path}); building unbranded", file=sys.stderr)
         doc = Document()
+        if add_header_image(doc, header_path):
+            print(f"template not found ({template_path}); using the GeneLabs header image",
+                  file=sys.stderr)
+        else:
+            print(f"template not found ({template_path}); building unbranded", file=sys.stderr)
     set_base_style(doc)
     add_meta_line(doc, spec["report_id"], spec["date"])
     add_category_tag(doc, spec["category"])

@@ -137,7 +137,7 @@ present, or if `recommended_actions` is missing or the wrong shape.
 
 Then it post-processes two house deviations for this series:
 
-1. **The footer TLP value renders in house black `#444648`, regular weight, no italic** — not the
+1. **The footer TLP value renders in house black (GeneLabs Charcoal `#202C29`), regular weight, no italic** — not the
    orange italic severity colour. April, 2026-08-26: the orange read as an alert on a document whose
    whole purpose is to be calm and routine.
 2. **The footer label reads "Employee Security Awareness"**, not "CTI Intelligence Bulletin".

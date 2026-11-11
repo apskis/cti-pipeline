@@ -60,7 +60,9 @@ already present, including its `Published` and `Unpublished` subfolders.
    ```
 
    In a Cowork session, resolve the template path relative to this skill folder.
-   The wordmark asset is resolved automatically from `assets/`.
+   The footer logo (`assets/genelabs_logo.png`) and, when the template is
+   missing, the header image (`assets/genelabs_cti_header.png`) are resolved
+   automatically from `assets/`.
 4. Deliver the resulting `.docx` to the user (SendUserFile), named per the
    filename format above.
 
@@ -148,7 +150,9 @@ Cheap checks that catch the failures that actually happen:
 - Fonts resolve to Arial only, and the colour set matches
   `assets/example_branded_bulletin.docx` apart from the severity chip, which
   legitimately differs by level.
-- The footer carries the wordmark image, the TLP marking, a `DOC #` field and
+- The page header carries the GeneLabs CTI header image (from the template, or
+  added by the builder when no template is shipped).
+- The footer carries the GeneLabs logo, the TLP marking, a `DOC #` field and
   `Page X of Y`.
 - The section order matches the flow below.
 
@@ -257,27 +261,29 @@ Do not override these in a spec; they are the house identity.
 
 | Element | Value |
 | --- | --- |
-| Accent, section headings, rules | GeneLabs orange `#FF7109` (`#E05F00` for small heading text) |
-| Body and headline text | Abbey `#444648` |
-| Meta text, wordmark, sources | Corporate grey `#676765` |
-| Relevance callout | Fill `#FFF4E8` with a solid orange left bar |
-| Table label column | Fill `#F4F4F4`, `#D9D9D9` borders at 0.75pt |
+| Accent, section rules, bullets | GeneLabs Emerald `#167D61` |
+| Small heading text | GeneLabs Forest `#103B32` |
+| Body and headline text | GeneLabs Charcoal `#202C29` |
+| Meta text, sources | Corporate grey `#676765` |
+| Relevance callout | Fill Mist `#EAF3EE` with a solid Emerald left bar |
+| Table label column | Fill Mist `#EAF3EE`, Sage `#A2BFAE` borders at 0.75pt |
 | Typeface | Arial throughout (GeneLabs office standard; avoids font substitution on recipient machines) |
 
-Page furniture, rebuilt in the footer on every page: the genelabs wordmark in
-corporate grey (`assets/genelabs_wordmark_grey.png`), the TLP marking, the
-copyright line, a `DOC #` field carrying the report ID, and live `Page X of Y`
-fields, all beneath an orange rule.
+Page furniture: the GeneLabs CTI header image (`assets/genelabs_cti_header.png`,
+about 7 in wide) in the page header, and, rebuilt in the footer on every page,
+the GeneLabs logo (`assets/genelabs_logo.png`), the TLP marking, the copyright
+line, a `DOC #` field carrying the report ID, and live `Page X of Y` fields, all
+beneath an Emerald rule.
 
 Body layout: right-aligned report ID and date, category tag, title, small caps
 audience line over a rule, relevance callout, then letterspaced section headings
-underlined in orange with orange square bullets beneath them. Source links use
-`#1565C0`.
+underlined in Emerald with Emerald square bullets beneath them. Source links use
+Emerald `#167D61`.
 
-Rules and borders are light grey `#D9D9D9` at 0.75pt; section underlines are
-orange at 1.5pt and the callout bar is 3pt. Verified against Word in the browser
-in dark mode: Word renders the page dark but leaves an explicit light border
-colour light, so `#D9D9D9` stays visible against the dark canvas. A mid grey such
+Rules and borders are Sage `#A2BFAE` at 0.75pt; section underlines are
+Emerald at 1.5pt and the callout bar is 3pt. The old light grey `#D9D9D9` was
+verified against Word in the browser in dark mode: Word renders the page dark but
+leaves an explicit light border colour light. Sage is lighter than the page in Word dark mode, but it has not been checked there the way the old grey was. If it fades, add weight rather than darkness. A mid grey such
 as `#9C9C9C` sits close to the dark page colour and disappears — do NOT darken
 these borders to "improve" dark mode, it does the opposite. Weight, not
 darkness, is the lever if they need to stand out more.
@@ -304,7 +310,8 @@ of the corporate palette pass above.
 
 ## Reference files
 - `assets/bulletin_template.docx` — the empty branded template (clone this).
-- `assets/genelabs_wordmark_grey.png` — footer wordmark, resolved automatically.
+- `assets/genelabs_logo.png`: footer logo, resolved automatically.
+- `assets/genelabs_cti_header.png`: page header image, used when the template is absent.
 - `assets/example_branded_bulletin.docx` — CTI26-14, built by this script; the
   reference for what correct output looks like, including the Questions to Ask
   close.

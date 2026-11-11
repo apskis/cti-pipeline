@@ -29,7 +29,7 @@ from genelabs_style import (ORANGE, ORANGE_DEEP, ABBEY, GREY, RULE, LABEL_FILL,
                             shade_cell, table_borders, border, set_grid)
 
 RED, AMBER, GREEN = "C62828", "EF6C00", "2E7D32"
-LINK = "1565C0"
+LINK = "167D61"   # hyperlinks render in GeneLabs Emerald
 
 # Where the advisories live. Links are SHAREPOINT, not file:/// - a local profile path
 # only resolves on April's own machine, and this document gets forwarded. Derived from

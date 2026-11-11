@@ -364,8 +364,9 @@ Then **render page one to PNG and look at it.**
 
 ## Branding
 
-GeneLabs orange `#FF7109` (`#E05F00` small headings), Abbey `#444648` body, corporate grey
-`#676765` meta, `#FFF4E8` callouts, `#F4F4F4` label columns, `#D9D9D9` borders at 0.75pt,
+GeneLabs Emerald `#167D61` accents (Forest `#103B32` small headings), Charcoal `#202C29` body,
+corporate grey `#676765` meta, Mist `#EAF3EE` callouts and label columns, Sage `#A2BFAE`
+borders at 0.75pt, the GeneLabs CTI header image in the page header, the GeneLabs logo in the footer,
 Arial throughout. Do not darken the rules for dark mode — Word keeps an explicit light
 border light, and a mid grey disappears.
 

@@ -449,22 +449,24 @@ Do not override these in a spec.
 
 | Element | Value |
 | --- | --- |
-| Accent, section headings, rules, bullets | GeneLabs orange `#FF7109` (`#E05F00` for small heading text and table headers) |
-| Body and headline text | Abbey `#444648` |
-| Meta text, wordmark, captions | Corporate grey `#676765` |
-| Callout (handoff note) | Fill `#FFF4E8` |
-| Tables | Label fill `#F4F4F4`, `#D9D9D9` borders at 0.75pt, warm `#FFF8F2` row stripe |
-| Links | `#1565C0` |
+| Accent, rules, bullets | GeneLabs Emerald `#167D61` |
+| Section headings, small heading text, table headers | GeneLabs Forest `#103B32` (table header text in white) |
+| Body and headline text | GeneLabs Charcoal `#202C29` |
+| Meta text, captions | Corporate grey `#676765` |
+| Callout (handoff note) | Fill Mist `#EAF3EE` |
+| Tables | Label fill Mist `#EAF3EE`, Sage `#A2BFAE` borders at 0.75pt, pale green `#F4F9F6` row stripe |
+| Links | Emerald `#167D61` |
 | Typeface | Arial for prose, Consolas for query code blocks |
 
-Section headings render letterspaced in caps with a 1.5pt orange underline.
-Borders stay light grey `#D9D9D9`: Word in the browser renders the page dark but
-leaves an explicit light border colour light, so it holds up on the dark canvas.
+Section headings render letterspaced in caps with a 1.5pt Emerald underline.
+Borders are Sage `#A2BFAE`: Word in the browser renders the page dark but leaves
+an explicit light border colour light. Sage is lighter than the page in Word dark mode, but it has not been checked there the way the old grey was. If it fades, add weight rather than darkness.
 Do NOT darken these to a mid grey — that sinks them into the page. Weight is the
 lever if they need to stand out more. Every page carries the footer furniture:
-genelabs wordmark in corporate grey, the TLP marking, `CTI Threat Hunt Package`,
-the copyright line (year from `date`), a `DOC #` field carrying `hunt_id`, and
-live `Page X of Y` fields, beneath an orange rule.
+the GeneLabs logo, the TLP marking, `CTI Threat Hunt Package`, the copyright
+line (year from `date`), a `DOC #` field carrying `hunt_id`, and live
+`Page X of Y` fields, beneath an Emerald rule. When no template is shipped the
+builder also puts the GeneLabs CTI header image in the page header.
 
 Optional spec key: `tlp` (defaults to `AMBER+STRICT`).
 
@@ -525,7 +527,8 @@ removed and must not be supplied. `meta.start_date`, `meta.end_date` and
 
 ## Reference files
 - `assets/hunt_template.docx` — branded template (clone this).
-- `assets/genelabs_wordmark_grey.png` — footer wordmark, resolved automatically.
+- `assets/genelabs_logo.png`: footer logo, resolved automatically.
+- `assets/genelabs_cti_header.png`: page header image, used when the template is absent.
 - `references/crowdstrike_cql.md` — CQL (LogScale) syntax, events and fields.
 - `references/splunk_datamodels.md` — data model to tstats cheat-sheet. The
   MEASURED DATA MODEL FACTS table above overrides it where they disagree.

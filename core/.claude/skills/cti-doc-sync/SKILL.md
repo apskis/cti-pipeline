@@ -123,10 +123,10 @@ paragraph created from the style name picks up a stray automatic number.
 ## Step 3b: apply the house branding
 
 Every document you edit must leave in the GeneLabs CTI house style, which is
-shared with the bulletin and hunt skills: Enterprise Information Security banner
-sitting clear of the first body element, GeneLabs orange `FF7109` headings and
-rules, Abbey `444648` body, corporate grey `676765` meta text, Arial throughout,
-and a footer carrying the wordmark, the marking text, the copyright line, DOC #
+shared with the bulletin and hunt skills: the GeneLabs CTI header image
+sitting clear of the first body element, GeneLabs Forest `103B32` headings and
+Emerald `167D61` rules, Charcoal `202C29` body, corporate grey `676765` meta text,
+Arial throughout, and a footer carrying the GeneLabs logo, the marking text, the copyright line, DOC #
 and live page fields.
 
 Internal program documentation carries NO TLP marking. TLP is a sharing

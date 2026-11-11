@@ -176,9 +176,9 @@ python .cursor/skills/genelabs-cti-documentation/scripts/restyle_cti_doc.py /tmp
 python scripts/render_pdf.py /tmp/probe_styled.docx
 ```
 
-Open the PDF and check four things: the Enterprise Information Security banner
-sits clear of the first body element, headings are GeneLabs orange, the footer
-carries the wordmark with DOC # and page fields, and there is **no TLP marking**.
+Open the PDF and check four things: the GeneLabs CTI header image
+sits clear of the first body element, headings are GeneLabs Forest, the footer
+carries the GeneLabs logo with DOC # and page fields, and there is **no TLP marking**.
 Internal program documentation carries no TLP. If one appears, the restyler is
 not the patched copy from this repository.
 

@@ -24,7 +24,7 @@ WHAT IT KEEPS FROM THE ANALYTICAL FORMAT, DELIBERATELY
     the format got friendlier — this is still the document with no access control.
   * The three universal instructions: report it, reporting is never a waste of time,
     nobody is in trouble for reporting. `verify_awareness.py` still has to pass.
-  * The wordmark, the orange rule, the DOC # and Page X of Y.
+  * The GeneLabs header image, the logo, the Emerald rule, the DOC # and Page X of Y.
 
 WORD BUDGET. Target 350-450 words of body copy. The long-form post for the same topic
 ran 997. If a draft is over 500, cut a section rather than tightening sentences: the
@@ -42,14 +42,61 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-ORANGE      = "FF7109"
-ORANGE_DEEP = "E05F00"
-ABBEY       = "444648"
+# GeneLabs brand kit v1.0 (legacy names kept)
+ORANGE      = "167D61"   # Emerald: rules and accents
+ORANGE_DEEP = "103B32"   # Forest: small heading text
+ABBEY       = "202C29"   # Charcoal: body text
 GREY        = "676765"
-TINT        = "FFF4E8"
-RULE        = "D9D9D9"
+TINT        = "EAF3EE"   # Mist
+RULE        = "A2BFAE"   # Sage
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+# ------------------------------------------------------------------ brand assets
+HEADER_FILE, LOGO_FILE = "genelabs_cti_header.png", "genelabs_logo.png"
+HEADER_ASPECT = 230.0 / 1800.0   # height / width of the header image
+
+
+def _asset(skill_dir, name, legacy_glob=None):
+    """Resolve a brand asset from the bulletin skill's assets/, then from ours."""
+    for base in (os.path.join(skill_dir, "assets"), os.path.join(HERE, "assets")):
+        if os.path.exists(os.path.join(base, name)):
+            return os.path.join(base, name)
+    if legacy_glob:
+        for base in (os.path.join(skill_dir, "assets"), os.path.join(HERE, "assets")):
+            hits = glob.glob(os.path.join(base, legacy_glob))
+            if hits:
+                return hits[0]
+    return None
+
+
+def _header_image(doc, skill_dir):
+    """GeneLabs CTI header image in the page header of every section.
+
+    About 7.0 in wide, or the text width when narrower, aspect kept. The top
+    margin grows only when the image would not otherwise fit.
+    """
+    path = _asset(skill_dir, HEADER_FILE)
+    if not path:
+        return False
+    for sec in doc.sections:
+        text_width = sec.page_width - sec.left_margin - sec.right_margin
+        width = min(int(text_width), int(Inches(7.0)))
+        hdr = sec.header
+        hdr.is_linked_to_previous = False
+        for child in list(hdr._element):
+            if child.tag != qn("w:sdt"):
+                hdr._element.remove(child)
+        p = hdr.add_paragraph()
+        p.paragraph_format.space_after = Pt(0)
+        p.add_run().add_picture(path, width=width)
+        if sec.header_distance > Inches(0.4):
+            sec.header_distance = Inches(0.4)
+        needed = sec.header_distance + int(width * HEADER_ASPECT) + Inches(0.35)
+        if sec.top_margin < needed:
+            sec.top_margin = needed
+    return True
 
 
 # ------------------------------------------------------------------ primitives
@@ -135,12 +182,10 @@ def _footer(doc, skill_dir, report_id, tlp):
     top.set(qn("w:space"), "4"); top.set(qn("w:color"), ORANGE)
     b.append(top); pPr.append(b)
 
-    wm = glob.glob(os.path.join(skill_dir, "assets", "*wordmark*.png"))
-    if not wm:
-        wm = glob.glob(os.path.join(HERE, "assets", "*wordmark*.png"))
+    wm = _asset(skill_dir, LOGO_FILE, "*wordmark*.png")
     if wm:
         _run(line, "", 8)
-        line.runs[-1].add_picture(wm[0], width=Inches(0.62))
+        line.runs[-1].add_picture(wm, width=Inches(0.62))
         _run(line, "   ", 8)
     # Label and value are SEPARATE runs, matching the analytical builders. The gate
     # locates the value run by its text in order to assert its colour, and a combined
@@ -209,6 +254,7 @@ def build(spec, out_docx, skill_dir, art_dir):
     for s in doc.sections:
         s.top_margin = Inches(0.7); s.bottom_margin = Inches(0.7)
         s.left_margin = Inches(0.9); s.right_margin = Inches(0.9)
+    _header_image(doc, skill_dir)
 
     # Kicker + headline. No category tag, no audience line, no severity chip: this
     # reader does not need the taxonomy and every line of it delays the point.

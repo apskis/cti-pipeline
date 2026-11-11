@@ -183,9 +183,10 @@ distribution. The test is whether every line is something the receiving team act
 
 ## Branding
 
-GeneLabs orange `#FF7109` / `#E05F00` for section rules and headings, Abbey `#444648` body,
-corporate grey `#676765` meta, `#F4F4F4` label cells, `#D9D9D9` borders, Arial throughout. A
+GeneLabs Emerald `#167D61` for section rules and Forest `#103B32` for headings, Charcoal
+`#202C29` body, corporate grey `#676765` meta, Mist `#EAF3EE` label cells, Sage `#A2BFAE`
+borders, Arial throughout. The GeneLabs CTI header image sits in the page header. A
 `observed` result renders in green `#2E7D32`; a blocked detection's gap reference in red
-`#C62828`. Footer carries the wordmark, TLP with the value as a separate run, the marking
-`CTI Detection Hand-off`, `DOC #` and live `Page X of Y` under an orange rule.
+`#C62828`. Footer carries the GeneLabs logo, TLP with the value as a separate run, the marking
+`CTI Detection Hand-off`, `DOC #` and live `Page X of Y` under an Emerald rule.
 

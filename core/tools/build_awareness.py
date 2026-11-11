@@ -17,7 +17,7 @@ Usage:
 """
 import sys, os, importlib.util
 
-ABBEY = "444648"   # GeneLabs Abbey — the house black used for body text
+ABBEY = "202C29"   # GeneLabs Charcoal: the house black used for body text
 
 
 def _load_bulletin_builder(skill_dir):

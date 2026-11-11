@@ -159,33 +159,34 @@ hunt skills.
 
 | Element | Value |
 | --- | --- |
-| Accent, section headings, rules | GeneLabs orange `#FF7109` (`#E05F00` for small heading text) |
-| Body and headline text | Abbey `#444648` |
-| Meta text, wordmark, footer | Corporate grey `#676765` |
-| Table header fill, callouts | `#FFF4E8`; label columns `#F4F4F4` |
-| Rules and table borders | `#D9D9D9` at 0.75pt |
+| Accent, rules, bullets | GeneLabs Emerald `#167D61` |
+| Section headings, small heading text | GeneLabs Forest `#103B32` |
+| Body and headline text | GeneLabs Charcoal `#202C29` |
+| Meta text, footer | Corporate grey `#676765` |
+| Table header fill, callouts | Mist `#EAF3EE`; label columns Mist `#EAF3EE` |
+| Rules and table borders | Sage `#A2BFAE` at 0.75pt |
 | Typeface | Arial throughout |
 
-Heading treatment: Heading 1 in letterspaced orange caps over a 1.5pt orange
-rule; Heading 2 in deepened orange; Heading 3 in Abbey bold. Bullets carry an
-orange glyph. Page furniture: the Enterprise Information Security banner in the
-header, and a footer beneath an orange rule holding the grey wordmark, the TLP
+Heading treatment: Heading 1 in letterspaced Forest caps over a 1.5pt Emerald
+rule; Heading 2 in Forest; Heading 3 in Charcoal bold. Bullets carry an
+Emerald glyph. Page furniture: the GeneLabs CTI header image in the page header,
+and a footer beneath an Emerald rule holding the GeneLabs logo, the TLP
 marking, the marking text, the copyright line, `DOC #` and live `Page X of Y`
 fields.
 
 Word shows page number fields as `1` until refreshed: Ctrl+A then F9. LibreOffice
 resolves them on open.
 
-Do NOT darken the `#D9D9D9` rules to "improve" dark mode. Word keeps an explicit
-light border light on a dark canvas, so they stay visible; a mid grey disappears
-into the dark page. Weight, not darkness, is the lever.
+Do NOT darken the Sage `#A2BFAE` rules to "improve" dark mode. Word keeps an
+explicit light border light on a dark canvas; a mid grey disappears into the dark
+page. Sage is lighter than the page in Word dark mode, but it has not been checked there the way the old grey was. If it fades, add weight rather than darkness.
 
 ## Verify before delivering
 
 - Fonts resolve to Arial only.
 - The banner appears once at the top of every page, with no leftover legacy header
   block above or beside it.
-- The footer carries wordmark, TLP marking, `DOC #` and `Page X of Y`.
+- The footer carries the GeneLabs logo, TLP marking, `DOC #` and `Page X of Y`.
 - Every heading level is used for its actual depth; no stray automatic numbers
   appear in front of a heading that should not be numbered. If numbering shows up
   on inserted content, clone an existing paragraph of that style rather than
@@ -200,9 +201,9 @@ into the dark page. Weight, not darkness, is the lever.
 ## Reference files
 - `assets/cti_doc_template.docx` — the branded shell with the house banner. Clone
   it; never rebuild the banner by hand.
-- `assets/cti_banner.jpg` — the banner image, used when restyling a document that
-  already exists.
-- `assets/genelabs_wordmark_grey.png` — footer wordmark, resolved automatically.
+- `assets/genelabs_cti_header.png`: the GeneLabs CTI header image, put in the page
+  header by `add_banner` (about 7 in wide, aspect kept, top margin made to fit).
+- `assets/genelabs_logo.png`: footer logo, resolved automatically.
 - `scripts/genelabs_style.py` — the shared palette, typography and page furniture.
   Import from here so every CTI artifact stays on one system.
 - `scripts/build_cti_doc.py` — new documents from a JSON spec.

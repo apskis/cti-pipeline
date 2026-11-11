@@ -66,7 +66,7 @@ organised like a post.
 Two pages, in this order. Every element is optional except the headline, one image and
 the actions card.
 
-1. **Kicker** — small orange caps, e.g. `SECURITY, IN PLAIN ENGLISH`. Series furniture;
+1. **Kicker** — small Forest caps, e.g. `SECURITY, IN PLAIN ENGLISH`. Series furniture;
    keep it constant so the post is recognisable at a glance.
 2. **Headline** — 22pt, the action or the claim. It must be useful to someone who reads
    nothing else.
@@ -184,15 +184,16 @@ Applied by the builder; do not override.
 
 | Element | Value |
 | --- | --- |
-| Kicker, pull quote, card heading | GeneLabs orange `#FF7109` / `#E05F00` |
-| Headline and body | Abbey `#444648` |
+| Kicker, pull quote, card heading | GeneLabs Forest `#103B32`; Emerald `#167D61` rules and accents |
+| Headline and body | GeneLabs Charcoal `#202C29` |
 | Standfirst, captions, sources | Corporate grey `#676765` |
-| Actions card fill | `#FFF4E8` |
+| Actions card fill | Mist `#EAF3EE` |
 | Typeface | Arial throughout |
 
-Footer: wordmark, `TLP: CLEAR` with the **value in house black, regular weight** (orange
-reads as an alert on a document meant to be calm), the label
-`Employee Security Awareness`, copyright, `DOC #` and live `Page X of Y`, under an orange
+Header: the GeneLabs CTI header image, resolved from the bulletin skill's `assets/`.
+Footer: the GeneLabs logo, `TLP: CLEAR` with the **value in house black, regular weight**
+(orange reads as an alert on a document meant to be calm), the label
+`Employee Security Awareness`, copyright, `DOC #` and live `Page X of Y`, under an Emerald
 rule.
 
 **The TLP label and value are SEPARATE runs.** The gate locates the value run by its text

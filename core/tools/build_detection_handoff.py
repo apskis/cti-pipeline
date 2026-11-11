@@ -44,12 +44,59 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-ORANGE, ORANGE_DEEP = "FF7109", "E05F00"
-ABBEY, GREY = "444648", "676765"
-TINT, LIGHT, RULE = "FFF4E8", "F4F4F4", "D9D9D9"
+# GeneLabs brand kit v1.0 (legacy names kept): Emerald, Forest, Charcoal, Mist, Sage
+ORANGE, ORANGE_DEEP = "167D61", "103B32"
+ABBEY, GREY = "202C29", "676765"
+TINT, LIGHT, RULE = "EAF3EE", "EAF3EE", "A2BFAE"
 GREEN, RED = "2E7D32", "C62828"
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+# ------------------------------------------------------------------ brand assets
+HEADER_FILE, LOGO_FILE = "genelabs_cti_header.png", "genelabs_logo.png"
+HEADER_ASPECT = 230.0 / 1800.0   # height / width of the header image
+
+
+def _asset(skill_dir, name, legacy_glob=None):
+    """Resolve a brand asset from the bulletin skill's assets/, then from ours."""
+    for base in (os.path.join(skill_dir, "assets"), os.path.join(HERE, "assets")):
+        if os.path.exists(os.path.join(base, name)):
+            return os.path.join(base, name)
+    if legacy_glob:
+        for base in (os.path.join(skill_dir, "assets"), os.path.join(HERE, "assets")):
+            hits = glob.glob(os.path.join(base, legacy_glob))
+            if hits:
+                return hits[0]
+    return None
+
+
+def _header_image(doc, skill_dir):
+    """GeneLabs CTI header image in the page header of every section.
+
+    About 7.0 in wide, or the text width when narrower, aspect kept. The top
+    margin grows only when the image would not otherwise fit.
+    """
+    path = _asset(skill_dir, HEADER_FILE)
+    if not path:
+        return False
+    for sec in doc.sections:
+        text_width = sec.page_width - sec.left_margin - sec.right_margin
+        width = min(int(text_width), int(Inches(7.0)))
+        hdr = sec.header
+        hdr.is_linked_to_previous = False
+        for child in list(hdr._element):
+            if child.tag != qn("w:sdt"):
+                hdr._element.remove(child)
+        p = hdr.add_paragraph()
+        p.paragraph_format.space_after = Pt(0)
+        p.add_run().add_picture(path, width=width)
+        if sec.header_distance > Inches(0.4):
+            sec.header_distance = Inches(0.4)
+        needed = sec.header_distance + int(width * HEADER_ASPECT) + Inches(0.35)
+        if sec.top_margin < needed:
+            sec.top_margin = needed
+    return True
 
 
 def _rgb(h):
@@ -141,10 +188,9 @@ def _footer(doc, skill_dir, report_id, tlp, marking="CTI Detection Hand-off"):
     top.set(qn("w:val"), "single"); top.set(qn("w:sz"), "12")
     top.set(qn("w:space"), "4"); top.set(qn("w:color"), ORANGE)
     b.append(top); pPr.append(b)
-    wm = glob.glob(os.path.join(skill_dir, "assets", "*wordmark*.png")) or \
-         glob.glob(os.path.join(HERE, "assets", "*wordmark*.png"))
+    wm = _asset(skill_dir, LOGO_FILE, "*wordmark*.png")
     if wm:
-        _run(line, "", 8); line.runs[-1].add_picture(wm[0], width=Inches(0.62)); _run(line, "   ", 8)
+        _run(line, "", 8); line.runs[-1].add_picture(wm, width=Inches(0.62)); _run(line, "   ", 8)
     _run(line, "TLP: ", 7.5, color=GREY)
     _run(line, tlp, 7.5, color=ABBEY)
     _run(line, f"  |  {marking}  |  © 2026 GeneLabs LLC", 7.5, color=GREY)
@@ -183,6 +229,7 @@ def build(spec, out_docx, skill_dir, figdir=None):
     for s in doc.sections:
         s.top_margin = Inches(0.6); s.bottom_margin = Inches(0.6)
         s.left_margin = Inches(0.85); s.right_margin = Inches(0.85)
+    _header_image(doc, skill_dir)
 
     rid = spec["report_id"]
     if not rid.startswith("CTI-DET-"):
