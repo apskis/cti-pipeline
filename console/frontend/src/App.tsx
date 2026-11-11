@@ -7,12 +7,14 @@ import CvesPage from "./pages/CvesPage";
 import OverviewPage from "./pages/OverviewPage";
 import ReportsPage from "./pages/ReportsPage";
 import RunsPage from "./pages/RunsPage";
+import StakeholdersPage from "./pages/StakeholdersPage";
 
 const TABS = [
   { page: "overview", label: "Overview", href: "#/" },
   { page: "reports", label: "Reports", href: "#/reports" },
   { page: "runs", label: "Runs", href: "#/runs" },
   { page: "cves", label: "CVEs", href: "#/cves" },
+  { page: "stakeholders", label: "Stakeholders", href: "#/stakeholders" },
 ] as const;
 
 const Page = ({ route }: { route: Route }) => {
@@ -23,6 +25,8 @@ const Page = ({ route }: { route: Route }) => {
       return <RunsPage selected={route.id} />;
     case "cves":
       return <CvesPage />;
+    case "stakeholders":
+      return <StakeholdersPage selected={route.id} />;
     default:
       return <OverviewPage />;
   }
@@ -39,16 +43,16 @@ const App = () => {
       <div className="mx-auto max-w-6xl px-4 py-6 md:px-8">
         <header className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
           <h1 className="text-xl font-medium">GeneLabs CTI pipeline</h1>
-          <p className="text-sm text-muted">Local and read only. Nothing here changes the pipeline.</p>
+          <p className="text-sm text-muted">Local only. Nothing here changes the pipeline; only the stakeholder list is saved.</p>
         </header>
-        <nav aria-label="Pages" className="mb-6 flex gap-1 border-b border-line">
+        <nav aria-label="Pages" className="mb-6 flex gap-1 overflow-x-auto [scrollbar-width:none] shadow-[inset_0_-1px_0_var(--color-line)]">
           {TABS.map((tab) => (
             <a
               key={tab.page}
               href={tab.href}
               aria-current={route.page === tab.page ? "page" : undefined}
               className={clsx(
-                "-mb-px border-b-2 px-3 py-2 text-sm",
+                "shrink-0 border-b-2 px-3 py-2 text-sm",
                 route.page === tab.page
                   ? "border-ink font-medium"
                   : "border-transparent text-muted hover:text-ink",

@@ -33,7 +33,9 @@ def word() -> FakeWord:
 
 @pytest.fixture()
 def client(settings: Settings, word: FakeWord) -> TestClient:
-    return TestClient(create_app(settings, converter=word, pdf_ready=True))
+    return TestClient(
+        create_app(settings, converter=word, pdf_ready=True), base_url="http://127.0.0.1"
+    )
 
 
 def test_html_says_a_pdf_can_be_made(client: TestClient) -> None:
@@ -94,7 +96,9 @@ def test_failed_conversion_leaves_no_file(settings: Settings) -> None:
         target.write_bytes(b"half")
         raise PdfError("Word could not convert the report", 502)
 
-    client = TestClient(create_app(settings, converter=broken, pdf_ready=True))
+    client = TestClient(
+        create_app(settings, converter=broken, pdf_ready=True), base_url="http://127.0.0.1"
+    )
     response = client.get("/api/deliverables/CTI26-01/pdf/ready")
     assert response.status_code == 502
     assert "Word could not convert" in response.json()["detail"]
@@ -102,7 +106,9 @@ def test_failed_conversion_leaves_no_file(settings: Settings) -> None:
 
 
 def test_no_word_means_503(settings: Settings, word: FakeWord) -> None:
-    client = TestClient(create_app(settings, converter=word, pdf_ready=False))
+    client = TestClient(
+        create_app(settings, converter=word, pdf_ready=False), base_url="http://127.0.0.1"
+    )
     assert client.get("/api/deliverables/CTI26-01/html").json()["pdf"] is False
     assert client.get("/api/deliverables/CTI26-01/pdf").status_code == 503
     assert word.calls == []

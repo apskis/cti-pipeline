@@ -1,11 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
+  Audience,
   CveRegister,
   Deliverable,
   DeliverableDocument,
   Run,
   RunDetail,
+  Stakeholder,
+  StakeholderInput,
+  StakeholderList,
   Summary,
 } from "./types";
 
@@ -101,4 +105,76 @@ export function useCves() {
     queryFn: () => getJson<CveRegister>("/api/cves"),
     staleTime: STALE_MS,
   });
+}
+
+export function useStakeholders() {
+  return useQuery({
+    queryKey: ["stakeholders"],
+    queryFn: () => getJson<StakeholderList>("/api/stakeholders"),
+    staleTime: STALE_MS,
+  });
+}
+
+export function useAudience() {
+  return useQuery({
+    queryKey: ["audience"],
+    queryFn: () => getJson<Audience>("/api/audience"),
+    staleTime: STALE_MS,
+  });
+}
+
+/** The backend refuses a write without this header, so other sites cannot send one. */
+const WRITE_HEADERS = { "Content-Type": "application/json", "X-CTI-Console": "1" };
+
+async function send<T>(method: "POST" | "PUT" | "DELETE", path: string, body?: unknown): Promise<T> {
+  const response = await fetch(path, {
+    method,
+    headers: WRITE_HEADERS,
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  if (!response.ok) {
+    const detail = await response.json().catch(() => null);
+    throw new ApiError(saveProblem(response.status, detail), response.status);
+  }
+  return (response.status === 204 ? undefined : await response.json()) as T;
+}
+
+/** A plain sentence from FastAPI's error body, which is a string or a list of field errors. */
+function saveProblem(status: number, body: unknown): string {
+  const detail = (body as { detail?: unknown } | null)?.detail;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail) && detail.length > 0) {
+    const first = detail[0] as { loc?: unknown[]; msg?: string };
+    const field = String(first.loc?.at(-1) ?? "a field").replace(/_/g, " ");
+    return `Check ${field}: ${first.msg ?? "not accepted"}.`;
+  }
+  return `The console API answered ${status}.`;
+}
+
+const stakeholderPath = (id: string): string => `/api/stakeholders/${encodeURIComponent(id)}`;
+
+/** Add, change or remove a stakeholder; every view that uses the list is refreshed after. */
+export function useStakeholderWrites() {
+  const client = useQueryClient();
+  const refresh = () => {
+    void client.invalidateQueries({ queryKey: ["stakeholders"] });
+    void client.invalidateQueries({ queryKey: ["audience"] });
+  };
+  return {
+    save: useMutation({
+      mutationFn: ({ id, input }: { id: string | null; input: StakeholderInput }) =>
+        id === null
+          ? send<Stakeholder>("POST", "/api/stakeholders", input)
+          : send<Stakeholder>("PUT", stakeholderPath(id), input),
+      onSuccess: refresh,
+    }),
+    remove: useMutation({
+      mutationFn: (id: string) => send<void>("DELETE", stakeholderPath(id)),
+      onSuccess: refresh,
+    }),
+    startFromExample: useMutation({
+      mutationFn: () => send<unknown>("POST", "/api/stakeholders/start-from-example"),
+      onSuccess: refresh,
+    }),
+  };
 }

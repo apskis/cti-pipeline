@@ -1,0 +1,288 @@
+{
+  "version": 1,
+  "stakeholders": [
+    {
+      "id": "sh-0a1b2c01",
+      "name": "Jordan Reyes",
+      "role": "SOC lead",
+      "team": "SOC",
+      "also_known_as": [
+        "Security Operations",
+        "Security Operations Center",
+        "Detection",
+        "Threat Hunting",
+        "Incident Response"
+      ],
+      "email": "jordan.reyes@genelabs.example",
+      "channel": "teams",
+      "receives": [
+        "bulletin",
+        "hunt",
+        "cve_brief",
+        "weekly"
+      ],
+      "interests": [
+        "detections",
+        "endpoint",
+        "phishing"
+      ],
+      "notes": "Takes every hunt package. Prefers the Teams channel for urgent items."
+    },
+    {
+      "id": "sh-0a1b2c02",
+      "name": "Priya Nair",
+      "role": "Vulnerability management manager",
+      "team": "Vulnerability Management",
+      "also_known_as": [
+        "Patch Management",
+        "VM"
+      ],
+      "email": "priya.nair@genelabs.example",
+      "channel": "email",
+      "receives": [
+        "cve_brief",
+        "bulletin",
+        "weekly"
+      ],
+      "interests": [
+        "patching",
+        "KEV",
+        "scanners"
+      ],
+      "notes": "Owns the CVE Priority Brief queue."
+    },
+    {
+      "id": "sh-0a1b2c03",
+      "name": "Sam Okafor",
+      "role": "Head of IT security",
+      "team": "IT Security",
+      "also_known_as": [
+        "Information Security",
+        "Security",
+        "Security Team",
+        "Security Engineering"
+      ],
+      "email": "sam.okafor@genelabs.example",
+      "channel": "email",
+      "receives": [
+        "bulletin",
+        "weekly",
+        "quarterly"
+      ],
+      "interests": [
+        "policy",
+        "architecture"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sh-0a1b2c04",
+      "name": "Alex Moreau",
+      "role": "IT operations manager",
+      "team": "IT Operations",
+      "also_known_as": [
+        "IT",
+        "Operations",
+        "IT Infrastructure",
+        "Infrastructure",
+        "Network Operations"
+      ],
+      "email": "alex.moreau@genelabs.example",
+      "channel": "email",
+      "receives": [],
+      "interests": [
+        "servers",
+        "network",
+        "backups"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sh-0a1b2c05",
+      "name": "Dana Whitfield",
+      "role": "CISO",
+      "team": "Leadership",
+      "also_known_as": [
+        "IT Leadership",
+        "IT Management",
+        "Executive"
+      ],
+      "email": "dana.whitfield@genelabs.example",
+      "channel": "email",
+      "receives": [
+        "weekly",
+        "quarterly"
+      ],
+      "interests": [
+        "risk",
+        "board reporting"
+      ],
+      "notes": "Weekly and quarterly only, unless a bulletin is critical."
+    },
+    {
+      "id": "sh-0a1b2c06",
+      "name": "Lee Tanaka",
+      "role": "Third party risk analyst",
+      "team": "Third Party Risk",
+      "also_known_as": [
+        "Vendor Risk Management",
+        "Vendor Risk",
+        "Procurement"
+      ],
+      "email": "lee.tanaka@genelabs.example",
+      "channel": "email",
+      "receives": [],
+      "interests": [
+        "suppliers",
+        "breach notices"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sh-0a1b2c07",
+      "name": "Robin Castillo",
+      "role": "IAM engineer",
+      "team": "Identity and Access Management",
+      "also_known_as": [
+        "IAM",
+        "Identity"
+      ],
+      "email": "robin.castillo@genelabs.example",
+      "channel": "teams",
+      "receives": [],
+      "interests": [
+        "Entra",
+        "MFA",
+        "privileged access"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sh-0a1b2c08",
+      "name": "Chris Lindqvist",
+      "role": "Product security lead",
+      "team": "Product Security",
+      "also_known_as": [
+        "Application Security",
+        "AppSec"
+      ],
+      "email": "chris.lindqvist@genelabs.example",
+      "channel": "email",
+      "receives": [
+        "cve_brief"
+      ],
+      "interests": [
+        "sequencing instruments",
+        "firmware",
+        "SBOM"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sh-0a1b2c09",
+      "name": "Morgan Ellis",
+      "role": "Lab operations manager",
+      "team": "Lab Operations",
+      "also_known_as": [
+        "Laboratory Operations",
+        "Lab Ops"
+      ],
+      "email": "morgan.ellis@genelabs.example",
+      "channel": "email",
+      "receives": [
+        "awareness"
+      ],
+      "interests": [
+        "instruments",
+        "OT"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sh-0a1b2c10",
+      "name": "Taylor Brooks",
+      "role": "Security awareness lead",
+      "team": "Communications",
+      "also_known_as": [
+        "Internal Communications"
+      ],
+      "email": "taylor.brooks@genelabs.example",
+      "channel": "email",
+      "receives": [
+        "awareness"
+      ],
+      "interests": [
+        "employee awareness"
+      ],
+      "notes": "Publishes the awareness posts to the intranet."
+    },
+    {
+      "id": "sh-0a1b2c11",
+      "name": "Jamie Osei",
+      "role": "Platform engineering lead",
+      "team": "Platform Engineering",
+      "also_known_as": [
+        "DevOps",
+        "Development Teams",
+        "Cloud Operations",
+        "Cloud Infrastructure",
+        "AI Infrastructure",
+        "DevOps / AI Infra",
+        "Kubernetes"
+      ],
+      "email": "jamie.osei@genelabs.example",
+      "channel": "slack",
+      "receives": [],
+      "interests": [
+        "CI/CD",
+        "containers",
+        "GPU clusters"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sh-0a1b2c12",
+      "name": "Casey Novak",
+      "role": "Service desk manager",
+      "team": "IT Service Desk",
+      "also_known_as": [
+        "Service Desk",
+        "Help Desk"
+      ],
+      "email": "casey.novak@genelabs.example",
+      "channel": "email",
+      "receives": [
+        "awareness"
+      ],
+      "interests": [
+        "user reports",
+        "password resets"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sh-0a1b2c13",
+      "name": "Riley Haddad",
+      "role": "Quality and regulatory lead",
+      "team": "Quality and Regulatory",
+      "also_known_as": [
+        "Regulatory",
+        "Privacy",
+        "Compliance",
+        "Privacy / Compliance",
+        "Data Protection"
+      ],
+      "email": "riley.haddad@genelabs.example",
+      "channel": "email",
+      "receives": [
+        "quarterly"
+      ],
+      "interests": [
+        "FDA",
+        "GDPR",
+        "HIPAA"
+      ],
+      "notes": ""
+    }
+  ]
+}

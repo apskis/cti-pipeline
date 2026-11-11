@@ -1,4 +1,9 @@
-"""HTTP API. GET only: the console reads the pipeline's output and never changes it."""
+"""HTTP API. The pipeline's output is read only; the stakeholder list is the one write.
+
+Writes are guarded three ways: the browser must send a custom header (which forces a
+CORS preflight that only GETs pass, so other sites cannot send it), any Origin must be
+the console's own, and the Host must be this machine (no DNS rebinding).
+"""
 
 from __future__ import annotations
 
@@ -6,11 +11,13 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query, Request, Response
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi import Path as PathParam
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import FileResponse
 
+from .audience import audience_view
 from .config import Settings
 from .deliverables import Deliverable, scan
 from .pdf import Converter, PdfCache, PdfError, WordWorker, word_available
@@ -18,10 +25,14 @@ from .pipeline import load_rules
 from .reader import render_docx
 from .register import latest_register, read_register
 from .rundetail import find_run, run_detail
+from .stakeholders import StakeholderIn, StakeholderStore, StoreError
 from .summary import build_summary, collect_runs
 
 # The Vite dev server. Nothing else may call the API from a browser.
 FRONTEND_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
+LOCAL_HOSTS = ["127.0.0.1", "localhost"]
+WRITE_HEADER = "X-CTI-Console"
+STAKEHOLDER_PATTERN = r"^sh-[a-f0-9]{8}$"
 MAX_LIMIT = 1000
 # Pipeline IDs (CTI26-137, TH26-54, CVE-VM-2026-11-10) and console IDs (WK-2026-46).
 ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9-]{1,39}$"
@@ -32,6 +43,17 @@ DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.docu
 API_CSP = "default-src 'none'; frame-ancestors 'none'"
 # The one exception: the branded PDF is shown inside the console's own page.
 PDF_CSP = "default-src 'none'; frame-ancestors 'self'"
+
+
+def require_console(
+    origin: str | None = Header(None),
+    x_cti_console: str | None = Header(None, alias=WRITE_HEADER),
+) -> None:
+    """Refuse a write unless it plainly comes from the console's own page."""
+    if x_cti_console != "1":
+        raise HTTPException(403, f"Writes need the {WRITE_HEADER} header")
+    if origin is not None and origin not in FRONTEND_ORIGINS:
+        raise HTTPException(403, "Writes are accepted from the console page only")
 
 
 def create_app(
@@ -61,9 +83,18 @@ def create_app(
         openapi_url=None,
         lifespan=lifespan,
     )
+    # Cross origin, only GETs pass the preflight; writes come from the page's own origin.
     app.add_middleware(
         CORSMiddleware, allow_origins=FRONTEND_ORIGINS, allow_methods=["GET"], allow_headers=[]
     )
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=LOCAL_HOSTS)
+    store = StakeholderStore(settings.stakeholders_file, settings.stakeholders_example)
+
+    def store_call(action):  # type: ignore[no-untyped-def]
+        try:
+            return action()
+        except StoreError as exc:
+            raise HTTPException(exc.status, str(exc)) from exc
 
     @app.middleware("http")
     async def no_sniff(request: Request, call_next):  # type: ignore[no-untyped-def]
@@ -178,5 +209,45 @@ def create_app(
             content_disposition_type="attachment" if download else "inline",
             headers={"Content-Security-Policy": PDF_CSP},
         )
+
+    @app.get("/api/stakeholders")
+    def stakeholders() -> dict[str, object]:
+        people = store_call(store.load)
+        return {
+            "exists": store.exists(),
+            "has_example": settings.stakeholders_example.is_file(),
+            "stakeholders": [p.model_dump() for p in people],
+        }
+
+    @app.post("/api/stakeholders", status_code=201, dependencies=[Depends(require_console)])
+    def stakeholder_add(item: StakeholderIn) -> dict[str, object]:
+        return store_call(lambda: store.add(item)).model_dump()
+
+    @app.put("/api/stakeholders/{ident}", dependencies=[Depends(require_console)])
+    def stakeholder_update(
+        item: StakeholderIn, ident: str = PathParam(pattern=STAKEHOLDER_PATTERN)
+    ) -> dict[str, object]:
+        return store_call(lambda: store.update(ident, item)).model_dump()
+
+    @app.delete(
+        "/api/stakeholders/{ident}", status_code=204, dependencies=[Depends(require_console)]
+    )
+    def stakeholder_remove(ident: str = PathParam(pattern=STAKEHOLDER_PATTERN)) -> Response:
+        store_call(lambda: store.remove(ident))
+        return Response(status_code=204)
+
+    @app.post(
+        "/api/stakeholders/start-from-example",
+        status_code=201,
+        dependencies=[Depends(require_console)],
+    )
+    def stakeholders_from_example() -> dict[str, object]:
+        people = store_call(store.start_from_example)
+        return {"stakeholders": [p.model_dump() for p in people]}
+
+    @app.get("/api/audience")
+    def audience() -> dict[str, object]:
+        """Teams each report names, the stakeholders who match, and teams nobody covers."""
+        return audience_view(settings.out_dir, store_call(store.load))
 
     return app

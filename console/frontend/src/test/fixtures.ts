@@ -1,4 +1,5 @@
 import type {
+  Audience,
   Cve,
   CveRegister,
   Deliverable,
@@ -6,6 +7,8 @@ import type {
   Run,
   RunDetail,
   Session,
+  Stakeholder,
+  StakeholderList,
   Summary,
 } from "../api/types";
 
@@ -150,4 +153,47 @@ export const CVES: CveRegister = {
     }),
     cve("CVE-2026-0002", { cvss_score: 5.5 }),
   ],
+};
+
+const person = (id: string, name: string, team: string, extra: Partial<Stakeholder> = {}): Stakeholder => ({
+  id,
+  name,
+  role: "",
+  team,
+  also_known_as: [],
+  email: `${name.split(" ")[0]?.toLowerCase()}@genelabs.example`,
+  channel: "email",
+  receives: [],
+  interests: [],
+  notes: "",
+  ...extra,
+});
+
+export const STAKEHOLDERS: StakeholderList = {
+  exists: true,
+  has_example: true,
+  stakeholders: [
+    person("sh-00000001", "Jordan Reyes", "SOC", {
+      role: "SOC lead",
+      also_known_as: ["Security Operations"],
+      receives: ["hunt"],
+    }),
+    person("sh-00000002", "Priya Nair", "Vulnerability Management", { receives: ["bulletin"] }),
+    person("sh-00000003", "Dana Whitfield", "Leadership", { email: "" }),
+  ],
+};
+
+export const NO_STAKEHOLDERS: StakeholderList = { exists: false, has_example: true, stakeholders: [] };
+
+export const AUDIENCE: Audience = {
+  reports: {
+    "CTI26-137": {
+      spec: "bulletin-scan/state/_work/CTI26-137-spec.json",
+      teams: [
+        { name: "SOC", questions: ["Would Falcon see it?"], stakeholders: ["sh-00000001"] },
+        { name: "Lab Operations", questions: ["Which instruments?"], stakeholders: [] },
+      ],
+    },
+  },
+  unmatched: [{ team: "Lab Operations", reports: ["CTI26-137"] }],
 };

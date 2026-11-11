@@ -1,7 +1,8 @@
 # CTI console
 
-A local, read only view of what the pipeline produced: runs, stages, costs and every
-deliverable. It reads `out/` and `logs/`, never writes to them, and makes no model calls.
+A local view of what the pipeline produced: runs, stages, costs and every deliverable,
+and who each one is for. It reads `out/` and `logs/`, never writes to them, and makes no
+model calls. The one thing it saves is the stakeholder list, on this machine.
 It is not part of the pipeline image (`.dockerignore` leaves `console/` out).
 
 ## Run it
@@ -38,6 +39,9 @@ A backend already running on port 8765 is reused, and keeps the folders it start
    saved and the scan report it left.
 4. **CVEs.** Tick "Exploited only" and "On CISA KEV" to show the CVEs that need action
    now, with the deadlines that have passed marked.
+5. **Stakeholders.** Back on a bulletin, "Intended for" shows the teams it asks
+   questions of and who on the list answers for each. Open one person to see every report
+   that names their team. The panel of teams with nobody on file is the gap list.
 
 ### By hand
 
@@ -137,6 +141,7 @@ purpose: the output is internal threat intelligence and the API has no login.
 | `CTI_CONSOLE_OUT` | `<repo>/out` | Pipeline output to read |
 | `CTI_CONSOLE_LOGS` | `<repo>/logs` | Run logs to read |
 | `CTI_CONSOLE_CACHE` | `<repo>/console/.cache` | Branded PDFs the console made (gitignored) |
+| `CTI_CONSOLE_STAKEHOLDERS` | `<repo>/config/stakeholders.json` | The stakeholder list (gitignored) |
 
 ### Branded PDFs
 
@@ -156,7 +161,34 @@ and offers no PDF download.
 - **Read only.** Word opens each `.docx` read only and never saves it. `out/` is not
   written to.
 
-### Endpoints (GET only)
+### Stakeholders
+
+The list of who the intelligence is for: name, role, team, other names the team goes by,
+email, preferred channel, the report kinds they get all of, interests and notes.
+
+- **Where it lives.** `config/stakeholders.json` (`CTI_CONSOLE_STAKEHOLDERS`). It holds
+  names and email addresses, so it is gitignored. `config/stakeholders.example.json` is a
+  made up GeneLabs list, committed; on a first start the page offers to copy it in.
+- **Who a report is for.** The console reads the build specs the pipeline leaves under
+  `out/`. A bulletin spec names teams in its audience line and on each question for the
+  reader. Each name is matched, ignoring case, punctuation and a trailing "team", to a
+  stakeholder's team or any of their other names; "DevOps / Platform Engineering" matches
+  either part. People who get all reports of a kind are listed too.
+- **Gaps.** Teams the reports name that nobody covers are listed, most named first, each
+  with a link to add someone for that team.
+- **Nothing is sent.** The reader has a button that copies the addresses for a report,
+  ready to paste. The console sends no email or message.
+- **Saving safely.** One save at a time; each writes a new file and swaps it in, and the
+  previous list is kept as `stakeholders.json.bak`. A list that cannot be read is never
+  overwritten.
+- **Only the console may write.** Each write needs an `X-CTI-Console` header. Another
+  site's page cannot send that header without a CORS preflight, which the API refuses.
+  Any `Origin` must be the console's own, and the API answers only to the hosts
+  `127.0.0.1` and `localhost`, which stops DNS rebinding.
+
+### Endpoints
+
+Everything is GET except the stakeholder writes.
 
 | Path | Returns |
 |---|---|
@@ -170,6 +202,10 @@ and offers no PDF download.
 | `/api/deliverables/{id}/file` | The original `.docx`, as a download |
 | `/api/deliverables/{id}/pdf/ready` | Makes the branded PDF if it is not cached yet; the page calls it to show progress |
 | `/api/deliverables/{id}/pdf?download=` | The branded PDF, shown in the page, or as a download with `download=true` |
+| `/api/stakeholders` | The list, and whether it exists yet |
+| `POST /api/stakeholders` | Add one. `PUT` and `DELETE /api/stakeholders/{id}` change or remove one |
+| `POST /api/stakeholders/start-from-example` | Copy the example list in, only when there is no list |
+| `/api/audience` | Teams each report names, the stakeholders matched to each, and the teams nobody covers |
 
 An ID must look like one (letters, digits and hyphens; a run ID is the component and its
 start time), and the file must sit inside `out/`, or the answer is 404. A bold paragraph on its own outside a table becomes a

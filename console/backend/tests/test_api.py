@@ -9,7 +9,7 @@ from cti_console.config import Settings
 
 @pytest.fixture()
 def client(settings: Settings) -> TestClient:
-    return TestClient(create_app(settings, pdf_ready=False))
+    return TestClient(create_app(settings, pdf_ready=False), base_url="http://127.0.0.1")
 
 
 def test_health(client: TestClient) -> None:
