@@ -175,7 +175,7 @@ It is pages two onward and it is the working behind page one.
   meeting; and the one unanswered question per row that would move it. This section argues about
   the FORMAT, not about the findings.
 
-Keep the appendix in the house identity: same banner, same footer, Arial only, shaded header rows,
+Keep the appendix in the house identity: same GeneLabs CTI header, same footer, Arial only, shaded header rows,
 and `cantSplit` plus a repeating header row on every appendix table so no row is orphaned across a
 page break.
 
@@ -190,7 +190,7 @@ python scripts/verify_briefing.py "<output .docx>"
 It checks: every page 792 x 612 pt; page one carries every asset and no appendix text; every row
 has an owner; every row links its advisory and every target resolves against a file on disk; zero
 orphaned relationships and zero external targets that are not SharePoint; no `file:///`; Arial
-only; footer DOC # matching the filename, TLP, page field and wordmark; no flag value broken mid
+only; footer DOC # matching the filename, TLP, page field and GeneLabs logo; no flag value broken mid
 word; and A.1 carrying one labelled provenance entry per row.
 
 Then also confirm by reading, which the gate cannot do: that no row contradicts the advisory it
@@ -205,8 +205,9 @@ Change the document's shape rather than shaving words, in the order that has act
    information and its width is better spent on prose.
 2. Move width from the columns with spare lines (asset, action) into the two prose columns, which
    are what set every row's height.
-3. Reduce the side margins, remembering that a wider body makes the banner TALLER because it
-   scales to body width. Measure the result rather than assuming it helped.
+3. Reduce the side margins. The GeneLabs CTI header scales to the body width but stops at
+   7 inches, so on this landscape page a wider body no longer makes it taller. Measure the
+   result rather than assuming it helped.
 4. Put a per row reference inline rather than on its own line.
 5. Trim only the outlier cells that exceed the line budget, and never a number.
 

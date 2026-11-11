@@ -215,14 +215,14 @@ Write n/a rather than omitting. Prefix updates "UPDATE: " and name the changed f
 
 TIERED PRUNE: AWARENESS 21d · CAMPAIGN 90d · VULN 90d or KEV deadline +30, whichever is LATER · BREACH 180d.
 
-STEP 5B — PEER INCIDENT REGISTER. A row whenever the scan surfaces a peer/supplier/customer BREACH item, EDGAR returns a watchlist filer, or an Intel 471 alert lands in our two industries. Two-value Source Confidence with amber shading (FFF4E8) for Unverified; never leave a cell blank. An attacker CLAIM is Unverified. Carry the confidence value and the STAGE verbatim. Update rows IN PLACE. A non-peer gets NO row.
+STEP 5B — PEER INCIDENT REGISTER. A row whenever the scan surfaces a peer/supplier/customer BREACH item, EDGAR returns a watchlist filer, or an Intel 471 alert lands in our two industries. Two-value Source Confidence with amber shading (FAEEDA) for Unverified; never leave a cell blank. An attacker CLAIM is Unverified. Carry the confidence value and the STAGE verbatim. Update rows IN PLACE. A non-peer gets NO row.
 
 STEP 6 — CVE REGISTER. FIVE tabs: Latest Run · Run History · CVE Register · Summary · Legend.
 6a. CVE REGISTER — permanent, one row per CVE, UPDATE in place, new rows at the top. Columns 1-17: CVE / Advisory ID · Source Confidence · Vendor · Product · Vulnerability Type · CVSS · CVSS Source · KEV Added · KEV Due · Exploitation Status · Ransomware Use · Fixed Version · GeneLabs Relevance · Hunt ID · Bulletin ID · Date Added · Source. Plus 18 Remediation Status, 19 Owner, 20 Observed In Our Logs, 21 Validation SPL, 22 Validation CQL — appended AFTER the mandated 17 so no column letter moves. Populate 20-22 for every CVE.
 *** CALL nvd_cve ON EVERY CVE BEFORE WRITING ITS ROW, and take the KEV deadline from `kev.due_date` rather than inferring one. Where NVD returns not found write "Not yet ingested by NVD as of <run date>". WHERE NVD AND THE ORIGINAL RESEARCH DISAGREE ON IMPACT, RECORD BOTH and scope hunts to the demonstrated impact. ***
 *** THE GeneLabs Relevance CELL IS A JUDGEMENT UNLESS A CONNECTOR MADE IT A MEASUREMENT. Prefix "MEASURED —" or "JUDGEMENT —". A MEASURED ZERO ON AN APPLIANCE IS NOT CLEAN: write "MEASURED, WITH A BLIND SPOT" and name GAP-09. ***
 KEEP CELLS SHORT — Product, CVSS, Fixed Version, GeneLabs Relevance and Observed In Our Logs render verbatim into the one-page brief.
-SOURCE CONFIDENCE: "Verified — in window, multiple sources" or "Unverified — background, second hand" (amber FFF4E8).
+SOURCE CONFIDENCE: "Verified — in window, multiple sources" or "Unverified — background, second hand" (amber FAEEDA).
 THE SOURCE CELL MAY CARRY A TITLE: where a URL has no descriptive slug write `Outlet: Headline (Month D, YYYY) — https://...`, because slug reconstruction rendered a Ubiquiti advisory as "Community: Fc4a3488 7c43 4628...". Where several CVEs share one vendor advisory, point them all at it.
 Never leave a cell blank.
 6b. LATEST RUN — OVERWRITTEN every run. Change · CVE ID · Source Confidence · Product · Vulnerability Type · CVSS · KEV Added · KEV Due · Exploitation Status · GeneLabs Relevance · Hunt ID · Source. NEW red, UPDATED orange, BACKFILL grey.
