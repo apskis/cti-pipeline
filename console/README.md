@@ -89,9 +89,10 @@ marked. Bulletin and hunt IDs link into the reader.
 
 ### Look and theme
 
-The console wears the GeneLabs brand kit: the DNA symbol, divider and wordmark as one
-lockup, with "Cyber Threat Intelligence" beneath, and the kit's palette (Forest, Emerald,
-Sage, Mist, Charcoal) as colour tokens in `src/index.css`.
+The console wears the GeneLabs brand kit (the updated kit, with the official logo): the
+DNA helix from the logo, a divider and the GeneLabs wordmark as one lockup, with "Cyber
+Threat Intelligence" beneath, and the kit's palette (Forest, Emerald, Sage, Mist,
+Charcoal) as colour tokens in `src/index.css`.
 
 - **Light, dark or system.** The switch in the header is remembered in this browser.
   System follows Windows. `public/theme-init.js` applies a saved choice before the page
@@ -103,8 +104,9 @@ Sage, Mist, Charcoal) as colour tokens in `src/index.css`.
   themes; chart colours meet 3:1 against the card, with a hairline between segments.
 - **Status colours** stay red, amber and green in both themes: they carry meaning.
 - **Font.** Aptos where installed (the kit names it but ships no font files), then Segoe UI.
-- **Favicon.** The kit's symbol on Forest. The kit's own favicon draws one strand in
-  Forest on a Forest square, so this one draws that strand in Mist.
+- **Logo in dark mode.** The helix has a dark Forest strand that would vanish on the
+  charcoal page, so in dark mode it sits on a small Mist tile.
+- **Favicon.** The kit's favicons (ICO, 32 and 192 pixel PNG, Apple touch icon).
 
 ### Showing documents safely
 

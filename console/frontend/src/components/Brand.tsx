@@ -1,30 +1,23 @@
 import clsx from "clsx";
 import { Monitor, Moon, Sun } from "lucide-react";
 
+import symbolUrl from "../assets/genelabs-symbol.png";
 import { type ThemeChoice, useTheme } from "../lib/theme";
 
 /**
- * The GeneLabs DNA symbol from the brand kit. The strands and rungs take theme colours,
- * so the mark stays legible on the light Mist page and on the dark Forest page.
+ * The GeneLabs DNA helix, taken from the brand kit's official logo. Its dark strand would
+ * vanish on the charcoal page, so in dark mode it sits on a small Mist tile.
  */
 export const BrandSymbol = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 76 112" aria-hidden className={className}>
-    <path
-      d="M24 22 L51 22 M19 39 L55 39 M21 55 L52 55 M21 72 L54 72 M24 89 L50 89"
-      fill="none"
-      stroke="var(--color-rung)"
-      strokeWidth="5"
-      strokeLinecap="round"
-    />
-    <path d="M55 2 C-3 28, 79 78, 21 108" fill="none" stroke="var(--color-brand)" strokeWidth="10" strokeLinecap="round" />
-    <path d="M20 2 C78 28, -4 78, 54 108" fill="none" stroke="var(--color-accent)" strokeWidth="10" strokeLinecap="round" />
-  </svg>
+  <span className={clsx("inline-flex shrink-0 items-center justify-center rounded-md bg-symbol-tile p-0.5", className)}>
+    <img src={symbolUrl} alt="" aria-hidden className="h-full w-auto" />
+  </span>
 );
 
 /** Symbol, divider and wordmark kept together as one lockup, as the brand guide asks. */
 export const BrandLockup = () => (
   <div className="flex items-center gap-3">
-    <BrandSymbol className="h-11 w-8 shrink-0" />
+    <BrandSymbol className="h-11" />
     <span aria-hidden className="h-9 w-px bg-rung" />
     <div className="leading-tight">
       <h1 className="text-xl font-semibold tracking-tight text-brand">GeneLabs</h1>

@@ -20,6 +20,7 @@
   --color-accent-soft: #eaf3ee;
   --color-accent-soft-ink: #103b32;
   --color-rung: #a2bfae;
+  --color-symbol-tile: transparent;
   --color-ok-bg: #eaf3de;
   --color-ok-ink: #27500a;
   --color-warn-bg: #faeeda;
@@ -52,6 +53,8 @@
     --color-accent-soft: #2b3b36;
     --color-accent-soft-ink: #d6ebe0;
     --color-rung: #7fa593;
+  --color-symbol-tile: #eaf3ee;
+    --color-symbol-tile: #eaf3ee;
     --color-ok-bg: #173404;
     --color-ok-ink: #c0dd97;
     --color-warn-bg: #412402;
