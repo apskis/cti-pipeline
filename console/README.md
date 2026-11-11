@@ -4,8 +4,8 @@ A local, read only view of what the pipeline produced: runs, stages, costs and e
 deliverable. It reads `out/` and `logs/`, never writes to them, and makes no model calls.
 It is not part of the pipeline image (`.dockerignore` leaves `console/` out).
 
-Status: the backend API and the overview page are in place. The report reader, run
-detail and CVE table come next.
+Status: the backend API, the overview page and the report reader are in place. Run
+detail and the CVE table come next.
 
 ## Run it
 
@@ -33,9 +33,28 @@ The overview page shows the headline numbers, how the last scan ran (six stages,
 with a status word as well as a colour) and the model cost per day. If the backend is
 not running it says how to start it and offers a retry.
 
+The Reports page lists every deliverable, filtered by kind, status and a search on ID or
+title. Picking one opens it in the reader, rendered from its `.docx`, with a button to
+download the original. A report has its own link, such as `#/reports/CTI26-137`, for a
+demo script or a bookmark.
+
+### Showing documents safely
+
+Report HTML is built from documents full of links and text the pipeline copied from the
+web, so it is treated as hostile:
+
+- The front end runs it through DOMPurify, keeping plain document markup only. Scripts,
+  event handlers, styles and frames are removed. Links open in a new tab with no access
+  to the page, and only images embedded in the document may load.
+- A Content Security Policy, set in `vite.config.ts`, lets the page load nothing from
+  anywhere but itself. `npm run preview` serves the built page with the strict policy.
+  `npm run dev` relaxes it just enough for Vite's inline refresh script and styles.
+- The API sends `default-src 'none'` on every answer, so nothing it returns can run.
+
 | Command | Does |
 |---|---|
 | `npm run dev` | Dev server on `127.0.0.1:5173` |
+| `npm run preview` | The built page on `127.0.0.1:5173`, with the strict policy |
 | `npm test` | Vitest |
 | `npm run typecheck` | TypeScript, no output |
 | `npm run lint` | ESLint |
@@ -77,6 +96,12 @@ purpose: the output is internal threat intelligence and the API has no login.
 | `/api/summary` | Counts per kind, CVEs tracked, total model cost, the last scan run and its six stages |
 | `/api/runs?component=&limit=` | Runs, newest first, each with its sessions and cost |
 | `/api/deliverables?kind=&status=&q=&limit=` | One entry per ID: kind, title, path under `out/`, first seen, status |
+| `/api/deliverables/{id}/html` | The same entry plus the document as HTML, made with mammoth |
+| `/api/deliverables/{id}/file` | The original `.docx`, as a download |
+
+An ID must look like one (letters, digits and hyphens), and the file must sit inside
+`out/`, or the answer is 404. A bold paragraph on its own outside a table becomes a
+heading in the HTML, because the pipeline writes its headings that way.
 
 ### Where the numbers come from
 

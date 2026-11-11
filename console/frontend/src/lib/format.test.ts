@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { formatCount, formatMoney, formatShortDay } from "./format";
+import { formatCount, formatDay, formatMoney, formatShortDay } from "./format";
 
 describe("format", () => {
   it("keeps a date only string on its own day in any time zone", () => {
     expect(formatShortDay("2026-11-10")).toBe("10 Nov");
+    expect(formatDay("2026-11-10")).toBe("10 Nov 2026");
   });
 
   it("formats money and missing counts", () => {

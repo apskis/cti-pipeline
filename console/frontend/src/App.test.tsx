@@ -1,9 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import App from "./App";
-import { RUNS, SUMMARY } from "./test/fixtures";
+import { DELIVERABLES, DOCUMENT, RUNS, SUMMARY } from "./test/fixtures";
 
 // jsdom has no canvas; the chart's own drawing is Chart.js's business, not ours.
 vi.mock("react-chartjs-2", () => ({ Bar: () => <div data-testid="chart" /> }));
@@ -38,5 +38,24 @@ describe("App", () => {
     );
     await userEvent.click(screen.getByRole("button", { name: "Retry" }));
     expect(await screen.findByText("151")).toBeInTheDocument();
+  });
+
+  it("opens a report from the list and renders it without its script", async () => {
+    window.location.hash = "#/reports";
+    mockApi((url) =>
+      answer(url.startsWith("/api/deliverables/CTI26-137/html") ? DOCUMENT : DELIVERABLES),
+    );
+    render(<App />);
+    await userEvent.click(await screen.findByRole("link", { name: /IBM Aspera Faspex RCE/ }));
+    expect(await screen.findByRole("heading", { name: "Why This Matters" })).toBeInTheDocument();
+    expect(screen.getByText("Patch now.")).toBeInTheDocument();
+    expect(document.querySelector(".report script")).toBeNull();
+    expect(screen.getByRole("link", { name: /Download .docx/ })).toHaveAttribute(
+      "href",
+      "/api/deliverables/CTI26-137/file",
+    );
+    const broken = screen.getByRole("link", { name: /Broken Example/ });
+    expect(within(broken).getByText("Broken")).toBeInTheDocument();
+    window.location.hash = "";
   });
 });

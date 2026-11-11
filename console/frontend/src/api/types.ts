@@ -42,3 +42,22 @@ export interface Summary {
   last_scan: Run | null;
   stages: Stage[];
 }
+
+export type DeliverableStatus = "ok" | "broken" | "unchecked";
+
+export interface Deliverable {
+  id: string;
+  kind: string;
+  title: string;
+  path: string;
+  first_seen: string;
+  modified: string;
+  status: DeliverableStatus;
+  problem: string | null;
+}
+
+/** A deliverable with its body as HTML. Untrusted: sanitize before rendering. */
+export interface DeliverableDocument extends Deliverable {
+  html: string;
+  warnings: number;
+}

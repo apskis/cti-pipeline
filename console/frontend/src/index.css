@@ -50,3 +50,52 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
+
+/* Report bodies come from mammoth as bare HTML with no classes, so they are styled here
+   by element, scoped to the reader. */
+.report {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.report > * + * {
+  margin-top: 0.6rem;
+}
+.report h1,
+.report h2,
+.report h3 {
+  margin-top: 1.4rem;
+  font-weight: 600;
+}
+.report h3 {
+  font-size: 1rem;
+}
+.report a {
+  color: var(--color-series-scan);
+  text-decoration: underline;
+}
+.report sup {
+  color: var(--color-muted);
+}
+.report table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.report td,
+.report th {
+  border: 1px solid var(--color-line);
+  padding: 0.35rem 0.6rem;
+  vertical-align: top;
+}
+.report td p {
+  margin: 0;
+}
+.report ul,
+.report ol {
+  padding-left: 1.4rem;
+  list-style: revert;
+}
+.report img {
+  max-width: 100%;
+  height: auto;
+}

@@ -17,9 +17,14 @@ const WORDS: Record<StageStatus, string> = {
   unknown: "Unknown",
 };
 
-const StatusPill = ({ status }: { status: StageStatus }) => (
+interface StatusPillProps {
+  status: StageStatus;
+  label?: string;
+}
+
+const StatusPill = ({ status, label }: StatusPillProps) => (
   <span className={clsx("inline-block rounded-md px-2 py-0.5 text-xs font-medium", STYLES[status])}>
-    {WORDS[status]}
+    {label ?? WORDS[status]}
   </span>
 );
 

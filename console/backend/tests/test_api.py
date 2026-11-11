@@ -54,3 +54,33 @@ def test_no_docs_and_cors_only_for_the_frontend(client: TestClient) -> None:
     other = client.get("/api/health", headers={"Origin": "https://evil.example"})
     assert "access-control-allow-origin" not in other.headers
     assert ok.headers["x-content-type-options"] == "nosniff"
+
+
+def test_deliverable_html(client: TestClient) -> None:
+    response = client.get("/api/deliverables/CTI26-01/html")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["id"] == "CTI26-01"
+    assert "CTI26-01 paragraph 3 of a complete bulletin." in body["html"]
+    assert response.headers["content-security-policy"].startswith("default-src 'none'")
+
+
+def test_deliverable_file_downloads(client: TestClient) -> None:
+    response = client.get("/api/deliverables/TH26-01/file")
+    assert response.status_code == 200
+    assert "attachment" in response.headers["content-disposition"]
+    assert "TH26-01-Sample_Hunt.docx" in response.headers["content-disposition"]
+    assert response.content[:2] == b"PK"  # a .docx is a zip
+
+
+@pytest.mark.parametrize(
+    ("path", "status"),
+    [
+        ("/api/deliverables/CTI26-77/html", 404),  # unknown ID
+        ("/api/deliverables/CTI26-99/file", 404),  # only exists under state/
+        ("/api/deliverables/..%2F..%2Fsecrets/file", 404),  # never matches the route
+        ("/api/deliverables/a b/html", 422),
+    ],
+)
+def test_deliverable_lookup_rejects(client: TestClient, path: str, status: int) -> None:
+    assert client.get(path).status_code == status
