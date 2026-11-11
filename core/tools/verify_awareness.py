@@ -8,8 +8,10 @@ The assertions below are deliberately blunt: they fail closed.
 import sys, os, re, datetime
 from docx import Document
 
-ABBEY = "444648"          # house black — the TLP value must render in this, not orange
-ORANGE_ISH = ("EF6C00", "FF7109", "E05F00", "C62828", "B71C1C")
+ABBEY = "202C29"          # house black (GeneLabs Charcoal): the TLP value must render in this
+# Alert and accent colours the TLP value must never take. The retired orange
+# accents stay listed so a return to the old palette is still caught.
+ORANGE_ISH = ("EF6C00", "FF7109", "E05F00", "C62828", "B71C1C", "167D61", "103B32")
 
 def all_text(doc):
     parts = [p.text for p in doc.paragraphs]

@@ -31,12 +31,13 @@ from docx.shared import Pt, RGBColor, Inches
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-ORANGE = "E05F00"
-ORANGE_RULE = "FF7109"
-ABBEY = "444648"
-HDR_FILL = "E05F00"
-BORDER = "D9D9D9"
-STRIPE = "FFF8F2"
+# GeneLabs brand kit v1.0 (legacy names kept)
+ORANGE = "103B32"        # Forest: heading text
+ORANGE_RULE = "167D61"   # Emerald: rules and accents
+ABBEY = "202C29"         # Charcoal: body text
+HDR_FILL = "103B32"      # Forest: table header fill, white header text
+BORDER = "A2BFAE"        # Sage
+STRIPE = "F4F9F6"        # very light green row stripe
 
 DISPO_COLOR = {
     "executed": "1B7837",   # green - executed as pivot hunt

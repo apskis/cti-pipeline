@@ -16,7 +16,7 @@ deliverables:
 - `genelabs-threat-hunt-report` — one completed hunt in depth (hypotheses, queries, findings).
 - `genelabs-threat-hunt-package` — one not-yet-run hunt plan.
 
-The branding (banner template, corporate palette, wordmark / TLP / DOC # / page-number
+The branding (header image, corporate palette, logo / TLP / DOC # / page-number
 footer) is **reused from the installed `genelabs-threat-hunt-report` skill** so the summary
 reads as one set with the per-hunt reports. The builder finds those shared assets
 automatically — no path argument needed.
@@ -100,7 +100,7 @@ Suspicious side-finding, an environmental gap, or campaign pressure in the glanc
   "closing_note": "Optional footer paragraph; a sensible default is used if omitted."
 }
 ```
-`recurring_gaps` accepts a list (rendered as GeneLabs orange bullets) or a single string.
+`recurring_gaps` accepts a list (rendered as GeneLabs Emerald bullets) or a single string.
 `subtitle`, `doc_title`, `tlp`, and `closing_note` are optional overrides. `doc_title`
 defaults to "Threat Hunt Summary"; pass it only to override.
 
@@ -114,8 +114,8 @@ defaults to "Threat Hunt Summary"; pass it only to override.
    Verdict / Confidence / Archived chip strip, and the narrative paragraph.
 6. **Pivot Gate Reasoning**, **Cross-Engine Standouts**, **Recurring Gaps to Close**.
 7. **Archived Reports** index table.
-8. Italic closing note, then the shared GeneLabs footer (wordmark, TLP marking, copyright,
-   DOC #, live page numbers) beneath an orange rule.
+8. Italic closing note, then the shared GeneLabs footer (logo, TLP marking, copyright,
+   DOC #, live page numbers) beneath an Emerald rule.
 
 ## Builder source
 Write this verbatim to `scripts/build_hunt_run_summary.py`, then run it. It imports the
@@ -129,7 +129,7 @@ Build an GeneLabs-branded Threat Hunt Summary .docx from a JSON spec.
 
 This is the run-level roll-up across a whole day's hunt loop (many hunts +
 pivots), NOT a single-hunt report. It reuses the GeneLabs house branding
-(banner template, corporate palette, wordmark/TLP/DOC#/page footer) from the
+(header image, corporate palette, logo/TLP/DOC#/page footer) from the
 installed genelabs-threat-hunt-report skill, so summaries read as one set with
 the per-hunt reports.
 
@@ -154,7 +154,7 @@ from docx.oxml import OxmlElement
 
 
 def _locate_report_skill():
-    """Find the installed genelabs-threat-hunt-report skill dir (template, wordmark, helpers).
+    """Find the installed genelabs-threat-hunt-report skill dir (template, logo, helpers).
 
     glob '**' does not descend into hidden dirs such as .claude, so try explicit
     patterns for the common install locations first, then a broad recursive fallback.
@@ -184,7 +184,7 @@ R = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(R)
 
 TEMPLATE = os.path.join(SKILL, "assets", "hunt_template.docx")
-WORDMARK = os.path.join(SKILL, "assets", "genelabs_wordmark_grey.png")
+WORDMARK = os.path.join(SKILL, "assets", "genelabs_logo.png")
 
 # Verdict palette for a run roll-up (distinct from single-hunt classifications).
 VERDICT_COLOR = {
@@ -200,7 +200,12 @@ def _vcolor(v):
 
 
 def build(spec, out_path):
-    doc = Document(TEMPLATE)
+    # Without the template, start blank and add the GeneLabs header image.
+    if os.path.exists(TEMPLATE):
+        doc = Document(TEMPLATE)
+    else:
+        doc = Document()
+        R.add_header_image(doc)
     R.set_base_style(doc)
     run_date = spec.get("run_date", "")
     doc_id = spec.get("doc_id", "FHR-" + run_date)

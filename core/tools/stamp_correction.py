@@ -33,7 +33,9 @@ from docx.shared import Pt, Inches, RGBColor
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-ORANGE, ABBEY, GREY, TINT, RED = "FF7109", "444648", "676765", "FFF4E8", "C62828"
+# GeneLabs brand kit v1.0: Emerald accent, Charcoal text, Mist tint, Sage rules
+ORANGE, ABBEY, GREY, TINT, RED = "167D61", "202C29", "676765", "EAF3EE", "C62828"
+RULE = "A2BFAE"
 
 
 def _rgb(h):
@@ -94,8 +96,8 @@ def stamp(path, label, lines):
     # left accent bar, matching the house callout
     tblPr = tbl._tbl.tblPr
     borders = OxmlElement("w:tblBorders")
-    for edge, sz, col in (("left", "24", ORANGE), ("top", "4", "D9D9D9"),
-                          ("bottom", "4", "D9D9D9"), ("right", "4", "D9D9D9")):
+    for edge, sz, col in (("left", "24", ORANGE), ("top", "4", RULE),
+                          ("bottom", "4", RULE), ("right", "4", RULE)):
         e = OxmlElement(f"w:{edge}")
         e.set(qn("w:val"), "single"); e.set(qn("w:sz"), sz)
         e.set(qn("w:space"), "0"); e.set(qn("w:color"), col)

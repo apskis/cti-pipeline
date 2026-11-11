@@ -61,7 +61,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
 
     Template structure:
     - Report ID header (CTI-WK-YYYY-WW)
-    - Title: "Cyber Threat Intelligence Weekly Report" (orange, 18pt bold)
+    - Title: "Cyber Threat Intelligence Weekly Report" (Forest, 18pt bold)
     - Date range subtitle
     - Executive Summary
     - This Week at a Glance (metric cards)
@@ -195,7 +195,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
         id_run.font.color.rgb = BrandColors.GRAY_LIGHT
         id_run.font.name = "Consolas"
 
-        # Body: main title, 18pt, orange — use Normal style so no line/border under title
+        # Body: main title, 18pt, Forest — use Normal style so no line/border under title
         title_para = self.doc.add_paragraph()
         title_para.style = self.doc.styles["Normal"]
         title_para.paragraph_format.space_before = Pt(4)
@@ -204,7 +204,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
         title_run = title_para.add_run(f"Cyber Threat Intelligence Weekly Report \u2014 Week {week_num}")
         title_run.font.size = FontSizes.TITLE  # 18pt
         title_run.font.bold = True
-        title_run.font.color.rgb = BrandColors.ORANGE_DESIGN
+        title_run.font.color.rgb = BrandColors.FOREST
         title_run.font.name = "Arial"
         title_para.alignment = WD_ALIGN_PARAGRAPH.LEFT
         self._clear_paragraph_borders(title_para)  # No line under the title
@@ -223,17 +223,17 @@ class WeeklyReportGenerator(BaseReportGenerator):
         self.doc.add_paragraph()
 
     def _add_executive_summary(self, analysis_result: dict[str, Any]) -> None:
-        """Add summary: bold orange heading, white body, tight spacing."""
+        """Add summary: bold Forest heading, white body, tight spacing."""
         logger.info("Adding Summary section")
 
-        # Heading 1 style: 14pt, orange
+        # Heading 1 style: 14pt, Forest
         heading_para = self.doc.add_paragraph()
         heading_para.style = self.doc.styles["Heading 1"]
         heading_para.paragraph_format.space_before = Pt(6)
         heading_para.paragraph_format.space_after = Pt(4)
         heading_run = heading_para.add_run("Summary")
         heading_run.font.bold = True
-        heading_run.font.color.rgb = BrandColors.ORANGE_DESIGN
+        heading_run.font.color.rgb = BrandColors.FOREST
         heading_run.font.size = FontSizes.HEADING_1  # 14pt
         heading_run.font.name = "Arial"
 
@@ -267,23 +267,23 @@ class WeeklyReportGenerator(BaseReportGenerator):
             run.font.name = "Arial"
 
     def _add_week_at_glance(self, analysis_result: dict[str, Any]) -> None:
-        """Add 'This Week at a Glance': bold orange heading; space before subtitle."""
+        """Add 'This Week at a Glance': bold Forest heading; space before subtitle."""
         logger.info("Adding This Week at a Glance section")
 
-        # Heading 1 style: "This Week at a Glance", 14pt, orange
+        # Heading 1 style: "This Week at a Glance", 14pt, Forest
         glance_para = self.doc.add_paragraph()
         glance_para.style = self.doc.styles["Heading 1"]
         glance_para.paragraph_format.space_before = Pt(0)
         glance_para.paragraph_format.space_after = Pt(0)
         r1 = glance_para.add_run("This Week ")
         r1.font.bold = True
-        r1.font.color.rgb = BrandColors.ORANGE_DESIGN
+        r1.font.color.rgb = BrandColors.FOREST
         r1.font.size = FontSizes.HEADING_1  # 14pt
         r1.font.name = "Arial"
         r2 = glance_para.add_run("at a Glance")
         r2.font.bold = True
         r2.font.underline = False
-        r2.font.color.rgb = BrandColors.ORANGE_DESIGN
+        r2.font.color.rgb = BrandColors.FOREST
         r2.font.size = FontSizes.HEADING_1  # 14pt
         r2.font.name = "Arial"
 
@@ -353,9 +353,9 @@ class WeeklyReportGenerator(BaseReportGenerator):
             if title in ("Threat Actors", "Exploited CVEs", "Peer Incidents"):
                 num_run.font.color.rgb = BrandColors.RED_HIGH_RISK  # High-risk / alert
             elif title == "Active Campaigns":
-                num_run.font.color.rgb = BrandColors.ORANGE_DESIGN  # Ongoing operations
+                num_run.font.color.rgb = BrandColors.ALERT_ORANGE  # Ongoing operations
             else:
-                num_run.font.color.rgb = BrandColors.ORANGE_DESIGN  # Default
+                num_run.font.color.rgb = BrandColors.EMERALD  # Default: brand accent
             num_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
             num_para.paragraph_format.space_after = Pt(2)
 
@@ -442,9 +442,9 @@ class WeeklyReportGenerator(BaseReportGenerator):
         return "N/A"
 
     def _style_heading_1(self, paragraph) -> None:
-        """Apply Heading 1 look: orange, 14pt, Arial to all runs in the paragraph."""
+        """Apply Heading 1 look: Forest, 14pt, Arial to all runs in the paragraph."""
         for run in paragraph.runs:
-            run.font.color.rgb = BrandColors.ORANGE_DESIGN
+            run.font.color.rgb = BrandColors.FOREST
             run.font.size = FontSizes.HEADING_1
             run.font.name = "Arial"
 
@@ -731,7 +731,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
         header_cells = table.rows[0].cells
         Pt(7)
 
-        # Header row: orange background, white bold text
+        # Header row: Forest background, white bold text
         for i, header in enumerate(headers):
             cell = header_cells[i]
             cell.text = header
@@ -854,7 +854,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
         if "CRITICAL" in sev:
             return BrandColors.RED_HIGH_RISK
         if "HIGH" in sev:
-            return BrandColors.ORANGE_DESIGN
+            return BrandColors.ALERT_ORANGE
         return BrandColors.TEXT_DARK
 
     def _cvss_color(self, score: Any) -> RGBColor:
@@ -866,7 +866,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
         if value >= 9.0:
             return BrandColors.RED_HIGH_RISK
         if value >= 7.0:
-            return BrandColors.ORANGE_DESIGN
+            return BrandColors.ALERT_ORANGE
         return BrandColors.TEXT_DARK
 
     def _extract_product(self, vuln: dict[str, Any]) -> str:
@@ -1159,9 +1159,9 @@ class WeeklyReportGenerator(BaseReportGenerator):
             if r["exploited"]:
                 exp_label, exp_color = "In the wild (KEV)", BrandColors.RED_HIGH_RISK
             elif (r.get("exploits_count") or 0) > 0:
-                exp_label, exp_color = "Exploit public", BrandColors.ORANGE_DESIGN
+                exp_label, exp_color = "Exploit public", BrandColors.ALERT_ORANGE
             elif isinstance(epss, (int, float)) and epss >= _EPSS_LIKELY_THRESHOLD:
-                exp_label, exp_color = f"Likely (EPSS {epss:.0%})", BrandColors.ORANGE_DESIGN
+                exp_label, exp_color = f"Likely (EPSS {epss:.0%})", BrandColors.ALERT_ORANGE
             else:
                 exp_label, exp_color = "—", BrandColors.GRAY_MEDIUM
             cells[5].text = ""
@@ -1239,7 +1239,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
             # Create threat actor table per CTI_Weekly_Report_Template_Spec.json
             table = self.doc.add_table(rows=1, cols=4)
 
-            # Header row: orange background, white text
+            # Header row: Forest background, white text
             headers = ["Origin / Motivation", "Activity Observed", "What to Monitor", "Source"]
             header_cells = table.rows[0].cells
             for i, header in enumerate(headers):
@@ -1349,7 +1349,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
             # Columns: Campaign Name | Threat Actor(s) | Objective | Targets | TTPs | Timeline | Source
             table = self.doc.add_table(rows=1, cols=7)
 
-            # Header row: orange background, white text
+            # Header row: Forest background, white text
             headers = ["Campaign Name", "Threat Actor(s)", "Objective", "Targets", "TTPs", "Timeline", "Source"]
             header_cells = table.rows[0].cells
             for i, header in enumerate(headers):
@@ -1611,7 +1611,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
             # Create table: Company | Incident Type | Date | Relevance | Source
             table = self.doc.add_table(rows=1, cols=5)
 
-            # Header row: orange background, white text
+            # Header row: Forest background, white text
             headers = ["Organization", "Incident Type", "Date", "Relevance", "Source"]
             header_cells = table.rows[0].cells
             for i, header in enumerate(headers):
@@ -2144,8 +2144,8 @@ class WeeklyReportGenerator(BaseReportGenerator):
         cell = table.rows[0].cells[0]
 
         # Light blue/gray background for the info box
-        self._set_cell_shading(cell, "E8F4F8")  # Light blue-gray
-        self._set_cell_borders(cell, "B0D4E3", "8")  # Slightly darker blue border
+        self._set_cell_shading(cell, BrandColors.MIST_HEX)  # GeneLabs Mist
+        self._set_cell_borders(cell, BrandColors.SAGE_HEX, "8")  # GeneLabs Sage border
 
         # Clear default paragraph
         cell.paragraphs[0].clear()

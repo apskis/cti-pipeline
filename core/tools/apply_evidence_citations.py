@@ -28,8 +28,9 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 FONT = "Arial"; MONO = "Consolas"
-ABBEY = "444648"; DEEP = "E05F00"; ORANGE = "FF7109"; GREY = "676765"
-LINK = "1565C0"; CODE_BG = "F4F4F4"
+# GeneLabs brand kit v1.0: Charcoal body, Forest headings, Emerald rules and links
+ABBEY = "202C29"; DEEP = "103B32"; ORANGE = "167D61"; GREY = "676765"
+LINK = "167D61"; CODE_BG = "F4F4F4"
 MARKER = re.compile(r"\{\{(E\d+)\}\}")
 _bm_id = [9000]
 

@@ -109,9 +109,18 @@ logger = logging.getLogger(__name__)
 class BrandColors:
     """Brand color constants matching the template."""
 
-    ORANGE_PRIMARY = RGBColor(0xE6, 0x51, 0x00)  # #E65100 - Main title
-    ORANGE_DESIGN = RGBColor(0xFF, 0x5C, 0x41)  # #ff5c41 - Header orange
-    # Brand accent sourced from the customer profile (defaults to GeneLabs blue #1F6F8B).
+    # GeneLabs brand kit v1.0. Brand roles (titles, headings, accents, table
+    # headers, tints) use these; severity and TLP colours below are unchanged.
+    FOREST = RGBColor(0x10, 0x3B, 0x32)  # #103B32 - titles, headings, labels
+    EMERALD = RGBColor(0x16, 0x7D, 0x61)  # #167D61 - accents, key figures
+    FOREST_HEX = "103B32"  # table header fill (white header text)
+    EMERALD_HEX = "167D61"  # accent rules and bars
+    SAGE_HEX = "A2BFAE"  # light strokes and borders
+    MIST_HEX = "EAF3EE"  # pale tints and callout backgrounds
+    # Semantic colours that were also used as brand orange; kept for meaning.
+    ALERT_ORANGE = RGBColor(0xFF, 0x5C, 0x41)  # #ff5c41 - high severity, exploit public
+    TLP_AMBER = RGBColor(0xE6, 0x51, 0x00)  # #E65100 - TLP:AMBER+STRICT marking
+    # Brand accent sourced from the customer profile (defaults to GeneLabs Forest #103B32).
     BRAND_ACCENT = RGBColor.from_string(customer_profile.brand_color_hex)
     GENELABS_BLUE = BRAND_ACCENT  # backwards-compatible alias
     WHITE = RGBColor(0xFF, 0xFF, 0xFF)  # White text on dark background
@@ -126,7 +135,7 @@ class BrandColors:
     RED_HIGH_RISK = RGBColor(
         0xFF, 0x3B, 0x3B
     )  # Red #FF3B3B for high-risk, Actively Exploited, Actor Groups, Total Exposed
-    ORANGE_TABLE_HEADER = "E65100"  # Orange for table headers (hex string for shading)
+    ORANGE_TABLE_HEADER = "103B32"  # GeneLabs Forest for table headers (name kept for compatibility)
     DARK_BG_HEX = "1E1E1E"  # Dark page background (design reference)
     METRIC_BOX_DARK = "2A2A2A"  # Slightly lighter than page for metric boxes (#2A2A2A)
     BORDER_LIGHT_GRAY = "B0B0B0"  # Light gray box borders (dark theme)
@@ -170,8 +179,8 @@ class BrandColors:
     WKS_HIGHLIGHT_TEXT = RGBColor(0xCC, 0xA0, 0x44)
 
     # Light-mode table colors (from CTI_Weekly_Report_Template_Spec.json)
-    # Table header: orange background
-    TABLE_HEADER_BG = "E65100"  # Orange for header row
+    # Table header: GeneLabs Forest background, white text
+    TABLE_HEADER_BG = "103B32"  # Forest for header row
     # Exploited By column backgrounds
     EXPLOITED_ACTOR_BG = "FFEBEE"  # Light pink for threat actors
     EXPLOITED_NONE_BG = "E8F5E9"  # Light green for "None observed"
@@ -187,7 +196,7 @@ class BrandColors:
     METRIC_CARD_BG = "F5F5F5"  # Light gray for metric cards
     # Sector Threat Activity table
     SECTOR_ORIGIN_BG = "F5F5F5"  # Light gray for Origin/Motivation
-    SECTOR_MONITOR_BG = "E3F2FD"  # Light blue for What to Monitor
+    SECTOR_MONITOR_BG = "EAF3EE"  # GeneLabs Mist for What to Monitor
 
 
 class FontSizes:
@@ -520,19 +529,21 @@ class BaseReportGenerator(ABC):
         Get the path to the report banner image.
 
         Returns:
-            Path to Bulletin_banner.jpg if found, None otherwise
+            Path to the GeneLabs CTI header image (genelabs_cti_header.png), or the
+            legacy Bulletin_banner.jpg, if found; None otherwise
         """
         # Try the repo's assets/ directory first (src/reports/base.py -> repo root)
         repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        banner_path = os.path.join(repo_root, "assets", "Bulletin_banner.jpg")
-
-        if os.path.exists(banner_path):
-            return banner_path
+        for name in ("genelabs_cti_header.png", "Bulletin_banner.jpg"):
+            banner_path = os.path.join(repo_root, "assets", name)
+            if os.path.exists(banner_path):
+                return banner_path
 
         # Try current working directory (assets/ then bare filename)
-        for alt_path in (os.path.join("assets", "Bulletin_banner.jpg"), "Bulletin_banner.jpg"):
-            if os.path.exists(alt_path):
-                return alt_path
+        for name in ("genelabs_cti_header.png", "Bulletin_banner.jpg"):
+            for alt_path in (os.path.join("assets", name), name):
+                if os.path.exists(alt_path):
+                    return alt_path
 
         return None
 
@@ -790,8 +801,14 @@ class BaseReportGenerator(ABC):
             header_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
             run = header_para.add_run()
-            # Calculate width to fit within margins (page width minus left and right margins)
-            # Standard page width is 8.5", minus left (0.75") and right (0.75") margins = 7"
-            run.add_picture(banner_path, width=Inches(7.0))
+            # About 7.0" wide (8.5" page minus 0.75" margins), never wider than the text.
+            text_width = section.page_width - section.left_margin - section.right_margin
+            width = min(int(text_width), int(Inches(7.0)))
+            picture = run.add_picture(banner_path, width=width)
+
+            # Keep the body clear of the header image (plus the report id line below it).
+            needed = section.header_distance + picture.height + Inches(0.35)
+            if section.top_margin < needed:
+                section.top_margin = needed
         else:
-            logger.warning("Bulletin_banner.jpg not found - banner will be omitted from report")
+            logger.warning("GeneLabs header image not found - banner will be omitted from report")

@@ -9,7 +9,7 @@ Produces the **analyst hand-off sheet** .docx: the steps only a human can run in
 CrowdStrike Falcon console — Real Time Response (RTR) and other manual checks — to
 **confirm a hunt finding the automated loop could not close** with Falcon or Splunk
 telemetry alone. Each sheet is tied to a parent hunt and carries the GeneLabs house
-branding (banner, palette, wordmark / TLP / DOC # / page footer), reused from the installed
+branding (header image, palette, logo / TLP / DOC # / page footer), reused from the installed
 `genelabs-threat-hunt-report` skill, so it reads as one set with the reports and run
 summaries. File name convention: `<YYYY-MM-DD>-<FriendlyName>-<UID>-RTR.docx` in the year
 archive's `RTR Walkthroughs` subfolder.
@@ -98,10 +98,10 @@ string. `record` defaults to a standard capture block if omitted. `subtitle`, `d
    prepared date, status).
 3. "Why this needs you" callout in the warm GeneLabs tint.
 4. **Finding to Confirm**, **Target Hosts / Users** (table), **Before You Start** (prereqs).
-5. **Walkthrough** — one card per step: orange accent bar, the command in a monospace code
+5. **Walkthrough** — one card per step: Emerald accent bar, the command in a monospace code
    block, Confirms / Benign looks like / Malicious looks like, and a blank Result line.
 6. **Decision & Escalation**, then a **Record Your Findings** capture block.
-7. Italic closing note, then the shared GeneLabs footer (wordmark, TLP, DOC #, page numbers).
+7. Italic closing note, then the shared GeneLabs footer (logo, TLP, DOC #, page numbers).
 
 ## Builder source
 Write this verbatim to `scripts/build_rtr_walkthrough.py`, then run it. It imports the
@@ -161,11 +161,16 @@ R = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(R)
 
 TEMPLATE = os.path.join(SKILL, "assets", "hunt_template.docx")
-WORDMARK = os.path.join(SKILL, "assets", "genelabs_wordmark_grey.png")
+WORDMARK = os.path.join(SKILL, "assets", "genelabs_logo.png")
 
 
 def build(spec, out_path):
-    doc = Document(TEMPLATE)
+    # Without the template, start blank and add the GeneLabs header image.
+    if os.path.exists(TEMPLATE):
+        doc = Document(TEMPLATE)
+    else:
+        doc = Document()
+        R.add_header_image(doc)
     R.set_base_style(doc)
     date = spec.get("date", "")
     action_id = spec.get("action_id", (spec.get("parent_hunt", "TH") + "-RTR"))

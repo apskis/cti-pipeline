@@ -31,7 +31,8 @@ from genelabs_style import (  # noqa: E402
     set_base_style, shade_cell, strip_watermarks, style_headings, table_borders,
 )
 
-NEUTRAL = {None, "000000", "auto", "444648", "333333", "1F1F1F", "212121"}
+# 444648 is the retired Abbey body colour: legacy documents still carry it.
+NEUTRAL = {None, "000000", "auto", "202C29", "444648", "333333", "1F1F1F", "212121"}
 
 
 def _force_font(r):

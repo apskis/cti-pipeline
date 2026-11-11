@@ -63,8 +63,8 @@ Three conventions, applied by `scripts/restyle_report.py`:
 2. **Structured Investigation Summary — never a wall of text.** Instead of one dense
    `overall_finding.explanation` paragraph, supply `overall_finding.blocks`: an array of
    `{"label": "...", "body": "..."}` and set `"explanation": "__BLOCKS__"`. The restyler
-   replaces the marker with one paragraph per block — label rendered bold caps in deepened
-   orange (E05F00) at 9.5pt, body in Abbey 10pt, 7pt after-spacing. House labels to use:
+   replaces the marker with one paragraph per block — label rendered bold caps in GeneLabs
+   Forest (103B32) at 9.5pt, body in Charcoal 10pt, 7pt after-spacing. House labels to use:
    `Verdict` (or `Verdict - <component>` when hypotheses split), `Coverage caveat`,
    `What would change the verdict`, plus optional `New Suspicious thread`, `Side finding`,
    `What the rescan changed`, `Remaining caveats`. Keep each body 1-3 sentences.
@@ -72,7 +72,7 @@ Three conventions, applied by `scripts/restyle_report.py`:
    lines); set `investigation_note` to the FIRST line (the builder renders it) and the
    restyler inserts the rest as matching italic grey 9pt lines after it.
 
-3. **Air between sections.** The restyler sets every orange underlined section heading to
+3. **Air between sections.** The restyler sets every Forest underlined section heading to
    22pt space-before / 8pt space-after. No spec key needed.
 
 The builder script itself is unchanged; v2 is applied entirely by the restyler so older specs
@@ -124,10 +124,10 @@ How it works:
 5. Reports that predate v3 are not retrofitted; every NEW report ships with citations.
 
 ## Branding
-Body palette and footer furniture are shared with **genelabs-cti-bulletin**: GeneLabs orange
-`FF7109` rule, deepened orange `E05F00` for small text, Abbey `444648` body, corporate grey
-`676765`, and the grey wordmark in `assets/genelabs_wordmark_grey.png`. The footer carries the
-wordmark, `TLP: <level>  |  CTI Threat Hunt Report`, the copyright line, `DOC # <hunt_id>` and
+Body palette and footer furniture are shared with **genelabs-cti-bulletin**: GeneLabs Emerald
+`167D61` rule, Forest `103B32` for small text, Charcoal `202C29` body, corporate grey
+`676765`, and the GeneLabs logo in `assets/genelabs_logo.png`. The footer carries the
+logo, `TLP: <level>  |  CTI Threat Hunt Report`, the copyright line, `DOC # <hunt_id>` and
 live `Page X of Y` fields. Override per document with `tlp`, `copyright_line`, `doc_title`,
 `subtitle` and `closing_note`.
 
@@ -284,19 +284,21 @@ as one set. Do not override these in a spec.
 
 | Element | Value |
 | --- | --- |
-| Accent, section headings, rules, bullets | GeneLabs orange `#FF7109` (`#E05F00` for small heading text and table headers) |
-| Body and headline text | Abbey `#444648` |
-| Meta text, wordmark, captions | Corporate grey `#676765` |
-| Callouts (handoff note, overall finding) | Fill `#FFF4E8` |
-| Tables | Label fill `#F4F4F4`, `#D9D9D9` borders at 0.75pt, warm `#FFF8F2` row stripe |
-| Links | `#1565C0` |
+| Accent, rules, bullets | GeneLabs Emerald `#167D61` |
+| Section headings, small heading text, table headers | GeneLabs Forest `#103B32` (table header text in white) |
+| Body and headline text | GeneLabs Charcoal `#202C29` |
+| Meta text, captions | Corporate grey `#676765` |
+| Callouts (handoff note, overall finding) | Fill Mist `#EAF3EE` |
+| Tables | Label fill Mist `#EAF3EE`, Sage `#A2BFAE` borders at 0.75pt, pale green `#F4F9F6` row stripe |
+| Links | Emerald `#167D61` |
 | Typeface | Arial for prose, Consolas for query code blocks |
 
-Section headings render letterspaced in caps with a 1.5pt orange underline and,
-after the restyler, 22pt space-before / 8pt space-after. Borders stay light grey
-`#D9D9D9`. Every page carries the footer furniture: genelabs wordmark in corporate
-grey, the TLP marking, the copyright line, a `DOC #` field carrying the `hunt_id`,
-and live `Page X of Y` fields.
+Section headings render letterspaced in caps with a 1.5pt Emerald underline and,
+after the restyler, 22pt space-before / 8pt space-after. Borders are Sage
+`#A2BFAE`. Every page carries the footer furniture: the GeneLabs logo, the TLP
+marking, the copyright line, a `DOC #` field carrying the `hunt_id`, and live
+`Page X of Y` fields. When no template is shipped the builder also puts the
+GeneLabs CTI header image in the page header.
 
 Optional spec key: `tlp` (defaults to `AMBER+STRICT`).
 
@@ -377,7 +379,8 @@ reports), and the second MITRE table for single-hypothesis documents.
 
 ## Reference files
 - `assets/hunt_template.docx` — branded template (clone this).
-- `assets/genelabs_wordmark_grey.png` — footer wordmark, resolved automatically.
+- `assets/genelabs_logo.png`: footer logo, resolved automatically.
+- `assets/genelabs_cti_header.png`: page header image, used when the template is absent.
 - `scripts/build_hunt_report.py` — the builder (run it; handles hyperlinks, tables, code).
 - `scripts/restyle_report.py` — house layout v2 post-pass (write from the source below if absent).
 - `<PACKAGES>/_tools/apply_evidence_citations.py` — v3 citation pass (also in CTI Deliverables `_tools`; write from the source below if both are absent).
@@ -396,7 +399,7 @@ if it does not exist, then run `python scripts/restyle_report.py <report.docx> <
 2. Replaces the __BLOCKS__ marker (or inserts after the Overall Finding box) with
    labeled verdict paragraphs from overall_finding.blocks.
 3. Inserts investigation_note_lines after the investigation_note paragraph.
-4. Sets every orange section heading to 22pt before / 8pt after.
+4. Sets every Forest section heading to 22pt before / 8pt after.
 Idempotence: safe to run once per report. Running twice duplicates the delta row
 and note lines, so run exactly once, after builder + proposed-hunts appender.
 """
@@ -406,7 +409,7 @@ from docx.shared import Pt, RGBColor
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-FONT="Arial"; ABBEY="444648"; DEEP="E05F00"; ORANGE="FF7109"; GREY="676765"; META_LABEL="F4F4F4"
+FONT="Arial"; ABBEY="202C29"; DEEP="103B32"; ORANGE="167D61"; GREY="676765"; META_LABEL="EAF3EE"
 
 def run(p,text,size=10,bold=False,color=ABBEY,italic=False):
     r=p.add_run(text); r.font.name=FONT; r.font.size=Pt(size); r.font.bold=bold
@@ -511,8 +514,9 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 FONT = "Arial"; MONO = "Consolas"
-ABBEY = "444648"; DEEP = "E05F00"; ORANGE = "FF7109"; GREY = "676765"
-LINK = "1565C0"; CODE_BG = "F4F4F4"
+# GeneLabs brand kit v1.0: Charcoal body, Forest headings, Emerald rules and links
+ABBEY = "202C29"; DEEP = "103B32"; ORANGE = "167D61"; GREY = "676765"
+LINK = "167D61"; CODE_BG = "F4F4F4"
 MARKER = re.compile(r"\{\{(E\d+)\}\}")
 _bm_id = [9000]
 

@@ -25,19 +25,20 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-# ---- GeneLabs corporate palette (shared with the genelabs-cti-bulletin skill)
-ORANGE = "E05F00"            # deepened GeneLabs orange for small heading text
-ORANGE_RULE = "FF7109"       # GeneLabs orange, sampled from the corporate deck rule
-ABBEY = "444648"             # GeneLabs Abbey, body and headline text
-BLUE = "1565C0"              # link blue
-BOX_FILL = "FFF4E8"          # warm callout tint
+# ---- GeneLabs corporate palette (brand kit v1.0, shared with genelabs-cti-bulletin)
+# Legacy names are kept so importers keep working; only the values changed.
+ORANGE = "103B32"            # GeneLabs Forest: small heading text
+ORANGE_RULE = "167D61"       # GeneLabs Emerald: rules and accents
+ABBEY = "202C29"             # GeneLabs Charcoal: body and headline text
+BLUE = "167D61"              # hyperlinks render in Emerald
+BOX_FILL = "EAF3EE"          # GeneLabs Mist: callout tint
 CODE_FILL = "F1F3F4"
-HDR_FILL = "F4F4F4"
+HDR_FILL = "EAF3EE"          # GeneLabs Mist
 GREY = "676765"              # corporate grey
-GENELABS_ORANGE = "E05F00"   # table header fill
-ZEBRA = "FFF8F2"             # very light warm row stripe
-META_LABEL = "F4F4F4"        # label cells for the metadata header
-BORDER = "D9D9D9"            # light grey: Word keeps it light on a dark canvas (verified)
+GENELABS_ORANGE = "103B32"   # GeneLabs Forest: table header fill, white header text
+ZEBRA = "F4F9F6"             # very light green row stripe
+META_LABEL = "EAF3EE"        # GeneLabs Mist: label cells for the metadata header
+BORDER = "A2BFAE"            # GeneLabs Sage (dark canvas check was done on the old grey, not Sage)
 WHITE = "FFFFFF"
 FONT = "Arial"
 COPYRIGHT_HOLDER = "GeneLabs LLC"
@@ -145,12 +146,45 @@ def _copyright(date_str):
     return "\u00a9 %s %s All rights reserved." % (year, COPYRIGHT_HOLDER)
 
 
-DEFAULT_WORDMARK = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                "..", "assets", "genelabs_wordmark_grey.png")
+_ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets")
+DEFAULT_WORDMARK = os.path.join(_ASSETS, "genelabs_logo.png")
+DEFAULT_HEADER = os.path.join(_ASSETS, "genelabs_cti_header.png")
+HEADER_ASPECT = 230.0 / 1800.0   # height / width of the header image
+HEADER_MAX_WIDTH = Inches(7.0)
+
+
+def add_header_image(doc, header_path=None):
+    """Put the GeneLabs CTI header image in the page header of every section.
+
+    About 7.0 in wide, or the text width when that is narrower, aspect kept.
+    The top margin grows only when the image would not otherwise fit.
+    Returns False, and changes nothing, when the image is missing.
+    """
+    header_path = header_path or DEFAULT_HEADER
+    if not os.path.exists(header_path):
+        return False
+    for section in doc.sections:
+        text_width = section.page_width - section.left_margin - section.right_margin
+        width = min(int(text_width), int(HEADER_MAX_WIDTH))
+        header = section.header
+        header.is_linked_to_previous = False
+        for child in list(header._element):
+            if child.tag != qn('w:sdt'):
+                header._element.remove(child)
+        p = header.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.paragraph_format.space_after = Pt(0)
+        p.add_run().add_picture(header_path, width=width)
+        if section.header_distance > Inches(0.4):
+            section.header_distance = Inches(0.4)
+        needed = section.header_distance + int(width * HEADER_ASPECT) + Inches(0.35)
+        if section.top_margin < needed:
+            section.top_margin = needed
+    return True
 
 
 def build_footer(doc, hunt_id, tlp, copyright_line, wordmark_path=None):
-    """GeneLabs brand furniture: wordmark, TLP, DOC # and live page numbers."""
+    """GeneLabs brand furniture: logo, TLP, DOC # and live page numbers."""
     wordmark_path = wordmark_path or DEFAULT_WORDMARK
     footer = doc.sections[0].footer
     for p in list(footer.paragraphs):
@@ -584,7 +618,18 @@ def add_findings(doc, spec):
 
 
 def build(spec, template_path, out_path):
-    doc = Document(template_path)
+    # The branded template is not shipped in the sanitized build. Without it the
+    # builder starts from a blank document and adds the GeneLabs header image
+    # itself; a template, when present, carries its own header and is kept as is.
+    if os.path.exists(template_path):
+        doc = Document(template_path)
+    else:
+        doc = Document()
+        if add_header_image(doc):
+            print(f"template not found ({template_path}); using the GeneLabs header image",
+                  file=sys.stderr)
+        else:
+            print(f"template not found ({template_path}); building unbranded", file=sys.stderr)
     set_base_style(doc)
     hid = spec.get("hunt_id", "TH-26-XX")
     # header line

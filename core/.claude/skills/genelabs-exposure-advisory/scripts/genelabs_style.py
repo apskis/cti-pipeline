@@ -14,14 +14,16 @@ from docx.oxml.ns import qn
 from docx.shared import Emu, Inches, Pt, RGBColor
 
 # ---- corporate palette (shared across all CTI artifacts) -------------------
-ORANGE       = "FF7109"   # GeneLabs orange: rules, accents
-ORANGE_DEEP  = "E05F00"   # deepened orange: small heading text
-ABBEY        = "444648"   # GeneLabs Abbey: body and headline text
-GREY         = "676765"   # corporate grey: meta text, wordmark, footer
-RULE         = "D9D9D9"   # light grey rules; stays visible on Word dark canvas
-LABEL_FILL   = "F4F4F4"   # table label column
-CALLOUT_FILL = "FFF4E8"   # callout and table header fill
-LINK_BLUE    = "1565C0"
+# GeneLabs brand kit v1.0: Forest, Emerald, Sage, Mist and Charcoal. The legacy
+# names stay so every importer keeps working; only the values changed.
+ORANGE       = "167D61"   # GeneLabs Emerald: rules, accents
+ORANGE_DEEP  = "103B32"   # GeneLabs Forest: small heading text
+ABBEY        = "202C29"   # GeneLabs Charcoal: body and headline text
+GREY         = "676765"   # corporate grey: meta text, footer
+RULE         = "A2BFAE"   # GeneLabs Sage: light rules (dark canvas check was done on the old grey, not Sage)
+LABEL_FILL   = "EAF3EE"   # GeneLabs Mist: table label column
+CALLOUT_FILL = "EAF3EE"   # GeneLabs Mist: callout and table header fill
+LINK_BLUE    = "167D61"   # hyperlinks render in Emerald
 FONT         = "Arial"
 
 TLP_COLORS = {
@@ -32,11 +34,12 @@ DEFAULT_TLP = "AMBER+STRICT"
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.join(HERE, "..", "assets")
-DEFAULT_WORDMARK = os.path.join(ASSETS, "genelabs_wordmark_grey.png")
-DEFAULT_BANNER = os.path.join(ASSETS, "cti_banner.jpg")
+DEFAULT_WORDMARK = os.path.join(ASSETS, "genelabs_logo.png")
+DEFAULT_BANNER = os.path.join(ASSETS, "genelabs_cti_header.png")
 DEFAULT_TEMPLATE = os.path.join(ASSETS, "cti_doc_template.docx")
 
-BANNER_ASPECT = 274.0 / 2550.0   # height / width of the house banner
+BANNER_ASPECT = 230.0 / 1800.0   # height / width of the house header image
+BANNER_MAX_WIDTH_IN = 7.0        # header width; narrower text widths win
 
 
 # ---- run and paragraph primitives -----------------------------------------
@@ -237,7 +240,8 @@ def add_banner(doc, banner_path=None, min_top_margin_in=1.15):
     if not os.path.exists(banner_path):
         return False
     for section in doc.sections:
-        width = section.page_width - section.left_margin - section.right_margin
+        text_width = section.page_width - section.left_margin - section.right_margin
+        width = min(int(text_width), int(BANNER_MAX_WIDTH_IN * 914400))
         header = section.header
         header.is_linked_to_previous = False
         # Clear whatever page furniture the document carried before (logo
@@ -251,18 +255,19 @@ def add_banner(doc, banner_path=None, min_top_margin_in=1.15):
         p.alignment = WD_ALIGN_PARAGRAPH.LEFT
         p.paragraph_format.space_after = Pt(0)
         p.add_run().add_picture(banner_path, width=Emu(int(width)))
-        banner_h = Emu(int(width * BANNER_ASPECT))
-        needed = banner_h + Emu(int(0.35 * 914400))
-        if section.top_margin < needed:
-            section.top_margin = needed
         if section.header_distance > Emu(int(0.4 * 914400)):
             section.header_distance = Emu(int(0.4 * 914400))
+        # The header starts at header_distance, so the body has to clear both.
+        banner_h = Emu(int(width * BANNER_ASPECT))
+        needed = section.header_distance + banner_h + Emu(int(0.35 * 914400))
+        if section.top_margin < needed:
+            section.top_margin = needed
     return True
 
 
 def build_footer(doc, doc_id, doc_marking, tlp=DEFAULT_TLP,
                  copyright_line="", wordmark_path=None):
-    """The shared CTI footer: wordmark, TLP marking, DOC #, live page fields."""
+    """The shared CTI footer: logo, TLP marking, DOC #, live page fields."""
     wordmark_path = wordmark_path or DEFAULT_WORDMARK
     for section in doc.sections:
         footer = section.footer

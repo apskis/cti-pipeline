@@ -509,7 +509,7 @@ class CustomerProfile:
     """
 
     name: str = "GeneLabs"
-    brand_color_hex: str = "1F6F8B"  # hex without leading '#'
+    brand_color_hex: str = "103B32"  # hex without leading '#' (GeneLabs Forest)
     security_contact: str = "secops@genelabs.example"
     osint_source_name: str = "GeneLabs-OSINT"
     # Short industry/sector descriptor used to ground strategic analysis prompts.
