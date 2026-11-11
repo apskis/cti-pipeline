@@ -1,4 +1,13 @@
-import type { Deliverable, DeliverableDocument, Run, Session, Summary } from "../api/types";
+import type {
+  Cve,
+  CveRegister,
+  Deliverable,
+  DeliverableDocument,
+  Run,
+  RunDetail,
+  Session,
+  Summary,
+} from "../api/types";
 
 const session = (label: string, started: string, cost: number): Session => ({
   label,
@@ -90,4 +99,54 @@ export const DOCUMENT: DeliverableDocument = {
   ...deliverable("CTI26-137", "bulletin", "IBM Aspera Faspex RCE", "ok"),
   html: '<h3>Why This Matters</h3><p>Patch now.</p><script>window.hacked = true</script>',
   warnings: 0,
+};
+
+export const RUN_DETAIL: RunDetail = {
+  ...(RUNS[0] as Run),
+  stages: SUMMARY.stages,
+  written: [DELIVERABLES[0] as Deliverable],
+  report: {
+    name: "scan-2026-11-10.md",
+    html: '<h1>CTI Daily Scan</h1><p>Run conditions.</p><img src="https://tracker.example/p.gif">',
+  },
+};
+
+const cve = (id: string, overrides: Partial<Cve>): Cve => ({
+  id,
+  vendor: "Acme",
+  product: "Widget",
+  vuln_type: "RCE",
+  cvss: "9.8 CRITICAL",
+  cvss_score: 9.8,
+  kev_added: null,
+  kev_due: null,
+  exploitation: "None known",
+  exploited: false,
+  relevance: "",
+  hunt_id: null,
+  bulletin_id: null,
+  date_added: "2026-11-10",
+  remediation: "Patch",
+  observed: "CANNOT CONFIRM",
+  ...overrides,
+});
+
+export const CVES: CveRegister = {
+  register: "bulletin-scan/registers/CVE_Register_2026.xlsx",
+  cves: [
+    cve("CVE-2026-0003", {
+      date_added: "2026-10-08",
+      cvss_score: 7.5,
+      vendor: "Globex",
+    }),
+    cve("CVE-2026-0001", {
+      exploited: true,
+      exploitation: "ITW (CISA KEV)",
+      kev_added: "2026-11-09",
+      kev_due: "2026-11-12",
+      bulletin_id: "CTI26-137",
+      hunt_id: "TH26-54",
+    }),
+    cve("CVE-2026-0002", { cvss_score: 5.5 }),
+  ],
 };

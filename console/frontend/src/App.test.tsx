@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import App from "./App";
-import { DELIVERABLES, DOCUMENT, RUNS, SUMMARY } from "./test/fixtures";
+import { CVES, DELIVERABLES, DOCUMENT, RUN_DETAIL, RUNS, SUMMARY } from "./test/fixtures";
 
 // jsdom has no canvas; the chart's own drawing is Chart.js's business, not ours.
 vi.mock("react-chartjs-2", () => ({ Bar: () => <div data-testid="chart" /> }));
@@ -56,6 +56,41 @@ describe("App", () => {
     );
     const broken = screen.getByRole("link", { name: /Broken Example/ });
     expect(within(broken).getByText("Broken")).toBeInTheDocument();
+    window.location.hash = "";
+  });
+
+  it("opens a run with its stages, documents and sanitized report", async () => {
+    window.location.hash = "#/runs";
+    mockApi((url) => answer(url.startsWith("/api/runs/bulletin-scan-1") ? RUN_DETAIL : RUNS));
+    render(<App />);
+    expect(await screen.findAllByText("Reporting")).not.toHaveLength(0);
+    const links = await screen.findAllByRole("link", { name: /Bulletin scan/ });
+    await userEvent.click(links[0] as HTMLElement);
+    expect(await screen.findByRole("heading", { name: "CTI Daily Scan" })).toBeInTheDocument();
+    expect(screen.getByText("Run report, scan-2026-11-10.md")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "CTI26-137" })).toHaveAttribute(
+      "href",
+      "#/reports/CTI26-137",
+    );
+    expect(screen.getByLabelText(/Feeds: 189 items/)).toBeInTheDocument();
+    // a remote image in a report must not load
+    expect(document.querySelector(".report img")?.getAttribute("src")).toBeNull();
+    window.location.hash = "";
+  });
+
+  it("lists CVEs and narrows to the exploited ones", async () => {
+    window.location.hash = "#/cves";
+    mockApi(() => answer(CVES));
+    render(<App />);
+    expect(await screen.findByText("3 of 3 CVEs, newest first")).toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText("Exploited only"));
+    expect(screen.getByText("1 of 3 CVEs, newest first")).toBeInTheDocument();
+    const row = screen.getByText("CVE-2026-0001").closest("tr") as HTMLElement;
+    expect(within(row).getByText("Exploited")).toBeInTheDocument();
+    expect(within(row).getByRole("link", { name: "TH26-54" })).toHaveAttribute(
+      "href",
+      "#/reports/TH26-54",
+    );
     window.location.hash = "";
   });
 });

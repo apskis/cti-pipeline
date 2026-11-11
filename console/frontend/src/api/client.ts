@@ -1,6 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
-import type { Deliverable, DeliverableDocument, Run, Summary } from "./types";
+import type {
+  CveRegister,
+  Deliverable,
+  DeliverableDocument,
+  Run,
+  RunDetail,
+  Summary,
+} from "./types";
 
 export class ApiError extends Error {
   constructor(
@@ -57,6 +64,23 @@ export function useDeliverableDocument(id: string | null) {
     queryKey: ["deliverable", id],
     queryFn: () => getJson<DeliverableDocument>(deliverablePath(id ?? "", "html")),
     enabled: id !== null,
+    staleTime: STALE_MS,
+  });
+}
+
+export function useRunDetail(id: string | null) {
+  return useQuery({
+    queryKey: ["run", id],
+    queryFn: () => getJson<RunDetail>(`/api/runs/${encodeURIComponent(id ?? "")}`),
+    enabled: id !== null,
+    staleTime: STALE_MS,
+  });
+}
+
+export function useCves() {
+  return useQuery({
+    queryKey: ["cves"],
+    queryFn: () => getJson<CveRegister>("/api/cves"),
     staleTime: STALE_MS,
   });
 }

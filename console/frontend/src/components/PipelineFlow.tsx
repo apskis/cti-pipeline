@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import {
   ChevronRight,
   FileText,
@@ -52,19 +53,33 @@ const StageCard = ({ stage }: { stage: Stage }) => {
   );
 };
 
-const PipelineFlow = ({ stages }: { stages: Stage[] }) => {
+interface PipelineFlowProps {
+  stages: Stage[];
+  /** One row of six at wide screens. Off where the flow sits in a narrower pane. */
+  row?: boolean;
+}
+
+const PipelineFlow = ({ stages, row = true }: PipelineFlowProps) => {
   if (stages.length === 0) {
     return <p className="text-sm text-muted">No scan run found in the cost logs yet.</p>;
   }
   return (
-    <ol className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:flex xl:items-stretch">
+    <ol
+      className={clsx("grid grid-cols-2 gap-2 md:grid-cols-3", row && "xl:flex xl:items-stretch")}
+    >
       {stages.map((stage, i) => (
         <Fragment key={stage.key}>
-          <li className="xl:flex-1" aria-label={`${stage.label}: ${stage.value}, ${stage.status}`}>
+          <li
+            className={clsx(row && "xl:flex-1")}
+            aria-label={`${stage.label}: ${stage.value}, ${stage.status}`}
+          >
             <StageCard stage={stage} />
           </li>
           {i < stages.length - 1 && (
-            <li aria-hidden="true" className="hidden items-center text-faint xl:flex">
+            <li
+              aria-hidden="true"
+              className={clsx("hidden items-center text-faint", row && "xl:flex")}
+            >
               <ChevronRight size={18} />
             </li>
           )}

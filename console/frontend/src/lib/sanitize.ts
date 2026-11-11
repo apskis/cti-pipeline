@@ -6,7 +6,7 @@ import DOMPurify from "dompurify";
 const ALLOWED_TAGS = [
   "p", "h1", "h2", "h3", "h4", "h5", "h6", "strong", "b", "em", "i", "u", "s", "sup", "sub",
   "br", "ul", "ol", "li", "table", "thead", "tbody", "tr", "th", "td", "a", "img",
-  "blockquote", "pre", "code",
+  "blockquote", "pre", "code", "hr",
 ];
 const ALLOWED_ATTR = ["href", "src", "alt", "colspan", "rowspan"];
 const SAFE_LINK = /^(?:https?:|mailto:)/i;

@@ -84,3 +84,41 @@ def test_deliverable_file_downloads(client: TestClient) -> None:
 )
 def test_deliverable_lookup_rejects(client: TestClient, path: str, status: int) -> None:
     assert client.get(path).status_code == status
+
+
+def test_run_detail(client: TestClient) -> None:
+    runs = client.get("/api/runs", params={"component": "bulletin-scan"}).json()
+    body = client.get(f"/api/runs/{runs[1]['id']}").json()
+    assert [s["label"] for s in body["sessions"]] == ["scan", "build-1", "build-2"]
+    assert len(body["stages"]) == 6
+    assert [d["id"] for d in body["written"]] == ["CTI26-02"]
+    assert body["report"]["name"] == "scan-2026-11-10.md"
+    html = body["report"]["html"]
+    assert "<table>" in html and "<h1>Scan</h1>" in html
+    assert "<script>" not in html and "&lt;script&gt;" in html
+
+
+def test_run_without_report_or_stages(client: TestClient) -> None:
+    runs = client.get("/api/runs").json()
+    rebuild = next(r for r in runs if r["kind"] == "build only")
+    body = client.get(f"/api/runs/{rebuild['id']}").json()
+    assert body["stages"] == [] and body["report"] is None
+
+
+def test_run_rejects(client: TestClient) -> None:
+    assert client.get("/api/runs/bulletin-scan-20990101T000000").status_code == 404
+    assert client.get("/api/runs/..%2Fstate").status_code in (404, 422)
+    assert client.get("/api/runs/Bulletin-x").status_code == 422
+
+
+def test_cves(client: TestClient) -> None:
+    body = client.get("/api/cves").json()
+    assert body["register"] == "bulletin-scan/registers/CVE_Register_2026.xlsx"
+    first, second = body["cves"]
+    assert first["id"] == "CVE-2026-0001" and first["exploited"] is True
+    assert first["cvss_score"] == 9.8 and first["kev_added"] == "2026-11-09"
+    assert first["hunt_id"] == "TH26-01" and first["bulletin_id"] == "CTI26-01"
+    assert "validation_spl" not in first
+    assert second["exploited"] is False and second["cvss_score"] is None
+    assert second["kev_added"] is None and second["bulletin_id"] is None
+    assert second["hunt_id"] is None  # a shifted row's text is not linked as an ID

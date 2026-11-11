@@ -61,3 +61,39 @@ export interface DeliverableDocument extends Deliverable {
   html: string;
   warnings: number;
 }
+
+export interface RunReport {
+  name: string;
+  /** Markdown rendered by the backend with raw HTML escaped. Still sanitize it. */
+  html: string;
+}
+
+export interface RunDetail extends Run {
+  stages: Stage[];
+  written: Deliverable[];
+  report: RunReport | null;
+}
+
+export interface Cve {
+  id: string;
+  vendor: string;
+  product: string;
+  vuln_type: string;
+  cvss: string;
+  cvss_score: number | null;
+  kev_added: string | null;
+  kev_due: string | null;
+  exploitation: string;
+  exploited: boolean;
+  relevance: string;
+  hunt_id: string | null;
+  bulletin_id: string | null;
+  date_added: string | null;
+  remediation: string;
+  observed: string;
+}
+
+export interface CveRegister {
+  register: string | null;
+  cves: Cve[];
+}

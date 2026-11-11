@@ -2,14 +2,31 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import clsx from "clsx";
 import { useState } from "react";
 
-import { useRoute } from "./lib/route";
+import { type Route, useRoute } from "./lib/route";
+import CvesPage from "./pages/CvesPage";
 import OverviewPage from "./pages/OverviewPage";
 import ReportsPage from "./pages/ReportsPage";
+import RunsPage from "./pages/RunsPage";
 
 const TABS = [
   { page: "overview", label: "Overview", href: "#/" },
   { page: "reports", label: "Reports", href: "#/reports" },
+  { page: "runs", label: "Runs", href: "#/runs" },
+  { page: "cves", label: "CVEs", href: "#/cves" },
 ] as const;
+
+const Page = ({ route }: { route: Route }) => {
+  switch (route.page) {
+    case "reports":
+      return <ReportsPage selected={route.id} />;
+    case "runs":
+      return <RunsPage selected={route.id} />;
+    case "cves":
+      return <CvesPage />;
+    default:
+      return <OverviewPage />;
+  }
+};
 
 const App = () => {
   // One client per mount, so tests never share a cache.
@@ -42,7 +59,7 @@ const App = () => {
           ))}
         </nav>
         <main>
-          {route.page === "reports" ? <ReportsPage selected={route.id} /> : <OverviewPage />}
+          <Page route={route} />
         </main>
       </div>
     </QueryClientProvider>

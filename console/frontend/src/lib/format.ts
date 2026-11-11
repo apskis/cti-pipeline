@@ -27,3 +27,20 @@ export const formatDay = (iso: string): string =>
   (DATE_ONLY.test(iso) ? dayUtc : day).format(new Date(iso));
 
 export const formatShortDay = (iso: string): string => shortDay.format(new Date(iso));
+
+/** 75 -> "1 min", 4000 -> "1 h 7 min". Runs are minutes long, so seconds are dropped. */
+export function formatDuration(seconds: number): string {
+  const minutes = Math.max(1, Math.round(seconds / 60));
+  if (minutes < 60) return `${minutes} min`;
+  const rest = minutes % 60;
+  return rest ? `${Math.floor(minutes / 60)} h ${rest} min` : `${minutes / 60} h`;
+}
+
+const time = new Intl.DateTimeFormat("en-GB", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+/** A run's start, in the viewer's zone: "10 Nov 2026, 14:57". */
+export const formatWhen = (iso: string): string =>
+  `${formatDay(iso)}, ${time.format(new Date(iso))}`;
