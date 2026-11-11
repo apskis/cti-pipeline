@@ -1,48 +1,103 @@
 @import "tailwindcss";
 
-/* Colour tokens. Components use the Tailwind names below (bg-surface, text-muted, ...),
-   never raw hex, so dark mode is one block of overrides. */
+/* GeneLabs brand tokens, from the brand kit: Forest #103B32, Emerald #167D61,
+   Sage #A2BFAE, Mist #EAF3EE, Charcoal #202C29. Components use the Tailwind names
+   (bg-surface, text-accent, ...), never raw hex, so a theme is one block of overrides.
+   Dark mode is Charcoal on a near black charcoal page, with Emerald lifted to #3FB48C,
+   because the brand Emerald is too dark to read on a dark page. Status colours stay red, amber and green: they carry meaning. */
 @theme {
-  --color-page: #f7f6f2;
+  --color-page: #f4f8f6;
   --color-surface: #ffffff;
-  --color-raised: #f1efe8;
-  --color-line: #e3e1d9;
-  --color-ink: #1f1f1d;
-  --color-muted: #5f5e5a;
-  --color-faint: #888780;
+  --color-raised: #eaf3ee;
+  --color-line: #d3e1d9;
+  --color-ink: #202c29;
+  --color-muted: #4e5f58;
+  --color-faint: #5f706a;
+  --color-brand: #103b32;
+  --color-accent: #167d61;
+  --color-accent-hover: #106650;
+  --color-on-accent: #ffffff;
+  --color-accent-soft: #eaf3ee;
+  --color-accent-soft-ink: #103b32;
+  --color-rung: #a2bfae;
+  --color-symbol-tile: transparent;
   --color-ok-bg: #eaf3de;
   --color-ok-ink: #27500a;
   --color-warn-bg: #faeeda;
   --color-warn-ink: #633806;
   --color-fail-bg: #fcebeb;
   --color-fail-ink: #791f1f;
-  --color-unknown-bg: #f1efe8;
-  --color-unknown-ink: #444441;
-  --color-series-scan: #7f77dd;
-  --color-series-build: #1d9e75;
-  --color-series-report: #d85a30;
-  --color-series-other: #888780;
-  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --color-unknown-bg: #eef2f0;
+  --color-unknown-ink: #3e4a46;
+  --color-series-scan: #167d61;
+  --color-series-build: #a2bfae;
+  --color-series-report: #103b32;
+  --color-series-other: #7f8b86;
+  --font-sans: Aptos, "Segoe UI Variable", "Segoe UI", system-ui, Arial, sans-serif;
 }
 
+/* Dark follows the system unless the theme switch says otherwise (data-theme on <html>). */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --color-page: #161615;
-    --color-surface: #1f1f1d;
-    --color-raised: #2a2a28;
-    --color-line: #3a3a37;
-    --color-ink: #ecebe6;
-    --color-muted: #b4b2a9;
-    --color-faint: #888780;
+  :root:not([data-theme="light"]) {
+    --color-page: #121716;
+    --color-surface: #202c29;
+    --color-raised: #293632;
+    --color-line: #35423e;
+    --color-ink: #eaf3ee;
+    --color-muted: #b3bfbb;
+    --color-faint: #8d9a96;
+    --color-brand: #eaf3ee;
+    --color-accent: #3fb48c;
+    --color-accent-hover: #5cc69f;
+    --color-on-accent: #0b1512;
+    --color-accent-soft: #2b3b36;
+    --color-accent-soft-ink: #d6ebe0;
+    --color-rung: #7fa593;
+  --color-symbol-tile: #eaf3ee;
+    --color-symbol-tile: #eaf3ee;
     --color-ok-bg: #173404;
     --color-ok-ink: #c0dd97;
     --color-warn-bg: #412402;
     --color-warn-ink: #fac775;
     --color-fail-bg: #501313;
     --color-fail-ink: #f7c1c1;
-    --color-unknown-bg: #2c2c2a;
-    --color-unknown-ink: #d3d1c7;
+    --color-unknown-bg: #2a3532;
+    --color-unknown-ink: #cfd8d5;
+    --color-series-scan: #3fb48c;
+    --color-series-build: #a2bfae;
+    --color-series-report: #d7ebe0;
+    --color-series-other: #7d8a86;
+    color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --color-page: #121716;
+  --color-surface: #202c29;
+  --color-raised: #293632;
+  --color-line: #35423e;
+  --color-ink: #eaf3ee;
+  --color-muted: #b3bfbb;
+  --color-faint: #8d9a96;
+  --color-brand: #eaf3ee;
+  --color-accent: #3fb48c;
+  --color-accent-hover: #5cc69f;
+  --color-on-accent: #0b1512;
+  --color-accent-soft: #2b3b36;
+  --color-accent-soft-ink: #d6ebe0;
+  --color-rung: #7fa593;
+  --color-ok-bg: #173404;
+  --color-ok-ink: #c0dd97;
+  --color-warn-bg: #412402;
+  --color-warn-ink: #fac775;
+  --color-fail-bg: #501313;
+  --color-fail-ink: #f7c1c1;
+  --color-unknown-bg: #2a3532;
+  --color-unknown-ink: #cfd8d5;
+  --color-series-scan: #3fb48c;
+  --color-series-build: #a2bfae;
+  --color-series-report: #d7ebe0;
+  --color-series-other: #7d8a86;
+  color-scheme: dark;
 }
 
 body {
@@ -65,12 +120,13 @@ body {
 .report h3 {
   margin-top: 1.4rem;
   font-weight: 600;
+  color: var(--color-brand);
 }
 .report h3 {
   font-size: 1rem;
 }
 .report a {
-  color: var(--color-series-scan);
+  color: var(--color-accent);
   text-decoration: underline;
 }
 .report sup {

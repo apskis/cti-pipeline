@@ -2,7 +2,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import clsx from "clsx";
 import { useState } from "react";
 
+import { BrandLockup, ThemeSwitch } from "./components/Brand";
 import { type Route, useRoute } from "./lib/route";
+import { ThemeProvider } from "./lib/theme";
 import CvesPage from "./pages/CvesPage";
 import OverviewPage from "./pages/OverviewPage";
 import ReportsPage from "./pages/ReportsPage";
@@ -39,34 +41,41 @@ const App = () => {
   );
   const route = useRoute();
   return (
-    <QueryClientProvider client={client}>
-      <div className="mx-auto max-w-6xl px-4 py-6 md:px-8">
-        <header className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-          <h1 className="text-xl font-medium">GeneLabs CTI pipeline</h1>
-          <p className="text-sm text-muted">Local only. Nothing here changes the pipeline; only the stakeholder list is saved.</p>
-        </header>
-        <nav aria-label="Pages" className="mb-6 flex gap-1 overflow-x-auto [scrollbar-width:none] shadow-[inset_0_-1px_0_var(--color-line)]">
-          {TABS.map((tab) => (
-            <a
-              key={tab.page}
-              href={tab.href}
-              aria-current={route.page === tab.page ? "page" : undefined}
-              className={clsx(
-                "shrink-0 border-b-2 px-3 py-2 text-sm",
-                route.page === tab.page
-                  ? "border-ink font-medium"
-                  : "border-transparent text-muted hover:text-ink",
-              )}
-            >
-              {tab.label}
-            </a>
-          ))}
-        </nav>
-        <main>
-          <Page route={route} />
-        </main>
-      </div>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={client}>
+        <div className="mx-auto max-w-6xl px-4 py-6 md:px-8">
+          <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b-[3px] border-accent pb-4">
+            <BrandLockup />
+            <div className="flex flex-col items-start gap-2 sm:items-end">
+              <ThemeSwitch />
+              <p className="text-xs text-muted">
+                Local only. Nothing here changes the pipeline; only the stakeholder list is saved.
+              </p>
+            </div>
+          </header>
+          <nav aria-label="Pages" className="mb-6 flex gap-1 overflow-x-auto [scrollbar-width:none] shadow-[inset_0_-1px_0_var(--color-line)]">
+            {TABS.map((tab) => (
+              <a
+                key={tab.page}
+                href={tab.href}
+                aria-current={route.page === tab.page ? "page" : undefined}
+                className={clsx(
+                  "shrink-0 border-b-2 px-3 py-2 text-sm",
+                  route.page === tab.page
+                    ? "border-accent font-medium text-brand"
+                    : "border-transparent text-muted hover:text-ink",
+                )}
+              >
+                {tab.label}
+              </a>
+            ))}
+          </nav>
+          <main>
+            <Page route={route} />
+          </main>
+        </div>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 
