@@ -12,3 +12,6 @@ __pycache__/
 .ruff_cache/
 deploy/aws/generated/
 deploy/azure/generated/
+
+# The local console is not part of the pipeline image.
+console/
