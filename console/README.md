@@ -4,10 +4,40 @@ A local, read only view of what the pipeline produced: runs, stages, costs and e
 deliverable. It reads `out/` and `logs/`, never writes to them, and makes no model calls.
 It is not part of the pipeline image (`.dockerignore` leaves `console/` out).
 
-Status: the backend API, the overview page, the report reader, run detail and the CVE
-table are in place. Demo polish comes next.
-
 ## Run it
+
+One command from the repo root, in Windows PowerShell:
+
+```
+.\scripts\console.ps1
+```
+
+It starts the backend on `127.0.0.1:8765` and the built page on `127.0.0.1:5173`, with
+the strict Content Security Policy, then opens the browser. Ctrl+C stops both. The first
+start installs the front end's packages and builds the page; the backend needs its Python
+environment already (see Backend below).
+
+| Option | Does |
+|---|---|
+| `-Build` | Rebuild the page first, after a `git pull` |
+| `-Dev` | Use the Vite dev server instead, which reloads on edits |
+| `-Out <dir>` and `-Logs <dir>` | Read another copy of the output, such as `D:\projects\cti-pipeline\out` from a worktree |
+| `-NoBrowser` | Do not open the browser |
+
+A backend already running on port 8765 is reused, and keeps the folders it started with.
+
+### A five minute demo
+
+1. **Overview.** The headline numbers, then the six stages of the last scan: where the
+   feeds came from, what Claude ranked, what got an ID, what was built and checked.
+2. **Start here.** Open the latest bulletin, then its hunt package. Each is the real
+   `.docx` rendered in the page, with a button to download the original.
+3. **Runs.** Open the last bulletin scan: its sessions, what each cost, the documents it
+   saved and the scan report it left.
+4. **CVEs.** Tick "Exploited only" and "On CISA KEV" to show the CVEs that need action
+   now, with the deadlines that have passed marked.
+
+### By hand
 
 Two terminals. Start the backend first, then the front end, then open
 `http://127.0.0.1:5173`.
@@ -29,9 +59,12 @@ React 18 with TypeScript, built with Vite, styled with Tailwind v4, data through
 TanStack Query, the chart through Chart.js. Vite proxies `/api` to the backend on
 `127.0.0.1:8765`, so the browser only ever talks to one origin.
 
-The overview page shows the headline numbers, how the last scan ran (six stages, each
-with a status word as well as a colour) and the model cost per day. If the backend is
-not running it says how to start it and offers a retry.
+The overview page shows the headline numbers, a "Start here" row, how the last scan ran
+(six stages, each with a status word as well as a colour) and the model cost per day.
+"Start here" links the newest bulletin, hunt package, CVE brief and weekly report that
+are not broken, so a demo opens on a working document. If the backend is not running the
+page says how to start it and offers a retry. With no output at all it says how to make
+some, and every list says so when it is empty.
 
 The Reports page lists every deliverable, filtered by kind, status and a search on ID or
 title. Picking one opens it in the reader, rendered from its `.docx`, with a button to

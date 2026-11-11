@@ -16,7 +16,8 @@ const LoadState = ({ error, onRetry }: LoadStateProps) => {
     <div className="mx-auto max-w-lg rounded-xl border border-line bg-surface p-6" role="alert">
       <p className="font-medium">The console backend did not answer.</p>
       <p className="mt-2 text-sm text-muted">
-        Start it with <code>python -m cti_console</code> in <code>console/backend</code>, then retry.
+        Start the console with <code>.\scripts\console.ps1</code>, or the backend alone with{" "}
+        <code>python -m cti_console</code> in <code>console/backend</code>, then retry.
       </p>
       <p className="mt-2 text-xs text-faint">{error.message}</p>
       <button

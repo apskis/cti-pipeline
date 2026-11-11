@@ -120,7 +120,9 @@ const ReportsPage = ({ selected }: { selected: string | null }) => {
             </li>
           ))}
           {shown.length === 0 && (
-            <li className="px-3 py-6 text-center text-sm text-muted">No report matches.</li>
+            <li className="px-3 py-6 text-center text-sm text-muted">
+              {items.length === 0 ? "No reports under out/ yet." : "No report matches."}
+            </li>
           )}
         </ul>
       </section>
