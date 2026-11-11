@@ -60,6 +60,14 @@ five paragraphs); the driver rejects it and queues it again, so it is wasted wor
   `red_flags`, `questions`, `sources`, `tlp`. `why_this_matters`, `what_happened` and
   `red_flags` are LISTS of strings, one bullet or paragraph each (three or more), never
   one long string.
+  `questions` is a LIST of `[team, question]` PAIRS, never plain strings. Every question
+  names the team that should answer it: SOC, Vulnerability Management, IT, Third Party
+  Risk, Leadership, or another team the bulletin is about. Aim for 8 to 11 questions
+  across 4 to 6 teams, and list one team's questions together. Example:
+  `"questions": [["SOC", "Have we seen new Faspex admin accounts?"],
+  ["Leadership", "What is our patch timeline for a CVSS 9.8 file transfer flaw?"]]`.
+  Plain strings render with no team label and the builder prints a WARN line. If you
+  see that WARN, fix the spec and rebuild.
 
 VERIFY EVERY DOCUMENT AFTER BUILDING IT, before reporting it done:
 
