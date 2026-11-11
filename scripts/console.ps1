@@ -80,6 +80,8 @@ if (-not $Dev -and ($Build -or -not (Test-Path (Join-Path $Frontend "dist\index.
 }
 
 $Started = @()
+$LaunchedAt = Get-Date
+$OwnBackend = $false
 try {
   # A backend left running from an earlier start is reused, not replaced. It keeps
   # whatever -Out and -Logs it was started with.
@@ -90,6 +92,7 @@ try {
     $Proc = Start-Process -FilePath $PyExe -ArgumentList $PyArgs -WorkingDirectory $Backend `
       -NoNewWindow -PassThru
     $Started += $Proc
+    $OwnBackend = $true
     Wait-Up "$Api/api/health" "The backend" $Proc
   }
 
@@ -109,5 +112,13 @@ try {
   # Stop what this script started, children included (cmd.exe starts node).
   foreach ($P in $Started) {
     if (-not $P.HasExited) { & taskkill.exe /PID $P.Id /T /F | Out-Null }
+  }
+  # The backend keeps a hidden Word open to make branded PDFs. Word runs as its own
+  # process, not the backend's child, so close it here too. Only Word started for
+  # automation since this launch is touched, never a Word window you have open.
+  if ($OwnBackend) {
+    Get-CimInstance Win32_Process -Filter "Name='WINWORD.EXE'" |
+      Where-Object { $_.CommandLine -match '/Automation' -and $_.CreationDate -ge $LaunchedAt } |
+      ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
   }
 }

@@ -178,4 +178,4 @@ def settings(tmp_path: Path) -> Settings:
         "failed: ['HHS HC3 Alerts (HTTP 404)'] -> /app/out/state/_work/feed-digest.md\n",
         encoding="utf-8",
     )
-    return Settings(repo_root=REPO_ROOT, out_dir=out, logs_dir=logs)
+    return Settings(repo_root=REPO_ROOT, out_dir=out, logs_dir=logs, cache_dir=tmp_path / "cache")

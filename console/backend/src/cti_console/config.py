@@ -17,6 +17,9 @@ class Settings:
     repo_root: Path
     out_dir: Path
     logs_dir: Path
+    # The console's own scratch space: branded PDFs made from out/'s reports. Not out/,
+    # which belongs to the pipeline.
+    cache_dir: Path
 
     @property
     def scripts_dir(self) -> Path:
@@ -29,4 +32,7 @@ class Settings:
             repo_root=repo,
             out_dir=Path(os.environ.get("CTI_CONSOLE_OUT", repo / "out")).resolve(),
             logs_dir=Path(os.environ.get("CTI_CONSOLE_LOGS", repo / "logs")).resolve(),
+            cache_dir=Path(
+                os.environ.get("CTI_CONSOLE_CACHE", repo / "console" / ".cache")
+            ).resolve(),
         )

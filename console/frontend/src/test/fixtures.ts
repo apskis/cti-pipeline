@@ -99,6 +99,7 @@ export const DOCUMENT: DeliverableDocument = {
   ...deliverable("CTI26-137", "bulletin", "IBM Aspera Faspex RCE", "ok"),
   html: '<h3>Why This Matters</h3><p>Patch now.</p><script>window.hacked = true</script>',
   warnings: 0,
+  pdf: false,
 };
 
 export const RUN_DETAIL: RunDetail = {

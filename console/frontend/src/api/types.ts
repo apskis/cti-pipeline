@@ -60,6 +60,8 @@ export interface Deliverable {
 export interface DeliverableDocument extends Deliverable {
   html: string;
   warnings: number;
+  /** True when the backend can make a branded PDF with Word on this machine. */
+  pdf: boolean;
 }
 
 export interface RunReport {

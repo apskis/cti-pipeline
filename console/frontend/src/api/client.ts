@@ -54,10 +54,28 @@ export function useDeliverables() {
   });
 }
 
-const deliverablePath = (id: string, part: "html" | "file"): string =>
+const deliverablePath = (id: string, part: "html" | "file" | "pdf" | "pdf/ready"): string =>
   `/api/deliverables/${encodeURIComponent(id)}/${part}`;
 
 export const fileUrl = (id: string): string => deliverablePath(id, "file");
+
+/** The branded PDF, shown in the page, or saved when `download` is set. */
+export const pdfUrl = (id: string, download = false): string =>
+  deliverablePath(id, "pdf") + (download ? "?download=true" : "");
+
+/**
+ * Asks the backend to make the PDF (once; it is cached), so the page can say what is
+ * happening before it frames the finished file. Word's first export can take a minute.
+ */
+export function usePdfReady(id: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["pdf", id],
+    queryFn: () => getJson<{ id: string; bytes: number }>(deliverablePath(id, "pdf/ready")),
+    enabled,
+    staleTime: STALE_MS,
+    retry: false,
+  });
+}
 
 export function useDeliverableDocument(id: string | null) {
   return useQuery({

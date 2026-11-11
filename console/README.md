@@ -30,8 +30,10 @@ A backend already running on port 8765 is reused, and keeps the folders it start
 
 1. **Overview.** The headline numbers, then the six stages of the last scan: where the
    feeds came from, what Claude ranked, what got an ID, what was built and checked.
-2. **Start here.** Open the latest bulletin, then its hunt package. Each is the real
-   `.docx` rendered in the page, with a button to download the original.
+2. **Start here.** Open the latest bulletin, then its hunt package. Each opens on its
+   **Branded** view: the real document as Word lays it out, banner and footer included,
+   with buttons to download the `.docx` or the PDF. **Text** shows the same report as
+   plain page text.
 3. **Runs.** Open the last bulletin scan: its sessions, what each cost, the documents it
    saved and the scan report it left.
 4. **CVEs.** Tick "Exploited only" and "On CISA KEV" to show the CVEs that need action
@@ -95,6 +97,8 @@ copied from the web, so it is treated as hostile:
 - Markdown run reports are rendered with raw HTML switched off, so any HTML in them
   arrives as plain text, and then go through DOMPurify like the rest.
 - The API sends `default-src 'none'` on every answer, so nothing it returns can run.
+  Only the branded PDF may be framed, and only by the console's own page
+  (`frame-ancestors 'self'`). The page allows frames from itself and no plugins.
 
 | Command | Does |
 |---|---|
@@ -132,6 +136,25 @@ purpose: the output is internal threat intelligence and the API has no login.
 | `CTI_CONSOLE_PORT` | `8765` | Port |
 | `CTI_CONSOLE_OUT` | `<repo>/out` | Pipeline output to read |
 | `CTI_CONSOLE_LOGS` | `<repo>/logs` | Run logs to read |
+| `CTI_CONSOLE_CACHE` | `<repo>/console/.cache` | Branded PDFs the console made (gitignored) |
+
+### Branded PDFs
+
+The Branded view is a PDF made by Microsoft Word, so it matches the document exactly.
+It needs Windows with Word installed; without Word the reader shows the Text view only
+and offers no PDF download.
+
+- **One hidden Word.** The backend keeps one Word open on a worker thread and closes it
+  after 15 quiet minutes. Word's first export in a session is slow (close to a minute
+  on a machine whose default printer is a network printer), so the backend pays it at
+  start up, in the background. After that a report takes about a second.
+- **Cached.** Each PDF is made once and kept under `CTI_CONSOLE_CACHE`. A rebuilt report
+  gets a fresh PDF the next time it is opened, and the old one is removed.
+- **Never your Word.** The backend starts its own Word for automation and never touches
+  a Word window you have open. Windows closes that Word when the backend exits, even
+  when it is killed, and the launcher checks again on the way out.
+- **Read only.** Word opens each `.docx` read only and never saves it. `out/` is not
+  written to.
 
 ### Endpoints (GET only)
 
@@ -143,8 +166,10 @@ purpose: the output is internal threat intelligence and the API has no login.
 | `/api/runs/{id}` | One run: its sessions, stages, documents saved while it ran, and its run report as HTML |
 | `/api/cves` | The CVE register's rows, without the SPL and CQL columns |
 | `/api/deliverables?kind=&status=&q=&limit=` | One entry per ID: kind, title, path under `out/`, first seen, status |
-| `/api/deliverables/{id}/html` | The same entry plus the document as HTML, made with mammoth |
+| `/api/deliverables/{id}/html` | The same entry plus the document as HTML, made with mammoth, and `pdf`: whether Word can make the branded PDF |
 | `/api/deliverables/{id}/file` | The original `.docx`, as a download |
+| `/api/deliverables/{id}/pdf/ready` | Makes the branded PDF if it is not cached yet; the page calls it to show progress |
+| `/api/deliverables/{id}/pdf?download=` | The branded PDF, shown in the page, or as a download with `download=true` |
 
 An ID must look like one (letters, digits and hyphens; a run ID is the component and its
 start time), and the file must sit inside `out/`, or the answer is 404. A bold paragraph on its own outside a table becomes a
