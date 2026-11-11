@@ -80,3 +80,20 @@ def test_missing_sources_read_as_unknown(settings: Settings) -> None:
     stages = {st["key"]: st for st in build_summary(settings)["stages"]}  # type: ignore[union-attr]
     assert stages["feeds"]["status"] == "unknown"
     assert stages["scan"]["status"] == "unknown"
+
+
+def test_promote_headings_only_whole_bold_paragraphs() -> None:
+    from cti_console.reader import promote_headings
+
+    html = (
+        "<p><strong>Why This Matters</strong></p>"
+        "<p><strong>Lead: </strong>body text</p>"
+        "<p><strong>x</strong></p>"
+        "<table><tr><td><p><strong>Threat Actor</strong></p></td></tr></table>"
+        "<p><strong>Sources</strong></p>"
+    )
+    assert promote_headings(html) == (
+        "<h3>Why This Matters</h3><p><strong>Lead: </strong>body text</p><p><strong>x</strong></p>"
+        "<table><tr><td><p><strong>Threat Actor</strong></p></td></tr></table>"
+        "<h3>Sources</h3>"
+    )

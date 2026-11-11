@@ -1,4 +1,4 @@
-import type { Run, Session, Summary } from "../api/types";
+import type { Deliverable, DeliverableDocument, Run, Session, Summary } from "../api/types";
 
 const session = (label: string, started: string, cost: number): Session => ({
   label,
@@ -67,4 +67,27 @@ export const SUMMARY: Summary = {
     { key: "check", label: "Check", value: "224 docs, 0 broken", status: "ok", note: "No broken documents" },
     { key: "deliver", label: "Deliver", value: "38 new", status: "unknown", note: "First seen today" },
   ],
+};
+
+const deliverable = (id: string, kind: string, title: string, status: Deliverable["status"]) => ({
+  id,
+  kind,
+  title,
+  path: `bulletin-scan/${id}.docx`,
+  first_seen: "2026-11-10",
+  modified: "2026-11-10T20:00:00",
+  status,
+  problem: status === "broken" ? "8 one letter paragraphs" : null,
+});
+
+export const DELIVERABLES: Deliverable[] = [
+  deliverable("CTI26-137", "bulletin", "IBM Aspera Faspex RCE", "ok"),
+  deliverable("CTI26-136", "bulletin", "Broken Example", "broken"),
+  deliverable("TH26-54", "hunt", "Turla Exchange Email Harvesting", "ok"),
+];
+
+export const DOCUMENT: DeliverableDocument = {
+  ...deliverable("CTI26-137", "bulletin", "IBM Aspera Faspex RCE", "ok"),
+  html: '<h3>Why This Matters</h3><p>Patch now.</p><script>window.hacked = true</script>',
+  warnings: 0,
 };

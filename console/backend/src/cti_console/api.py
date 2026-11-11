@@ -2,17 +2,27 @@
 
 from __future__ import annotations
 
-from fastapi import FastAPI, Query, Request, Response
+from pathlib import Path
+
+from fastapi import FastAPI, HTTPException, Query, Request, Response
+from fastapi import Path as PathParam
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from .config import Settings
-from .deliverables import scan
+from .deliverables import Deliverable, scan
 from .pipeline import load_rules
+from .reader import render_docx
 from .summary import build_summary, collect_runs
 
 # The Vite dev server. Nothing else may call the API from a browser.
 FRONTEND_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
 MAX_LIMIT = 1000
+# Pipeline IDs (CTI26-137, TH26-54, CVE-VM-2026-11-10) and console IDs (WK-2026-46).
+ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9-]{1,39}$"
+DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+# The API only ever returns data and files. Nothing it sends should run or be framed.
+API_CSP = "default-src 'none'; frame-ancestors 'none'"
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -33,6 +43,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         response: Response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Cache-Control"] = "no-store"
+        response.headers["Content-Security-Policy"] = API_CSP
         return response
 
     @app.get("/api/health")
@@ -51,7 +62,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return [r.to_dict() for r in reversed(found[-limit:])]
 
     @app.get("/api/deliverables")
-    def deliverables(
+    def deliverables_list(
         kind: str | None = None,
         status: str | None = None,
         q: str | None = Query(None, max_length=100),
@@ -67,5 +78,28 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             and needle in f"{d.id} {d.title}".lower()
         ]
         return [d.to_dict() for d in picked[:limit]]
+
+    def find(ident: str) -> tuple[Deliverable, Path]:
+        """The deliverable and its file, checked to sit inside the out folder."""
+        items = scan(settings.out_dir, load_rules(settings.scripts_dir))
+        match = next((d for d in items if d.id == ident), None)
+        if match is None:
+            raise HTTPException(404, f"No deliverable {ident}")
+        out = settings.out_dir.resolve()
+        path = (out / match.path).resolve()
+        if not path.is_relative_to(out) or not path.is_file():
+            raise HTTPException(404, f"No file for {ident}")
+        return match, path
+
+    @app.get("/api/deliverables/{ident}/html")
+    def deliverable_html(ident: str = PathParam(pattern=ID_PATTERN)) -> dict[str, object]:
+        match, path = find(ident)
+        rendered = render_docx(path)
+        return {**match.to_dict(), "html": rendered.html, "warnings": rendered.warnings}
+
+    @app.get("/api/deliverables/{ident}/file")
+    def deliverable_file(ident: str = PathParam(pattern=ID_PATTERN)) -> FileResponse:
+        _, path = find(ident)
+        return FileResponse(path, media_type=DOCX_TYPE, filename=path.name)
 
     return app

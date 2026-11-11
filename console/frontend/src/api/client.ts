@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import type { Run, Summary } from "./types";
+import type { Deliverable, DeliverableDocument, Run, Summary } from "./types";
 
 export class ApiError extends Error {
   constructor(
@@ -35,6 +35,28 @@ export function useRuns() {
   return useQuery({
     queryKey: ["runs"],
     queryFn: () => getJson<Run[]>("/api/runs?limit=200"),
+    staleTime: STALE_MS,
+  });
+}
+
+export function useDeliverables() {
+  return useQuery({
+    queryKey: ["deliverables"],
+    queryFn: () => getJson<Deliverable[]>("/api/deliverables?limit=1000"),
+    staleTime: STALE_MS,
+  });
+}
+
+const deliverablePath = (id: string, part: "html" | "file"): string =>
+  `/api/deliverables/${encodeURIComponent(id)}/${part}`;
+
+export const fileUrl = (id: string): string => deliverablePath(id, "file");
+
+export function useDeliverableDocument(id: string | null) {
+  return useQuery({
+    queryKey: ["deliverable", id],
+    queryFn: () => getJson<DeliverableDocument>(deliverablePath(id ?? "", "html")),
+    enabled: id !== null,
     staleTime: STALE_MS,
   });
 }
