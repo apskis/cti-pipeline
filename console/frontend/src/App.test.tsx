@@ -15,9 +15,14 @@ function mockApi(handler: (url: string) => Promise<Response>) {
   return vi.spyOn(globalThis, "fetch").mockImplementation((input) => handler(String(input)));
 }
 
+const overview = (url: string) =>
+  answer(
+    url.startsWith("/api/summary") ? SUMMARY : url.startsWith("/api/deliverables") ? DELIVERABLES : RUNS,
+  );
+
 describe("App", () => {
   it("shows the headline numbers, the stages and the chart", async () => {
-    mockApi((url) => answer(url.startsWith("/api/summary") ? SUMMARY : RUNS));
+    mockApi(overview);
     render(<App />);
     expect(await screen.findByText("151")).toBeInTheDocument();
     expect(screen.getByText("54")).toBeInTheDocument();
@@ -27,15 +32,32 @@ describe("App", () => {
     expect(await screen.findByTestId("chart")).toBeInTheDocument();
   });
 
+  it("features the newest working report of each kind", async () => {
+    mockApi(overview);
+    render(<App />);
+    const bulletin = await screen.findByRole("link", { name: /Latest bulletin/ });
+    expect(bulletin).toHaveAttribute("href", "#/reports/CTI26-137");
+    expect(screen.getByRole("link", { name: /Latest hunt package/ })).toHaveAttribute(
+      "href",
+      "#/reports/TH26-54",
+    );
+    expect(screen.queryByRole("link", { name: /Broken Example/ })).toBeNull();
+  });
+
+  it("says how to make output when there is none", async () => {
+    const empty = { ...SUMMARY, counts: {}, cves_tracked: null, run_days: 0, last_scan: null };
+    mockApi((url) => answer(url.startsWith("/api/summary") ? empty : []));
+    render(<App />);
+    expect(await screen.findByText("No pipeline output yet.")).toBeInTheDocument();
+  });
+
   it("explains how to start the backend when it does not answer, and retries", async () => {
     const fetchMock = mockApi(() => answer({ detail: "down" }, 503));
     render(<App />);
     expect(await screen.findByRole("alert", {}, { timeout: 4000 })).toHaveTextContent(
       "The console backend did not answer.",
     );
-    fetchMock.mockImplementation((input) =>
-      answer(String(input).startsWith("/api/summary") ? SUMMARY : RUNS),
-    );
+    fetchMock.mockImplementation((input) => overview(String(input)));
     await userEvent.click(screen.getByRole("button", { name: "Retry" }));
     expect(await screen.findByText("151")).toBeInTheDocument();
   });
