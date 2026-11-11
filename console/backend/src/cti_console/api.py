@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
@@ -11,6 +13,7 @@ from fastapi.responses import FileResponse
 
 from .config import Settings
 from .deliverables import Deliverable, scan
+from .pdf import Converter, PdfCache, PdfError, WordWorker, word_available
 from .pipeline import load_rules
 from .reader import render_docx
 from .register import latest_register, read_register
@@ -27,16 +30,36 @@ RUN_PATTERN = r"^[a-z][a-z-]{1,40}-\d{8}T\d{6}$"
 DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 # The API only ever returns data and files. Nothing it sends should run or be framed.
 API_CSP = "default-src 'none'; frame-ancestors 'none'"
+# The one exception: the branded PDF is shown inside the console's own page.
+PDF_CSP = "default-src 'none'; frame-ancestors 'self'"
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    converter: Converter | None = None,
+    pdf_ready: bool | None = None,
+) -> FastAPI:
+    """`converter` and `pdf_ready` replace Word in tests; by default Word is looked for."""
     settings = settings or Settings.from_env()
+    has_word = word_available() if pdf_ready is None else pdf_ready
+    worker = WordWorker() if converter is None and has_word else None
+    pdfs = PdfCache(settings.cache_dir / "pdf", converter or worker)
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        if worker is not None:
+            worker.warm_up()  # Word's slow first export happens before anyone is waiting
+        yield
+        if worker is not None:
+            worker.close()
+
     app = FastAPI(
         title="GeneLabs CTI console",
         version="0.1.0",
         docs_url=None,
         redoc_url=None,
         openapi_url=None,
+        lifespan=lifespan,
     )
     app.add_middleware(
         CORSMiddleware, allow_origins=FRONTEND_ORIGINS, allow_methods=["GET"], allow_headers=[]
@@ -47,7 +70,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         response: Response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Cache-Control"] = "no-store"
-        response.headers["Content-Security-Policy"] = API_CSP
+        response.headers.setdefault("Content-Security-Policy", API_CSP)
         return response
 
     @app.get("/api/health")
@@ -115,11 +138,45 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def deliverable_html(ident: str = PathParam(pattern=ID_PATTERN)) -> dict[str, object]:
         match, path = find(ident)
         rendered = render_docx(path)
-        return {**match.to_dict(), "html": rendered.html, "warnings": rendered.warnings}
+        return {
+            **match.to_dict(),
+            "html": rendered.html,
+            "warnings": rendered.warnings,
+            "pdf": has_word,
+        }
 
     @app.get("/api/deliverables/{ident}/file")
     def deliverable_file(ident: str = PathParam(pattern=ID_PATTERN)) -> FileResponse:
         _, path = find(ident)
         return FileResponse(path, media_type=DOCX_TYPE, filename=path.name)
+
+    def branded_pdf(ident: str) -> tuple[Path, Path]:
+        """The report's .docx and its cached PDF, made now if this version has none."""
+        if not has_word:
+            raise HTTPException(503, "Microsoft Word is not available to make the PDF")
+        _, path = find(ident)
+        try:
+            return path, pdfs.get(ident, path)
+        except PdfError as exc:
+            raise HTTPException(exc.status, str(exc)) from exc
+
+    @app.get("/api/deliverables/{ident}/pdf/ready")
+    def deliverable_pdf_ready(ident: str = PathParam(pattern=ID_PATTERN)) -> dict[str, object]:
+        """Makes the PDF if needed, so the page can show progress before it frames it."""
+        _, pdf = branded_pdf(ident)
+        return {"id": ident, "bytes": pdf.stat().st_size}
+
+    @app.get("/api/deliverables/{ident}/pdf")
+    def deliverable_pdf(
+        ident: str = PathParam(pattern=ID_PATTERN), download: bool = False
+    ) -> FileResponse:
+        source, pdf = branded_pdf(ident)
+        return FileResponse(
+            pdf,
+            media_type="application/pdf",
+            filename=source.with_suffix(".pdf").name,
+            content_disposition_type="attachment" if download else "inline",
+            headers={"Content-Security-Policy": PDF_CSP},
+        )
 
     return app

@@ -81,6 +81,54 @@ describe("App", () => {
     window.location.hash = "";
   });
 
+  it("shows the branded PDF first when Word can make it, with both downloads", async () => {
+    window.location.hash = "#/reports/CTI26-137";
+    mockApi((url) =>
+      url.startsWith("/api/deliverables/CTI26-137/html")
+        ? answer({ ...DOCUMENT, pdf: true })
+        : url.startsWith("/api/deliverables/CTI26-137/pdf/ready")
+          ? answer({ id: "CTI26-137", bytes: 1200 })
+          : answer(DELIVERABLES),
+    );
+    render(<App />);
+    const frame = await screen.findByTitle("CTI26-137, branded PDF");
+    expect(frame).toHaveAttribute("src", "/api/deliverables/CTI26-137/pdf#view=FitH");
+    expect(screen.getByRole("link", { name: /Download .pdf/ })).toHaveAttribute(
+      "href",
+      "/api/deliverables/CTI26-137/pdf?download=true",
+    );
+    expect(screen.getByRole("button", { name: "Branded" })).toHaveAttribute("aria-pressed", "true");
+    await userEvent.click(screen.getByRole("button", { name: "Text" }));
+    expect(await screen.findByText("Patch now.")).toBeInTheDocument();
+    expect(screen.queryByTitle("CTI26-137, branded PDF")).toBeNull();
+  });
+
+  it("offers the text view when the PDF cannot be made", async () => {
+    window.location.hash = "#/reports/CTI26-137";
+    mockApi((url) =>
+      url.startsWith("/api/deliverables/CTI26-137/html")
+        ? answer({ ...DOCUMENT, pdf: true })
+        : url.startsWith("/api/deliverables/CTI26-137/pdf/ready")
+          ? answer({ detail: "Word could not convert the report" }, 502)
+          : answer(DELIVERABLES),
+    );
+    render(<App />);
+    expect(await screen.findByText(/Could not make the branded PDF/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Show the text view" }));
+    expect(await screen.findByText("Patch now.")).toBeInTheDocument();
+  });
+
+  it("shows only the text view and no PDF download without Word", async () => {
+    window.location.hash = "#/reports/CTI26-137";
+    mockApi((url) =>
+      answer(url.startsWith("/api/deliverables/CTI26-137/html") ? DOCUMENT : DELIVERABLES),
+    );
+    render(<App />);
+    expect(await screen.findByText("Patch now.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Branded" })).toBeNull();
+    expect(screen.queryByRole("link", { name: /Download .pdf/ })).toBeNull();
+  });
+
   it("opens a run with its stages, documents and sanitized report", async () => {
     window.location.hash = "#/runs";
     mockApi((url) => answer(url.startsWith("/api/runs/bulletin-scan-1") ? RUN_DETAIL : RUNS));

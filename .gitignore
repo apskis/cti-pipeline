@@ -12,3 +12,4 @@ deploy/azure/generated/
 node_modules/
 dist/
 *.tsbuildinfo
+.cache/

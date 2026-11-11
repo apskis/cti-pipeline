@@ -22,6 +22,9 @@ const policy = (dev: boolean): string =>
     dev ? `connect-src 'self' ws://${HOST}:${PORT}` : "connect-src 'self'",
     "img-src 'self' data:",
     "font-src 'self'",
+    // The reader frames the branded PDF from its own origin. Chrome shows a framed PDF
+    // without plugin rights, so object-src stays 'none' (checked in Chrome).
+    "frame-src 'self'",
     "object-src 'none'",
     "base-uri 'none'",
     "form-action 'none'",
