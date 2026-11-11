@@ -6,6 +6,7 @@ import { formatDay } from "../lib/format";
 import { kindLabel } from "../lib/kinds";
 import { sanitizeReport } from "../lib/sanitize";
 import DocStatus from "./DocStatus";
+import IntendedFor from "./IntendedFor";
 
 type View = "branded" | "text";
 
@@ -103,6 +104,7 @@ const ReportReader = ({ id }: { id: string | null }) => {
           )}
         </div>
       </header>
+      <IntendedFor reportId={d.id} kind={d.kind} />
       {d.pdf && (
         <div role="group" aria-label="How to show the report" className="mb-4 inline-flex rounded-md border border-line p-0.5 text-sm">
           {(

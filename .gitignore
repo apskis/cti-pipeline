@@ -13,3 +13,6 @@ node_modules/
 dist/
 *.tsbuildinfo
 .cache/
+config/stakeholders.json
+config/stakeholders.json.bak
+config/stakeholders.json.part

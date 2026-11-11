@@ -10,6 +10,7 @@ from pathlib import Path
 import docx
 import pytest
 from openpyxl import Workbook
+from specs_fixture import write_specs
 
 from cti_console.config import REPO_ROOT, Settings
 
@@ -76,6 +77,7 @@ def _documents(out: Path) -> None:
     hunt = [f"TH26-01 hunt paragraph {i}." for i in range(35)]
     _docx(out / "bulletin-scan/hunts/packages/TH26-01-Sample_Hunt.docx", hunt)
     _docx(out / "bulletin-scan/state/_work/CTI26-99-Scratch.docx", ["scratch"])
+    write_specs(out)
     # A CVE brief is one table: few paragraphs is normal, not broken.
     brief = out / "bulletin-scan/registers/CVE-VM-2026-10-10.docx"
     weekly = out / "reporting/CTI_Weekly_Report_2026_Week46.docx"
@@ -178,4 +180,10 @@ def settings(tmp_path: Path) -> Settings:
         "failed: ['HHS HC3 Alerts (HTTP 404)'] -> /app/out/state/_work/feed-digest.md\n",
         encoding="utf-8",
     )
-    return Settings(repo_root=REPO_ROOT, out_dir=out, logs_dir=logs, cache_dir=tmp_path / "cache")
+    return Settings(
+        repo_root=REPO_ROOT,
+        out_dir=out,
+        logs_dir=logs,
+        cache_dir=tmp_path / "cache",
+        stakeholders_file=tmp_path / "config" / "stakeholders.json",
+    )

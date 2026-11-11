@@ -20,10 +20,18 @@ class Settings:
     # The console's own scratch space: branded PDFs made from out/'s reports. Not out/,
     # which belongs to the pipeline.
     cache_dir: Path
+    # Who the intelligence is for. The one file the console writes; gitignored, because
+    # it holds names and email addresses.
+    stakeholders_file: Path
 
     @property
     def scripts_dir(self) -> Path:
         return self.repo_root / "scripts"
+
+    @property
+    def stakeholders_example(self) -> Path:
+        """Made up GeneLabs teams, committed, for a first start and for demos."""
+        return self.repo_root / "config" / "stakeholders.example.json"
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -34,5 +42,8 @@ class Settings:
             logs_dir=Path(os.environ.get("CTI_CONSOLE_LOGS", repo / "logs")).resolve(),
             cache_dir=Path(
                 os.environ.get("CTI_CONSOLE_CACHE", repo / "console" / ".cache")
+            ).resolve(),
+            stakeholders_file=Path(
+                os.environ.get("CTI_CONSOLE_STAKEHOLDERS", repo / "config" / "stakeholders.json")
             ).resolve(),
         )

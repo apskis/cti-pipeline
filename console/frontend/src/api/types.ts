@@ -99,3 +99,44 @@ export interface CveRegister {
   register: string | null;
   cves: Cve[];
 }
+
+export type Channel = "email" | "teams" | "slack" | "other";
+
+/** What the edit form sends. */
+export interface StakeholderInput {
+  name: string;
+  role: string;
+  team: string;
+  /** Other names the reports use for this team, such as "Security Operations" for SOC. */
+  also_known_as: string[];
+  email: string;
+  channel: Channel;
+  /** Deliverable kinds this person gets every one of, such as "bulletin". */
+  receives: string[];
+  interests: string[];
+  notes: string;
+}
+
+export interface Stakeholder extends StakeholderInput {
+  id: string;
+}
+
+export interface StakeholderList {
+  /** False until the first save; the list then lives in config/stakeholders.json. */
+  exists: boolean;
+  has_example: boolean;
+  stakeholders: Stakeholder[];
+}
+
+export interface TeamAsk {
+  name: string;
+  questions: string[];
+  /** IDs of the stakeholders whose team or other names match. */
+  stakeholders: string[];
+}
+
+export interface Audience {
+  reports: Record<string, { spec: string; teams: TeamAsk[] }>;
+  /** Teams the reports name that nobody on the list covers, most named first. */
+  unmatched: { team: string; reports: string[] }[];
+}
