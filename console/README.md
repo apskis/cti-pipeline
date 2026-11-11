@@ -87,6 +87,24 @@ The CVEs page is the CVE register as a table: newest first, then highest CVSS. I
 narrow to exploited CVEs or those on CISA KEV, and a KEV deadline that has passed is
 marked. Bulletin and hunt IDs link into the reader.
 
+### Look and theme
+
+The console wears the GeneLabs brand kit: the DNA symbol, divider and wordmark as one
+lockup, with "Cyber Threat Intelligence" beneath, and the kit's palette (Forest, Emerald,
+Sage, Mist, Charcoal) as colour tokens in `src/index.css`.
+
+- **Light, dark or system.** The switch in the header is remembered in this browser.
+  System follows Windows. `public/theme-init.js` applies a saved choice before the page
+  draws, so it never flashes the other theme.
+- **Dark mode** uses a deep Forest page with Mist text. Emerald is lifted to `#3FB48C`,
+  because the brand Emerald is too dark to read on a dark page.
+- **Contrast.** Every text colour meets WCAG AA (4.5:1) on the surfaces it sits on, in both
+  themes; chart colours meet 3:1 against the card, with a hairline between segments.
+- **Status colours** stay red, amber and green in both themes: they carry meaning.
+- **Font.** Aptos where installed (the kit names it but ships no font files), then Segoe UI.
+- **Favicon.** The kit's symbol on Forest. The kit's own favicon draws one strand in
+  Forest on a Forest square, so this one draws that strand in Mist.
+
 ### Showing documents safely
 
 Report HTML, from a `.docx` or a run report in Markdown, is built from text the pipeline

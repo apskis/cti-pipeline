@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 
 import type { Run } from "../api/types";
+import { useTheme } from "../lib/theme";
 import { formatMoney, formatShortDay } from "../lib/format";
 import { costByDay, SERIES_LABELS, type Series, usedSeries } from "../lib/runHistory";
 
@@ -20,6 +21,8 @@ const SERIES_TOKENS: Record<Series, string> = {
 };
 
 const RunHistoryChart = ({ runs }: { runs: Run[] }) => {
+  // Re-read the colour tokens when the theme changes.
+  const { theme } = useTheme();
   const days = useMemo(() => costByDay(runs), [runs]);
   const series = useMemo(() => usedSeries(days), [days]);
   if (days.length === 0) {
@@ -32,11 +35,15 @@ const RunHistoryChart = ({ runs }: { runs: Run[] }) => {
       label: SERIES_LABELS[s],
       data: days.map((d) => Math.round(d.cost[s] * 100) / 100),
       backgroundColor: token(SERIES_TOKENS[s]),
+      // A hairline in the card colour keeps neighbouring segments apart in both themes.
+      borderColor: token("--color-surface"),
+      borderWidth: 1,
     })),
   };
   return (
     <div className="relative h-56" role="img" aria-label="Model cost per run day, split by stage">
       <Bar
+        key={theme}
         data={data}
         options={{
           responsive: true,

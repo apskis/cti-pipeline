@@ -13,7 +13,7 @@ const fieldClass = "w-full rounded-md border border-line bg-surface px-2 py-1.5 
 const buttonClass =
   "inline-flex items-center gap-1.5 rounded-md border border-line px-3 py-1.5 text-sm hover:bg-raised disabled:opacity-50";
 const primaryClass =
-  "inline-flex items-center gap-1.5 rounded-md bg-ink px-3 py-1.5 text-sm text-surface hover:opacity-90 disabled:opacity-50";
+  "inline-flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-sm text-on-accent hover:bg-accent-hover disabled:opacity-50";
 
 const EDIT = "/edit";
 const SHOWN_REPORTS = 25;
@@ -427,7 +427,7 @@ const StakeholdersPage = ({ selected }: { selected: string | null }) => {
 
   return (
     <div className="grid gap-6 md:grid-cols-[20rem_minmax(0,1fr)]">
-      <div className={clsx(open && "hidden md:block")}>
+      <div className={clsx("min-w-0", open && "hidden md:block")}>
         <section aria-label="Stakeholders">
           <div className="flex gap-2">
             <label className="sr-only" htmlFor="stakeholder-search">
@@ -439,7 +439,7 @@ const StakeholdersPage = ({ selected }: { selected: string | null }) => {
               placeholder="Search by name or team"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className={fieldClass}
+              className={clsx(fieldClass, "min-w-0 flex-1")}
             />
             <a href={newStakeholderHref()} className={clsx(buttonClass, "shrink-0")}>
               <Plus aria-hidden size={16} />
