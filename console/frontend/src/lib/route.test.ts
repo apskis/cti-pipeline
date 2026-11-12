@@ -48,3 +48,9 @@ describe("kevPassed", () => {
     expect(kevPassed("2026-11-10", "2026-11-10")).toBe(false);
   });
 });
+
+describe("parseRoute built", () => {
+  it("opens the How it's built tab", () => {
+    expect(parseRoute("#/built")).toEqual({ page: "built" });
+  });
+});
