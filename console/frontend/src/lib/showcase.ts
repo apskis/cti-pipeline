@@ -240,6 +240,31 @@ export const PRACTICES: Practice[] = [
   },
 ];
 
+export interface RoadmapItem {
+  title: string;
+  when: string;
+  body: string;
+}
+
+// Ideas weighed and kept for later, with what has to be true before each is worth doing.
+export const ROADMAP: RoadmapItem[] = [
+  {
+    title: "A Reviewer agent",
+    when: "Next",
+    body: "A fresh session that checks each finished document against its sources before it ships, and flags weak or unsupported claims. A model checking another model's work, with clean context so it does not share the Writer's blind spots.",
+  },
+  {
+    title: "Writers in parallel",
+    when: "When run time matters",
+    body: "The Coordinator would start several Writers at once instead of one batch after another. Runs finish sooner for the same cost. Today a run finishes well inside its window, so speed is not the bottleneck.",
+  },
+  {
+    title: "Helper agents for the Hunter",
+    when: "Once Splunk is live",
+    body: "The Hunter could hand separate lines of inquiry to helper agents that each run their own searches, then pull the answers together. Worth it when there is real hunt data to search in parallel.",
+  },
+];
+
 export const STACK: { group: string; items: string[] }[] = [
   { group: "Agents", items: ["Claude Code, headless", "Model Context Protocol", "Agent skills"] },
   { group: "Models", items: ["Claude Opus", "Claude Sonnet 4.5", "Claude Haiku 4.5", "Amazon Bedrock"] },

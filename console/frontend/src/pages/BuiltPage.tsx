@@ -4,7 +4,16 @@ import { ArrowDown, Bot, Cloud, Code2, FileText, Laptop, Server } from "lucide-r
 import { useSummary } from "../api/client";
 import StatTile from "../components/StatTile";
 import { formatCount, formatMoney } from "../lib/format";
-import { AGENTS, type Agent, CLOUD_ROWS, FLOW, HANDOFFS, PRACTICES, STACK } from "../lib/showcase";
+import {
+  AGENTS,
+  type Agent,
+  CLOUD_ROWS,
+  FLOW,
+  HANDOFFS,
+  PRACTICES,
+  ROADMAP,
+  STACK,
+} from "../lib/showcase";
 
 const Section = ({
   title,
@@ -273,6 +282,23 @@ const BuiltPage = () => (
           </p>
         </div>
       </div>
+    </Section>
+
+    <Section
+      title="Roadmap"
+      lead="Ideas weighed and kept for later, each with what has to be true before it is worth the cost."
+    >
+      <ol className="grid gap-3 md:grid-cols-3">
+        {ROADMAP.map((item) => (
+          <li key={item.title} className="flex flex-col rounded-xl border border-line bg-surface p-4">
+            <span className="self-start rounded-full bg-accent-soft px-2 py-0.5 text-xs text-accent-soft-ink">
+              {item.when}
+            </span>
+            <p className="mt-2 font-medium">{item.title}</p>
+            <p className="mt-1 text-sm text-muted">{item.body}</p>
+          </li>
+        ))}
+      </ol>
     </Section>
 
     <Section title="Built with">
