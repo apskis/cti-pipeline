@@ -163,4 +163,17 @@ describe("App", () => {
     );
     window.location.hash = "";
   });
+
+  it("shows the agents, the run flow and both clouds on the How it's built tab", async () => {
+    mockApi(overview);
+    window.location.hash = "#/built";
+    render(<App />);
+    expect(screen.getByRole("link", { name: "How it's built" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByText("Bulletin scan")).toBeInTheDocument();
+    expect(screen.getAllByText("Haiku 4.5").length).toBeGreaterThan(0);
+    expect(screen.getByText("Prefetch feeds")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "AWS" })).toBeInTheDocument();
+    expect(await screen.findByText("Documents produced")).toBeInTheDocument();
+    window.location.hash = "";
+  });
 });

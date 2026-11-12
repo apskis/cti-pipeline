@@ -1,0 +1,216 @@
+// Content for the "How it's built" tab. Static facts about the pipeline's design, kept as
+// data so the page stays a layout and a test can check the copy follows the house rules.
+// Source of truth: deploy/entrypoint.sh, components/*/component.yaml and the two deploy
+// runbooks. Update this file when those change.
+
+export interface Agent {
+  name: string;
+  role: string;
+  cadence: string;
+  /** The model that does the judgement work, or null where plain code does the job. */
+  model: string | null;
+  why: string;
+  tools: string[];
+  status: "live" | "ready" | "waiting";
+  statusNote: string;
+}
+
+export const AGENTS: Agent[] = [
+  {
+    name: "Bulletin scan",
+    role: "Collect",
+    cadence: "Mon, Wed, Fri",
+    model: "Sonnet 4.5 in the cloud, Opus locally",
+    why: "Reads every feed, searches for context, decides what matters to GeneLabs and ranks it. That is research and judgement, so it gets the strongest model.",
+    tools: ["News search", "NVD", "Enrichment", "ICS advisories"],
+    status: "live",
+    statusNote: "Runs locally today",
+  },
+  {
+    name: "Document builders",
+    role: "Write",
+    cadence: "After each scan",
+    model: "Haiku 4.5",
+    why: "Fill branded templates from a scan that already made the decisions. No research needed, so the fastest model does it at a fraction of the price.",
+    tools: ["15 GeneLabs skills", "Word, PDF, Excel"],
+    status: "live",
+    statusNote: "Runs locally today",
+  },
+  {
+    name: "Reporting",
+    role: "Report",
+    cadence: "Weekly and quarterly",
+    model: "Sonnet 4.5 in the cloud, Opus locally",
+    why: "Turns a week or a quarter of findings into analysis for leadership. A plain Python renderer then makes the .docx, so layout never costs a model call.",
+    tools: ["News search", "NVD", "Enrichment", "ICS advisories"],
+    status: "ready",
+    statusNote: "Built, not yet scheduled",
+  },
+  {
+    name: "Perimeter scan",
+    role: "Watch",
+    cadence: "Weekly",
+    model: "Sonnet 4.5 in the cloud, Opus locally",
+    why: "Looks at what GeneLabs exposes to the internet and judges which exposures need an owner and a fix.",
+    tools: ["Shodan", "Enrichment", "NVD"],
+    status: "ready",
+    statusNote: "Built, not yet scheduled",
+  },
+  {
+    name: "Threat hunting",
+    role: "Investigate",
+    cadence: "Daily",
+    model: "Sonnet 4.5 in the cloud, Opus locally",
+    why: "Writes hypotheses, runs real Splunk searches and reads the results. The hardest reasoning in the pipeline.",
+    tools: ["Splunk", "Enrichment", "AWS API"],
+    status: "waiting",
+    statusNote: "Waiting on a Splunk instance",
+  },
+  {
+    name: "Documentation sync",
+    role: "Govern",
+    cadence: "Monthly",
+    model: "Haiku 4.5",
+    why: "Keeps the program documents in line with what the pipeline actually does. Comparing and updating text is light work.",
+    tools: ["The repo's document set"],
+    status: "waiting",
+    statusNote: "Waiting on the plan documents",
+  },
+  {
+    name: "Program console",
+    role: "Measure",
+    cadence: "Daily",
+    model: null,
+    why: "Refreshing numbers needs no judgement. It runs as plain Python and never starts a model session.",
+    tools: ["Its own KPI data"],
+    status: "waiting",
+    statusNote: "Waiting on its collector",
+  },
+];
+
+export interface FlowStep {
+  title: string;
+  /** "model" when Claude does the step, "code" when plain code does. */
+  by: "model" | "code";
+  who: string;
+  what: string;
+}
+
+export const FLOW: FlowStep[] = [
+  {
+    title: "Schedule fires",
+    by: "code",
+    who: "EventBridge or Container Apps cron",
+    what: "Starts one container for one component. The same image serves every component.",
+  },
+  {
+    title: "Restore state",
+    by: "code",
+    who: "Shell",
+    what: "Pulls the last run's registers and dedup log from storage, so only new items get reported.",
+  },
+  {
+    title: "Wire up tools",
+    by: "code",
+    who: "Python",
+    what: "Writes an MCP config with only the servers this component needs. Keys stay in the environment, never in the file.",
+  },
+  {
+    title: "Prefetch feeds",
+    by: "code",
+    who: "Python",
+    what: "Fetches and filters every feed into one digest. Doing this inside the model cost a turn per feed.",
+  },
+  {
+    title: "Scan",
+    by: "model",
+    who: "Sonnet 4.5 or Opus",
+    what: "Reads the digest, searches for context, ranks what matters and assigns bulletin and hunt IDs in the dedup log.",
+  },
+  {
+    title: "Build documents",
+    by: "model",
+    who: "Haiku 4.5",
+    what: "Fresh sessions build four documents at a time. Anything not finished stays pending for the next run, never lost.",
+  },
+  {
+    title: "Check and finalize",
+    by: "code",
+    who: "Python",
+    what: "Renders reports, verifies every document and rebuilds the ID counters from what is on disk.",
+  },
+  {
+    title: "Ship and log cost",
+    by: "code",
+    who: "Shell",
+    what: "Copies output to S3 or Blob storage. Every session logs its cost, turns and tokens, which feed this console.",
+  },
+];
+
+export interface Practice {
+  title: string;
+  body: string;
+}
+
+export const PRACTICES: Practice[] = [
+  {
+    title: "The right model for each job",
+    body: "Research and judgement get Sonnet or Opus. Template filling gets Haiku. Anything with no judgement in it runs as plain code. Model choice is a cost decision made per step.",
+  },
+  {
+    title: "Code where code is enough",
+    body: "Feed fetching, rendering, state and verification are deterministic Python. The model is only used where a person would otherwise have to think.",
+  },
+  {
+    title: "Context kept small on purpose",
+    body: "One session cannot carry a dozen documents, so the scan only decides and fresh builder sessions write in small batches. A failure delays a document, it never loses one.",
+  },
+  {
+    title: "Guardrails on every run",
+    body: "Headless runs load an explicit allow and deny list. Each component sees only its own MCP servers. Secrets arrive from Secrets Manager or Key Vault as environment, never in files or commits.",
+  },
+  {
+    title: "Checks the model cannot skip",
+    body: "A Splunk query linter, programmatic checks on every .docx and a sanitization gate for posts that leave the security team. The pipeline proves its own output.",
+  },
+  {
+    title: "Cost you can see",
+    body: "Every model session writes one line with its cost, turns and tokens. The Runs tab and the cost chart read straight from it.",
+  },
+  {
+    title: "Domain knowledge as skills",
+    body: "House style, report formats and hard lessons from real hunts live in 15 GeneLabs skills. The model follows the same playbook an analyst would.",
+  },
+  {
+    title: "One image, any cloud",
+    body: "CLOUD picks AWS, Azure or local. MODEL_BACKEND picks Bedrock or a Claude plan. Nothing else changes.",
+  },
+];
+
+export const STACK: { group: string; items: string[] }[] = [
+  { group: "Agents", items: ["Claude Code, headless", "Model Context Protocol", "Agent skills"] },
+  { group: "Models", items: ["Claude Opus", "Claude Sonnet 4.5", "Claude Haiku 4.5", "Amazon Bedrock"] },
+  { group: "Pipeline", items: ["Python 3.11+", "uv", "python-docx", "Docker"] },
+  { group: "Console", items: ["React", "TypeScript", "Vite", "Tailwind", "TanStack Query", "FastAPI"] },
+  { group: "Quality", items: ["unittest", "pytest", "Vitest", "ruff", "ESLint"] },
+];
+
+export interface CloudRow {
+  need: string;
+  aws: string;
+  azure: string;
+}
+
+export const CLOUD_ROWS: CloudRow[] = [
+  { need: "Build the image", aws: "CodeBuild into ECR", azure: "az acr build into ACR" },
+  { need: "Run a component", aws: "ECS task on Fargate Spot", azure: "Container Apps Job" },
+  { need: "Schedule it", aws: "EventBridge Scheduler", azure: "The job's own cron" },
+  { need: "Keep secrets", aws: "Secrets Manager", azure: "Key Vault" },
+  { need: "Store output and state", aws: "S3", azure: "Blob Storage" },
+  { need: "Identity", aws: "Task role", azure: "Managed identity" },
+  {
+    need: "Call the model",
+    aws: "Bedrock, credentials from the task role",
+    azure: "Bedrock across clouds, with a scoped AWS key from Key Vault",
+  },
+];

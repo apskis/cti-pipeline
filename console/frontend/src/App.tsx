@@ -5,6 +5,7 @@ import { useState } from "react";
 import { BrandLockup, ThemeSwitch } from "./components/Brand";
 import { type Route, useRoute } from "./lib/route";
 import { ThemeProvider } from "./lib/theme";
+import BuiltPage from "./pages/BuiltPage";
 import CvesPage from "./pages/CvesPage";
 import OverviewPage from "./pages/OverviewPage";
 import ReportsPage from "./pages/ReportsPage";
@@ -17,6 +18,7 @@ const TABS = [
   { page: "runs", label: "Runs", href: "#/runs" },
   { page: "cves", label: "CVEs", href: "#/cves" },
   { page: "stakeholders", label: "Stakeholders", href: "#/stakeholders" },
+  { page: "built", label: "How it's built", href: "#/built" },
 ] as const;
 
 const Page = ({ route }: { route: Route }) => {
@@ -29,6 +31,8 @@ const Page = ({ route }: { route: Route }) => {
       return <CvesPage />;
     case "stakeholders":
       return <StakeholdersPage selected={route.id} />;
+    case "built":
+      return <BuiltPage />;
     default:
       return <OverviewPage />;
   }

@@ -7,6 +7,7 @@ export type Route =
   | { page: "reports"; id: string | null }
   | { page: "runs"; id: string | null }
   | { page: "cves" }
+  | { page: "built" }
   | { page: "stakeholders"; id: string | null };
 
 export function parseRoute(hash: string): Route {
@@ -14,6 +15,7 @@ export function parseRoute(hash: string): Route {
   const id = raw ? decodeURIComponent(raw) : null;
   if (page === "reports" || page === "runs" || page === "stakeholders") return { page, id };
   if (page === "cves") return { page: "cves" };
+  if (page === "built") return { page: "built" };
   return { page: "overview" };
 }
 
