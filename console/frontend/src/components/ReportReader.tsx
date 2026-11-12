@@ -2,6 +2,7 @@ import { Download, FileText, LoaderCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { fileUrl, pdfUrl, useDeliverableDocument, usePdfReady } from "../api/client";
+import { kindAgents } from "../lib/agents";
 import { formatDay } from "../lib/format";
 import { kindLabel } from "../lib/kinds";
 import { sanitizeReport } from "../lib/sanitize";
@@ -81,7 +82,7 @@ const ReportReader = ({ id }: { id: string | null }) => {
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3 border-b border-line pb-4">
         <div className="min-w-0">
           <p className="text-xs text-muted">
-            {d.id} · {kindLabel(d.kind)} · first seen {formatDay(d.first_seen)}
+            {d.id} · {kindLabel(d.kind)} · first seen {formatDay(d.first_seen)} · {kindAgents(d.kind)}
           </p>
           <h2 id="reader-title" className="mt-1 text-lg font-medium">
             {d.title}

@@ -3,10 +3,10 @@ import type { Run, Session } from "../api/types";
 export type Series = "scan" | "build" | "report" | "other";
 
 export const SERIES_LABELS: Record<Series, string> = {
-  scan: "Scan",
-  build: "Build passes",
-  report: "Weekly report",
-  other: "Other components",
+  scan: "Analyst (scan)",
+  build: "Writer (documents)",
+  report: "Reporter (weekly report)",
+  other: "Other agents",
 };
 
 export interface DayCost {

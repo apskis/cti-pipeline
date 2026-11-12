@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import { useRunDetail } from "../api/client";
 import type { RunDetail as RunDetailData } from "../api/types";
+import { joinAgents, runAgents, sessionName } from "../lib/agents";
 import { componentLabel } from "../lib/components";
 import { formatDuration, formatMoney, formatWhen } from "../lib/format";
 import { reportHref } from "../lib/route";
@@ -18,7 +19,7 @@ const Sessions = ({ run }: { run: RunDetailData }) => (
     <table className="w-full text-sm">
       <thead className="bg-raised text-left text-xs text-muted">
         <tr>
-          <th className="px-3 py-2 font-medium">Session</th>
+          <th className="px-3 py-2 font-medium">Agent</th>
           <th className="px-3 py-2 font-medium">Started</th>
           <th className="px-3 py-2 text-right font-medium">Time</th>
           <th className="px-3 py-2 text-right font-medium">Turns</th>
@@ -29,7 +30,9 @@ const Sessions = ({ run }: { run: RunDetailData }) => (
       <tbody>
         {run.sessions.map((s) => (
           <tr key={`${s.label}-${s.started}`} className="border-t border-line">
-            <td className="px-3 py-1.5">{s.label}</td>
+            <td className="px-3 py-1.5" title={s.label}>
+              {sessionName(run.component, s.label)}
+            </td>
             <td className="whitespace-nowrap px-3 py-1.5">{formatWhen(s.started)}</td>
             <td className="px-3 py-1.5 text-right">{formatDuration(s.duration_s)}</td>
             <td className="px-3 py-1.5 text-right">{s.turns}</td>
@@ -106,7 +109,10 @@ const RunDetail = ({ id }: { id: string | null }) => {
             status={run.ok ? "ok" : "fail"}
             label={run.ok ? "All sessions OK" : "A session failed"}
           />
-          <span>{run.sessions.length} sessions</span>
+          <span>
+            {run.sessions.length} sessions by{" "}
+            {joinAgents(runAgents(run.component, run.sessions.map((s) => s.label)))}
+          </span>
           <span>{formatDuration(run.duration_s)} of model time</span>
           <span>{formatMoney(run.cost_usd)} at API prices</span>
         </p>
