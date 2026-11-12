@@ -12,6 +12,7 @@ import {
 import { Fragment } from "react";
 
 import type { Stage } from "../api/types";
+import { COORDINATOR, stageAgent } from "../lib/agents";
 import StatusPill from "./StatusPill";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -35,12 +36,23 @@ const PLAIN: Record<string, string> = {
 
 const StageCard = ({ stage }: { stage: Stage }) => {
   const Icon = ICONS[stage.key] ?? FileText;
+  const agent = stageAgent(stage.key);
   return (
     <div className="flex h-full flex-col rounded-xl border border-line bg-surface p-3">
       <p className="flex items-center gap-1.5 text-sm text-muted">
         <Icon aria-hidden="true" size={16} />
         {stage.label}
       </p>
+      {agent && (
+        <p
+          className={clsx(
+            "mt-1 text-xs font-medium",
+            agent === COORDINATOR ? "text-muted" : "text-accent",
+          )}
+        >
+          The {agent}
+        </p>
+      )}
       <p className="mt-1 text-xs text-faint">{PLAIN[stage.key]}</p>
       <p className="mt-2 font-medium">{stage.value}</p>
       <div className="mt-auto pt-2">

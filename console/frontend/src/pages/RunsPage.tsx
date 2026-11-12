@@ -5,6 +5,7 @@ import { useRuns } from "../api/client";
 import LoadState from "../components/LoadState";
 import RunDetail from "../components/RunDetail";
 import StatusPill from "../components/StatusPill";
+import { joinAgents, runAgents } from "../lib/agents";
 import { componentLabel } from "../lib/components";
 import { formatMoney, formatWhen } from "../lib/format";
 import { runHref } from "../lib/route";
@@ -41,6 +42,9 @@ const RunsPage = ({ selected }: { selected: string | null }) => {
                     {r.kind !== "scan" && <span className="text-muted"> · rebuild</span>}
                   </span>
                   <span className="text-muted">{formatMoney(r.cost_usd)}</span>
+                </span>
+                <span className="mt-0.5 block text-xs text-faint first-letter:uppercase">
+                  {joinAgents(runAgents(r.component, r.sessions.map((s) => s.label)))}
                 </span>
               </a>
             </li>
