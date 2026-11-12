@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import os
+from dataclasses import replace
 from datetime import date
+from pathlib import Path
+
+import pytest
 
 from cti_console.config import Settings
-from cti_console.deliverables import scan
-from cti_console.pipeline import load_rules
+from cti_console.deliverables import _CHECKS, load_checks, save_checks, scan
+from cti_console.pipeline import PipelineRules, load_rules
 from cti_console.runs import group_runs, load_sessions
 from cti_console.stages import assigned_ids, search_count
 from cti_console.summary import build_summary
@@ -97,3 +102,66 @@ def test_promote_headings_only_whole_bold_paragraphs() -> None:
         "<table><tr><td><p><strong>Threat Actor</strong></p></td></tr></table>"
         "<h3>Sources</h3>"
     )
+
+
+@pytest.fixture(autouse=True)
+def _fresh_checks() -> None:
+    """Check results are module level; each test starts as a newly started console."""
+    _CHECKS.clear()
+
+
+def _counting(rules: PipelineRules) -> tuple[PipelineRules, list[str]]:
+    """The same rules, with a shell check that records each document it parses."""
+    parsed: list[str] = []
+
+    def check(path: Path, ident: str, kind: str) -> str | None:
+        parsed.append(ident)
+        return rules.shell_reason(path, ident, kind)
+
+    return replace(rules, shell_reason=check), parsed
+
+
+def test_saved_checks_spare_a_restart_the_parsing(settings: Settings) -> None:
+    rules = load_rules(settings.scripts_dir)
+    file = settings.cache_dir / "checks.json"
+    before = {d.id: d.status for d in scan(settings.out_dir, rules)}
+    save_checks(file, rules)
+    _CHECKS.clear()  # as after a restart
+
+    assert load_checks(file, rules) == 3
+    counted, parsed = _counting(rules)
+    after = {d.id: d.status for d in scan(settings.out_dir, counted)}
+    assert parsed == []
+    assert after == before
+
+
+def test_saved_checks_are_dropped_when_the_rules_change(settings: Settings) -> None:
+    rules = load_rules(settings.scripts_dir)
+    file = settings.cache_dir / "checks.json"
+    scan(settings.out_dir, rules)
+    save_checks(file, rules)
+    _CHECKS.clear()
+
+    assert load_checks(file, replace(rules, version="tightened")) == 0
+
+
+def test_a_changed_report_is_checked_again(settings: Settings) -> None:
+    rules = load_rules(settings.scripts_dir)
+    file = settings.cache_dir / "checks.json"
+    scan(settings.out_dir, rules)
+    save_checks(file, rules)
+    _CHECKS.clear()
+    load_checks(file, rules)
+    changed = settings.out_dir / "bulletin-scan/bulletins/2026/CTI26-01-Good_Bulletin.docx"
+    os.utime(changed, (1_800_000_000, 1_800_000_000))
+
+    counted, parsed = _counting(rules)
+    scan(settings.out_dir, counted)
+    assert parsed == ["CTI26-01"]
+
+
+def test_unreadable_saved_checks_are_ignored(settings: Settings) -> None:
+    file = settings.cache_dir / "checks.json"
+    file.parent.mkdir(parents=True)
+    file.write_text("{not json", encoding="utf-8")
+    assert load_checks(file, load_rules(settings.scripts_dir)) == 0
