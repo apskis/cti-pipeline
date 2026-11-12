@@ -7,6 +7,7 @@ the console's own, and the Host must be this machine (no DNS rebinding).
 
 from __future__ import annotations
 
+import threading
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -19,7 +20,7 @@ from fastapi.responses import FileResponse
 
 from .audience import audience_view
 from .config import Settings
-from .deliverables import Deliverable, scan
+from .deliverables import Deliverable, load_checks, save_checks, scan, warm_checks
 from .pdf import Converter, PdfCache, PdfError, WordWorker, word_available
 from .pipeline import load_rules
 from .reader import render_docx
@@ -66,14 +67,28 @@ def create_app(
     has_word = word_available() if pdf_ready is None else pdf_ready
     worker = WordWorker() if converter is None and has_word else None
     pdfs = PdfCache(settings.cache_dir / "pdf", converter or worker)
+    checks_file = settings.cache_dir / "checks.json"
 
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        rules = load_rules(settings.scripts_dir)
+        load_checks(checks_file, rules)
+        # Only new or changed reports are left to check. That runs beside the server, so
+        # the health check answers at once instead of after every report is parsed.
+        threading.Thread(
+            target=warm_checks,
+            args=(settings.out_dir, rules, checks_file),
+            name="warm-checks",
+            daemon=True,
+        ).start()
         if worker is not None:
             worker.warm_up()  # Word's slow first export happens before anyone is waiting
-        yield
-        if worker is not None:
-            worker.close()
+        try:
+            yield
+        finally:
+            if worker is not None:
+                worker.close()
+        save_checks(checks_file, rules)  # keeps reports checked since startup
 
     app = FastAPI(
         title="GeneLabs CTI console",

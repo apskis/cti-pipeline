@@ -67,6 +67,9 @@ const NothingYet = () => (
 const OverviewPage = () => {
   const summary = useSummary();
   const runs = useRuns();
+  // Asked for here, not only in StartHere, so it loads alongside the summary instead of
+  // waiting for the summary to arrive before StartHere mounts and asks.
+  useDeliverables();
   const handleRetry = () => {
     void summary.refetch();
     void runs.refetch();

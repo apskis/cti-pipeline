@@ -7,6 +7,7 @@ agreement: if the pipeline tightens what counts as broken, the console follows.
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import re
 from collections.abc import Callable
@@ -27,6 +28,18 @@ class PipelineRules:
     # Kinds the pipeline runs the shell check on. A CVE brief is a one page table, so the
     # paragraph minimum would wrongly call every brief broken.
     checked_kinds: frozenset[str]
+    # Changes whenever either script changes, so results saved under older rules are dropped.
+    version: str
+
+
+SCRIPTS = ("update_state", "pending_deliverables")
+
+
+def _scripts_version(scripts_dir: Path) -> str:
+    digest = hashlib.sha256()
+    for name in SCRIPTS:
+        digest.update((scripts_dir / f"{name}.py").read_bytes())
+    return digest.hexdigest()[:16]
 
 
 def _load(scripts_dir: Path, name: str) -> ModuleType:
@@ -48,4 +61,5 @@ def load_rules(scripts_dir: Path) -> PipelineRules:
         kinds=dict(update_state.KINDS),
         shell_reason=pending.shell_reason,
         checked_kinds=frozenset(pending.MIN_PARAS),
+        version=_scripts_version(scripts_dir),
     )

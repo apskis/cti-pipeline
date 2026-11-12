@@ -7,12 +7,18 @@ are not in the pipeline's ID scheme, so they get console IDs of their own.
 
 from __future__ import annotations
 
+import json
+import logging
+import os
 import re
+import threading
 from dataclasses import asdict, dataclass
 from datetime import date, datetime
 from pathlib import Path
 
 from .pipeline import PipelineRules
+
+log = logging.getLogger(__name__)
 
 # Not in the pipeline's ID scheme; titled by week or quarter instead.
 REPORT_KINDS = {
@@ -89,8 +95,62 @@ def _title(found: _Found) -> str:
 
 
 # Parsing every .docx takes seconds, so results are kept per file and modification time:
-# a document is parsed again only after it changes.
+# a document is parsed again only after it changes. They are also saved to disk (see
+# save_checks), so a restarted console does not parse all of them again.
 _CHECKS: dict[tuple[str, int], str | None] = {}
+# The startup warm and the first requests scan at once; this way each report is parsed by
+# one of them, not by all of them competing for the same CPU.
+_CHECKING = threading.Lock()
+
+
+def _is_check_row(row: object) -> bool:
+    return (
+        isinstance(row, list)
+        and len(row) == 3
+        and isinstance(row[0], str)
+        and isinstance(row[1], int)
+        and (row[2] is None or isinstance(row[2], str))
+    )
+
+
+def load_checks(file: Path, rules: PipelineRules) -> int:
+    """Take an earlier run's check results; returns how many. Other rules' results are
+    ignored, so a check the pipeline tightened runs again on every document."""
+    try:
+        data = json.loads(file.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return 0
+    if not isinstance(data, dict) or data.get("rules") != rules.version:
+        return 0
+    rows = [r for r in data.get("checks", []) if _is_check_row(r)]
+    for path, mtime, problem in rows:
+        _CHECKS.setdefault((path, mtime), problem)
+    return len(rows)
+
+
+def _still_current(path: str, mtime: int) -> bool:
+    try:
+        return Path(path).stat().st_mtime_ns == mtime
+    except OSError:
+        return False
+
+
+def save_checks(file: Path, rules: PipelineRules) -> None:
+    """Write the results for documents as they are now; older versions are left out."""
+    rows = [[p, m, r] for (p, m), r in list(_CHECKS.items()) if _still_current(p, m)]
+    file.parent.mkdir(parents=True, exist_ok=True)
+    partial = file.with_suffix(".part")
+    partial.write_text(json.dumps({"rules": rules.version, "checks": rows}), encoding="utf-8")
+    os.replace(partial, file)  # a crash mid write never leaves a half file behind
+
+
+def warm_checks(out_dir: Path, rules: PipelineRules, file: Path) -> None:
+    """Check every document not checked yet, then save, so the first page load is quick."""
+    try:
+        scan(out_dir, rules)
+        save_checks(file, rules)
+    except Exception:  # runs on its own thread: a failure must be logged, not lost
+        log.exception("Could not check the reports ahead of time")
 
 
 def _status(found: _Found, rules: PipelineRules) -> tuple[str, str | None]:
@@ -98,7 +158,9 @@ def _status(found: _Found, rules: PipelineRules) -> tuple[str, str | None]:
         return "unchecked", None
     key = (str(found.path), found.path.stat().st_mtime_ns)
     if key not in _CHECKS:
-        _CHECKS[key] = rules.shell_reason(found.path, found.ident, found.kind)
+        with _CHECKING:
+            if key not in _CHECKS:  # another thread may have checked it while this waited
+                _CHECKS[key] = rules.shell_reason(found.path, found.ident, found.kind)
     problem = _CHECKS[key]
     return ("broken", problem) if problem else ("ok", None)
 
