@@ -32,6 +32,18 @@ describe("App", () => {
     expect(await screen.findByTestId("chart")).toBeInTheDocument();
   });
 
+  it("asks for the summary, runs and reports together, not one after another", () => {
+    // The summary never answers, so a request made only after it arrives would not appear.
+    const fetchMock = mockApi((url) =>
+      url.startsWith("/api/summary") ? new Promise<Response>(() => {}) : overview(url),
+    );
+    render(<App />);
+    const asked = fetchMock.mock.calls.map(([input]) => String(input).split("?")[0]);
+    expect(asked).toEqual(
+      expect.arrayContaining(["/api/summary", "/api/runs", "/api/deliverables"]),
+    );
+  });
+
   it("features the newest working report of each kind", async () => {
     mockApi(overview);
     render(<App />);
