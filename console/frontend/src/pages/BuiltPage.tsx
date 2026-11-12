@@ -1,10 +1,10 @@
 import clsx from "clsx";
-import { Bot, Cloud, Code2, Laptop, Server } from "lucide-react";
+import { ArrowDown, Bot, Cloud, Code2, FileText, Laptop, Server } from "lucide-react";
 
 import { useSummary } from "../api/client";
 import StatTile from "../components/StatTile";
 import { formatCount, formatMoney } from "../lib/format";
-import { AGENTS, type Agent, CLOUD_ROWS, FLOW, PRACTICES, STACK } from "../lib/showcase";
+import { AGENTS, type Agent, CLOUD_ROWS, FLOW, HANDOFFS, PRACTICES, STACK } from "../lib/showcase";
 
 const Section = ({
   title,
@@ -53,7 +53,8 @@ const AgentCard = ({ agent }: { agent: Agent }) => (
     <div className="flex items-start justify-between gap-2">
       <div>
         <p className="text-xs uppercase tracking-wide text-faint">{agent.role}</p>
-        <p className="font-medium">{agent.name}</p>
+        <p className="font-medium">The {agent.persona}</p>
+        <p className="text-xs text-muted">{agent.name}</p>
       </div>
       <span className={clsx("shrink-0 rounded-full px-2 py-0.5 text-xs", STATUS_STYLE[agent.status])}>
         {agent.statusNote}
@@ -75,6 +76,36 @@ const AgentCard = ({ agent }: { agent: Agent }) => (
       </ul>
     </div>
   </li>
+);
+
+const Handoffs = () => (
+  <ol className="max-w-3xl">
+    {HANDOFFS.map((step, i) => (
+      <li key={i}>
+        <div
+          className={clsx(
+            "rounded-xl border p-4",
+            step.model ? "border-accent bg-accent-soft" : "border-line bg-surface",
+          )}
+        >
+          <p className="flex flex-wrap items-baseline gap-x-2">
+            <span className="font-medium">The {step.actor}</span>
+            <span className={clsx("text-xs", step.model ? "text-accent" : "text-muted")}>
+              {step.model ?? "Plain code"}
+            </span>
+          </p>
+          <p className="mt-1 text-sm text-muted">{step.does}</p>
+        </div>
+        {step.leaves && (
+          <p className="flex items-center gap-2 py-2 pl-4 text-xs text-muted">
+            <ArrowDown aria-hidden="true" size={14} className="text-faint" />
+            <FileText aria-hidden="true" size={14} className="text-faint" />
+            {step.leaves}
+          </p>
+        )}
+      </li>
+    ))}
+  </ol>
 );
 
 const Flow = () => (
@@ -190,6 +221,13 @@ const BuiltPage = () => (
           <AgentCard key={agent.name} agent={agent} />
         ))}
       </ul>
+    </Section>
+
+    <Section
+      title="How the agents work together"
+      lead="Agents never call each other. The Coordinator, a plain shell script, starts each one in turn, and every handoff is a file you can open and read. Each agent starts with a clean context and ends when its job is done."
+    >
+      <Handoffs />
     </Section>
 
     <Section

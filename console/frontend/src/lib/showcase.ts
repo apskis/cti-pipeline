@@ -4,6 +4,8 @@
 // runbooks. Update this file when those change.
 
 export interface Agent {
+  /** The role name a demo audience remembers, such as "Analyst". */
+  persona: string;
   name: string;
   role: string;
   cadence: string;
@@ -17,6 +19,7 @@ export interface Agent {
 
 export const AGENTS: Agent[] = [
   {
+    persona: "Analyst",
     name: "Bulletin scan",
     role: "Collect",
     cadence: "Mon, Wed, Fri",
@@ -27,6 +30,7 @@ export const AGENTS: Agent[] = [
     statusNote: "Runs locally today",
   },
   {
+    persona: "Writer",
     name: "Document builders",
     role: "Write",
     cadence: "After each scan",
@@ -37,6 +41,7 @@ export const AGENTS: Agent[] = [
     statusNote: "Runs locally today",
   },
   {
+    persona: "Reporter",
     name: "Reporting",
     role: "Report",
     cadence: "Weekly and quarterly",
@@ -47,6 +52,7 @@ export const AGENTS: Agent[] = [
     statusNote: "Built, not yet scheduled",
   },
   {
+    persona: "Watcher",
     name: "Perimeter scan",
     role: "Watch",
     cadence: "Weekly",
@@ -57,6 +63,7 @@ export const AGENTS: Agent[] = [
     statusNote: "Built, not yet scheduled",
   },
   {
+    persona: "Hunter",
     name: "Threat hunting",
     role: "Investigate",
     cadence: "Daily",
@@ -67,6 +74,7 @@ export const AGENTS: Agent[] = [
     statusNote: "Waiting on a Splunk instance",
   },
   {
+    persona: "Librarian",
     name: "Documentation sync",
     role: "Govern",
     cadence: "Monthly",
@@ -77,6 +85,7 @@ export const AGENTS: Agent[] = [
     statusNote: "Waiting on the plan documents",
   },
   {
+    persona: "Scorekeeper",
     name: "Program console",
     role: "Measure",
     cadence: "Daily",
@@ -85,6 +94,50 @@ export const AGENTS: Agent[] = [
     tools: ["Its own KPI data"],
     status: "waiting",
     statusNote: "Waiting on its collector",
+  },
+];
+
+export interface Handoff {
+  /** Who acts: the Coordinator is plain code, everyone else is a Claude session. */
+  actor: string;
+  model: string | null;
+  does: string;
+  /** The file this step leaves for the next one, or null at the end. */
+  leaves: string | null;
+}
+
+// One bulletin scan run, as the Coordinator drives it. Agents never call each other:
+// each one reads a file, does its work, writes a file and ends.
+export const HANDOFFS: Handoff[] = [
+  {
+    actor: "Coordinator",
+    model: null,
+    does: "Restores state, prefetches the feeds and starts the Analyst.",
+    leaves: "Feed digest",
+  },
+  {
+    actor: "Analyst",
+    model: "Sonnet 4.5 or Opus",
+    does: "Decides what matters and gives each item a bulletin or hunt ID.",
+    leaves: "Dedup log with new IDs",
+  },
+  {
+    actor: "Coordinator",
+    model: null,
+    does: "Picks the next four pending IDs and starts a fresh Writer.",
+    leaves: "Pending list",
+  },
+  {
+    actor: "Writer",
+    model: "Haiku 4.5",
+    does: "Builds each document on the list in GeneLabs house style. Repeats in a new session until nothing is pending.",
+    leaves: "Finished documents",
+  },
+  {
+    actor: "Coordinator",
+    model: null,
+    does: "Checks every document, rebuilds the ID counters and ships the output.",
+    leaves: null,
   },
 ];
 
