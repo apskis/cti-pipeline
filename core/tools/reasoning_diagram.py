@@ -15,8 +15,8 @@ WHAT THESE DIAGRAMS ENCODE THAT PROSE HIDES
 Every node carries its EPISTEMIC STATUS in its colour, so a reader can see at a glance
 which parts of the argument are measured and which are inferred:
 
-    MEASURED   solid orange fill     a connector or query produced this number
-    INFERRED   white, orange outline  a judgement drawn from measured facts
+    MEASURED   solid emerald fill    a connector or query produced this number
+    INFERRED   white, emerald outline a judgement drawn from measured facts
     RULED OUT  grey, struck through   a reading that was tested and DISPROVED
     OPEN       dashed outline         the question that would change the conclusion
 
@@ -35,14 +35,14 @@ Labels use Liberation Sans, metrically compatible with Arial.
 from PIL import Image, ImageDraw, ImageFont
 import glob, os, textwrap
 
-ORANGE      = (255, 113,   9)
-ORANGE_DEEP = (224,  95,   0)
-TINT        = (255, 244, 232)
-ABBEY       = ( 68,  70,  72)
+ORANGE      = ( 22, 125,  97)   # Emerald #167D61 (name kept so callers need no change)
+ORANGE_DEEP = ( 16,  59,  50)   # Forest #103B32
+TINT        = (234, 243, 238)   # Mist #EAF3EE
+ABBEY       = ( 32,  44,  41)   # Charcoal #202C29
 GREY        = (103, 103, 101)
 MUTED       = (150, 150, 148)
-LIGHT       = (244, 244, 244)
-RULE        = (217, 217, 217)
+LIGHT       = (244, 249, 246)   # pale Mist #F4F9F6
+RULE        = (162, 191, 174)   # Sage #A2BFAE
 WHITE       = (255, 255, 255)
 
 SS = 3
