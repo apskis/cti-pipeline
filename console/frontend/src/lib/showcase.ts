@@ -48,8 +48,8 @@ export const AGENTS: Agent[] = [
     model: "Sonnet 4.5 in the cloud, Opus locally",
     why: "Reads each new document cold, with none of the Writer's context, and checks every claim against its source and every CVE against NVD. That is judgement, so it gets the strong model. It flags problems and never edits: a person decides.",
     tools: ["NVD", "Web fetch"],
-    status: "ready",
-    statusNote: "Built, first run pending",
+    status: "live",
+    statusNote: "Runs locally today",
   },
   {
     persona: "Reporter",
