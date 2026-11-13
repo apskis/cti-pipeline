@@ -67,6 +67,12 @@ class Candidates(unittest.TestCase):
         self._doc("bulletins/2026/CTI26-02-New.docx", "CTI26-02", mtime=now)
         self.assertEqual(self._ids(since=now - 60), ["CTI26-02"])
 
+    def test_document_fixed_after_its_review_is_queued_whatever_its_date(self) -> None:
+        now = time.time()
+        self._doc("hunts/packages/TH26-08-H.docx", "TH26-08", paras=35, mtime=now - 3600)
+        self._review("TH26-08", now - 7200)
+        self.assertEqual(self._ids(since=now - 60), ["TH26-08"])
+
     def test_shells_and_scratch_and_briefs_are_skipped(self) -> None:
         self._doc("bulletins/2026/CTI26-03-Shell.docx", "CTI26-03", paras=3)
         self._doc("state/_work/CTI26-04-Draft.docx", "CTI26-04")
