@@ -157,3 +157,15 @@ export interface Audience {
   /** Teams the reports name that nobody on the list covers, most named first. */
   unmatched: { team: string; reports: string[] }[];
 }
+
+/** The company's brand, from config/companies/<slug>/company.json. */
+export interface Brand {
+  slug: string;
+  name: string;
+  legal_name: string;
+  /** The program the console belongs to, such as "Cyber Threat Intelligence". */
+  program: string;
+  /** Colour tokens for each theme, by name without the --color- prefix, as #rrggbb. */
+  light: Record<string, string>;
+  dark: Record<string, string>;
+}

@@ -74,16 +74,25 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-# ---- GeneLabs corporate palette (brand kit v1.0) ----------------------------
+# ---- company brand (config/companies/<slug>/company.json) -------------------
+# Colours, names, logo and banner come from the company's brand file, read by
+# core/tools/cti_brand.py. CTI_TOOLS_DIR points there when this script runs from
+# a copy outside the repo.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.environ.get("CTI_TOOLS_DIR") or os.path.join(_HERE, "..", "..", "..", "..", "tools"))
+from cti_brand import load_brand  # noqa: E402
+
+BRAND = load_brand()
+
 # Legacy names are kept so importers (priority brief, awareness) keep working.
-ORANGE      = "167D61"   # GeneLabs Emerald: rules and accents
-ORANGE_DEEP = "103B32"   # GeneLabs Forest: small heading text
-ABBEY       = "202C29"   # GeneLabs Charcoal: body and headline text
-GREY        = "676765"   # corporate grey, footer meta
-RULE        = "A2BFAE"   # GeneLabs Sage: light rules (dark canvas check was done on the old grey, not Sage)
-LABEL_FILL  = "EAF3EE"   # GeneLabs Mist
-CALLOUT_FILL= "EAF3EE"   # GeneLabs Mist
-LINK_BLUE   = "167D61"   # hyperlinks render in Emerald
+ORANGE      = BRAND.palette.accent    # rules and accents
+ORANGE_DEEP = BRAND.palette.primary   # small heading text
+ABBEY       = BRAND.palette.text      # body and headline text
+GREY        = BRAND.palette.muted     # footer meta
+RULE        = BRAND.palette.rule      # light rules
+LABEL_FILL  = BRAND.palette.tint
+CALLOUT_FILL= BRAND.palette.tint
+LINK_BLUE   = BRAND.palette.accent    # hyperlinks
 FONT        = "Arial"
 
 # Published bulletin category legend (unchanged)
@@ -108,7 +117,7 @@ CITE_RE = re.compile(r"\s*((?:" + _ONE_CITE + r")+)")
 def _copyright(date_str):
     m = re.search(r"(20\d{2})", date_str or "")
     year = m.group(1) if m else str(datetime.date.today().year)
-    return f"© {year} GeneLabs LLC All rights reserved."
+    return f"© {year} {BRAND.legal_name} All rights reserved."
 
 
 # ---- low level helpers -----------------------------------------------------
@@ -425,7 +434,7 @@ def add_relevance_box(doc, severity, relevance, supersedes=None):
     p.paragraph_format.line_spacing = 1.08
     _shade_p(p, CALLOUT_FILL)
     _border(p, 'left', ORANGE, sz=24, space=6)
-    _run(p, "Relevance to GeneLabs:  ", size=10, bold=True, color=ABBEY)
+    _run(p, f"Relevance to {BRAND.name}:  ", size=10, bold=True, color=ABBEY)
     _run(p, sev, size=10, bold=True, color=SEVERITY_COLORS.get(sev, ABBEY))
     tail = "  —  " + relevance
     if supersedes:
@@ -713,8 +722,8 @@ def set_base_style(doc):
 
 
 _ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets")
-DEFAULT_WORDMARK = os.path.join(_ASSETS, "genelabs_logo.png")
-DEFAULT_HEADER = os.path.join(_ASSETS, "genelabs_cti_header.png")
+DEFAULT_WORDMARK = str(BRAND.logo)
+DEFAULT_HEADER = str(BRAND.banner)
 HEADER_ASPECT = 230.0 / 1800.0   # height / width of the header image
 HEADER_MAX_WIDTH = Inches(7.0)
 
@@ -764,7 +773,7 @@ def build(spec, template_path, out_path, wordmark_path=None, header_path=None):
     else:
         doc = Document()
         if add_header_image(doc, header_path):
-            print(f"template not found ({template_path}); using the GeneLabs header image",
+            print(f"template not found ({template_path}); using the {BRAND.name} header image",
                   file=sys.stderr)
         else:
             print(f"template not found ({template_path}); building unbranded", file=sys.stderr)
@@ -805,13 +814,13 @@ def build(spec, template_path, out_path, wordmark_path=None, header_path=None):
     if spec.get("sources"):
         add_section_heading(doc, "Sources")
         add_sources(doc, spec["sources"])
-    add_contact(doc, spec.get("footer_contact", "secops@genelabs.com  |  ServiceNow"))
+    add_contact(doc, spec.get("footer_contact", BRAND.contact))
     build_footer(doc, spec["report_id"], wordmark_path,
                  spec.get("tlp", DEFAULT_TLP), _copyright(spec.get("date", "")))
     cp = doc.core_properties
     cp.title = f'{spec["report_id"]} {spec["title"]}'
     cp.category = spec["category"]
-    cp.comments = "GeneLabs Enterprise Information Security | Cyber Threat Intelligence"
+    cp.comments = BRAND.doc_comments
     doc.save(out_path)
     return out_path
 

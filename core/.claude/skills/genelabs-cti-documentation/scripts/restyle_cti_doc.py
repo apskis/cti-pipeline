@@ -26,13 +26,15 @@ from docx.shared import RGBColor
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from genelabs_style import (  # noqa: E402
+    BRAND,
     ABBEY, CALLOUT_FILL, FONT, GREY, LABEL_FILL, ORANGE, RULE,
     add_banner, build_footer, fit_change_history, promote_headings,
     set_base_style, shade_cell, strip_watermarks, style_headings, table_borders,
 )
 
 # 444648 is the retired Abbey body colour: legacy documents still carry it.
-NEUTRAL = {None, "000000", "auto", "202C29", "444648", "333333", "1F1F1F", "212121"}
+# Body text with no deliberate colour of its own: black, Word defaults, and the brand text colour.
+NEUTRAL = {None, "000000", "auto", ABBEY, "202C29", "444648", "333333", "1F1F1F", "212121"}
 
 
 def _force_font(r):
@@ -164,8 +166,7 @@ def restyle(in_path, out_path, doc_id, marking, tlp, copyright_line,
     build_footer(doc, doc_id, marking, tlp=tlp, copyright_line=copyright_line)
 
     cp = doc.core_properties
-    cp.comments = ("GeneLabs Enterprise Information Security | "
-                   "Cyber Threat Intelligence")
+    cp.comments = BRAND.doc_comments
     doc.save(out_path)
     return out_path
 

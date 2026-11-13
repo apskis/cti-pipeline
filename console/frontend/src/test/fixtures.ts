@@ -1,5 +1,6 @@
 import type {
   Audience,
+  Brand,
   Cve,
   CveRegister,
   Deliverable,
@@ -197,4 +198,13 @@ export const AUDIENCE: Audience = {
     },
   },
   unmatched: [{ team: "Lab Operations", reports: ["CTI26-137"] }],
+};
+
+export const BRAND: Brand = {
+  slug: "genelabs",
+  name: "GeneLabs",
+  legal_name: "GeneLabs LLC",
+  program: "Cyber Threat Intelligence",
+  light: { accent: "#167d61", brand: "#103b32" },
+  dark: { accent: "#3fb48c" },
 };

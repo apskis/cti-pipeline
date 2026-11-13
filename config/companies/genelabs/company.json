@@ -1,0 +1,66 @@
+{
+  "_comment": "One company's brand. The document builders (core/tools/cti_brand.py) and the console (/api/brand) both read this file. Colours are six digit hex, no #. Asset paths are relative to this folder.",
+  "slug": "genelabs",
+  "name": "GeneLabs",
+  "legal_name": "GeneLabs LLC",
+  "department": "Enterprise Information Security",
+  "program": "Cyber Threat Intelligence",
+  "contact": "secops@genelabs.com  |  ServiceNow",
+  "palette": {
+    "primary": "103B32",
+    "accent": "167D61",
+    "text": "202C29",
+    "muted": "676765",
+    "rule": "A2BFAE",
+    "tint": "EAF3EE",
+    "zebra": "F4F9F6"
+  },
+  "assets": {
+    "logo": "assets/logo.png",
+    "banner": "assets/banner.png",
+    "symbol": "assets/symbol.png"
+  },
+  "console": {
+    "light": {
+      "page": "F4F8F6",
+      "surface": "FFFFFF",
+      "raised": "EAF3EE",
+      "line": "D3E1D9",
+      "ink": "202C29",
+      "muted": "4E5F58",
+      "faint": "5F706A",
+      "brand": "103B32",
+      "accent": "167D61",
+      "accent-hover": "106650",
+      "on-accent": "FFFFFF",
+      "accent-soft": "EAF3EE",
+      "accent-soft-ink": "103B32",
+      "rung": "A2BFAE",
+      "series-scan": "167D61",
+      "series-build": "A2BFAE",
+      "series-report": "103B32",
+      "series-other": "7F8B86"
+    },
+    "dark": {
+      "page": "121716",
+      "surface": "202C29",
+      "raised": "293632",
+      "line": "35423E",
+      "ink": "EAF3EE",
+      "muted": "B3BFBB",
+      "faint": "8D9A96",
+      "brand": "EAF3EE",
+      "accent": "3FB48C",
+      "accent-hover": "5CC69F",
+      "on-accent": "0B1512",
+      "accent-soft": "2B3B36",
+      "accent-soft-ink": "D6EBE0",
+      "rung": "7FA593",
+      "symbol-tile": "EAF3EE",
+      "series-scan": "3FB48C",
+      "series-build": "A2BFAE",
+      "series-report": "D7EBE0",
+      "series-other": "7D8A86"
+    }
+  }
+}

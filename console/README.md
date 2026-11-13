@@ -89,10 +89,17 @@ marked. Bulletin and hunt IDs link into the reader.
 
 ### Look and theme
 
-The console wears the GeneLabs brand kit (the updated kit, with the official logo): the
-DNA helix from the logo, a divider and the GeneLabs wordmark as one lockup, with "Cyber
-Threat Intelligence" beneath, and the kit's palette (Forest, Emerald, Sage, Mist,
-Charcoal) as colour tokens in `src/index.css`.
+The console wears the brand of one company, read from
+`config/companies/<slug>/company.json` (see `config/companies/README.md`), the same file
+the document builders use. The default is GeneLabs. The header shows the company's
+symbol, a divider and its name as one lockup, with its program name beneath; the browser
+tab is named after it.
+
+The colour tokens in `src/index.css` hold the GeneLabs values, so the page draws in them
+before the brand loads. Once `/api/brand` answers, the company's own tokens for the theme
+on show are set on `<html>` over them. Tokens a company leaves out keep the
+`index.css` value. Choose another company with `CTI_CONSOLE_COMPANY=<slug>` or
+`CTI_CONSOLE_COMPANY_DIR=<folder>` when starting the backend, then reload the page.
 
 - **Light, dark or system.** The switch in the header is remembered in this browser.
   System follows Windows. `public/theme-init.js` applies a saved choice before the page
@@ -214,6 +221,8 @@ Everything is GET except the stakeholder writes.
 | Path | Returns |
 |---|---|
 | `/api/health` | `{"status": "ok"}` |
+| `/api/brand` | The company's name, legal name, program and console colour tokens for light and dark |
+| `/api/brand/symbol` | The company's symbol, a PNG from its folder |
 | `/api/summary` | Counts per kind, CVEs tracked, total model cost, the last scan run and its six stages |
 | `/api/runs?component=&limit=` | Runs, newest first, each with its sessions and cost |
 | `/api/runs/{id}` | One run: its sessions, stages, documents saved while it ran, and its run report as HTML |
