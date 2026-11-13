@@ -1,6 +1,7 @@
 import type {
   Audience,
   Brand,
+  BrandPreview,
   Cve,
   CveRegister,
   Deliverable,
@@ -203,7 +204,29 @@ export const BRAND: Brand = {
   slug: "genelabs",
   name: "GeneLabs",
   legal_name: "GeneLabs LLC",
+  department: "Enterprise Information Security",
   program: "Cyber Threat Intelligence",
+  contact: "secops@genelabs.com  |  ServiceNow",
+  palette: {
+    primary: "103B32",
+    accent: "167D61",
+    text: "202C29",
+    muted: "676765",
+    rule: "A2BFAE",
+    tint: "EAF3EE",
+    zebra: "F4F9F6",
+  },
   light: { accent: "#167d61", brand: "#103b32" },
   dark: { accent: "#3fb48c" },
+  version: "abc123def456",
+};
+
+export const BRAND_PREVIEW: BrandPreview = {
+  light: { accent: "#167d61", brand: "#103b32" },
+  dark: { accent: "#1ea883" },
+  checks: [
+    { label: "Body text on white", foreground: "#202c29", background: "#ffffff", ratio: 14.45, needed: 4.5, ok: true },
+    { label: "Accent on white (links)", foreground: "#167d61", background: "#ffffff", ratio: 5.07, needed: 4.5, ok: true },
+  ],
+  ok: true,
 };

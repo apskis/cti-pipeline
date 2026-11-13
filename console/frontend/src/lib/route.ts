@@ -8,7 +8,12 @@ export type Route =
   | { page: "runs"; id: string | null }
   | { page: "cves" }
   | { page: "built" }
-  | { page: "stakeholders"; id: string | null };
+  | { page: "stakeholders"; id: string | null }
+  | { page: "settings"; section: SettingsSection };
+
+/** The tabs inside Settings. Branding is the first; more join it as they are built. */
+export const SETTINGS_SECTIONS = ["branding"] as const;
+export type SettingsSection = (typeof SETTINGS_SECTIONS)[number];
 
 export function parseRoute(hash: string): Route {
   const [page, raw] = hash.replace(/^#\/?/, "").split("/");
@@ -16,6 +21,10 @@ export function parseRoute(hash: string): Route {
   if (page === "reports" || page === "runs" || page === "stakeholders") return { page, id };
   if (page === "cves") return { page: "cves" };
   if (page === "built") return { page: "built" };
+  if (page === "settings") {
+    const section = SETTINGS_SECTIONS.find((s) => s === id) ?? "branding";
+    return { page: "settings", section };
+  }
   return { page: "overview" };
 }
 
@@ -31,6 +40,8 @@ export const stakeholderHref = (id: string | null): string =>
 /** The add form, optionally with the team filled in, as in #/stakeholders/new:SOC. */
 export const newStakeholderHref = (team?: string): string =>
   team ? `#/stakeholders/new:${encodeURIComponent(team)}` : "#/stakeholders/new";
+
+export const settingsHref = (section: SettingsSection): string => `#/settings/${section}`;
 
 export function useRoute(): Route {
   const [route, setRoute] = useState(() => parseRoute(window.location.hash));

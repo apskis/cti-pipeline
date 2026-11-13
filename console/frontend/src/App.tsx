@@ -10,6 +10,7 @@ import CvesPage from "./pages/CvesPage";
 import OverviewPage from "./pages/OverviewPage";
 import ReportsPage from "./pages/ReportsPage";
 import RunsPage from "./pages/RunsPage";
+import SettingsPage from "./pages/SettingsPage";
 import StakeholdersPage from "./pages/StakeholdersPage";
 
 const TABS = [
@@ -19,6 +20,7 @@ const TABS = [
   { page: "cves", label: "CVEs", href: "#/cves" },
   { page: "stakeholders", label: "Stakeholders", href: "#/stakeholders" },
   { page: "built", label: "How it's built", href: "#/built" },
+  { page: "settings", label: "Settings", href: "#/settings/branding" },
 ] as const;
 
 const Page = ({ route }: { route: Route }) => {
@@ -33,6 +35,8 @@ const Page = ({ route }: { route: Route }) => {
       return <StakeholdersPage selected={route.id} />;
     case "built":
       return <BuiltPage />;
+    case "settings":
+      return <SettingsPage section={route.section} />;
     default:
       return <OverviewPage />;
   }
@@ -53,7 +57,7 @@ const App = () => {
             <div className="flex flex-col items-start gap-2 sm:items-end">
               <ThemeSwitch />
               <p className="text-xs text-muted">
-                Local only. Nothing here changes the pipeline; only the stakeholder list is saved.
+                Local only. Nothing here changes the pipeline; only the stakeholder list and the branding are saved.
               </p>
             </div>
           </header>
