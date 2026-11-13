@@ -215,8 +215,8 @@ export interface Company {
   slug: string;
   name: string;
   program: string;
-  /** The one company the pipeline writes reports for today. */
-  pipeline: boolean;
+  /** Whether the pipeline has left any output for it yet. */
+  has_runs: boolean;
 }
 
 export interface CompanyList {

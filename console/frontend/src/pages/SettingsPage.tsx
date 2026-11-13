@@ -304,7 +304,7 @@ const CompanyRow = ({
       </p>
       <p className="text-xs text-muted">
         Short name <code>{company.slug}</code>.{" "}
-        {company.pipeline ? "The pipeline writes its reports." : "No pipeline runs for it yet."}
+        {company.has_runs ? "It has pipeline runs." : "No pipeline runs for it yet."}
       </p>
     </div>
     {!active && (

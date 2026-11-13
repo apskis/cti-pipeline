@@ -31,7 +31,7 @@ function mockApi() {
     if (url === "/api/companies" && method === "POST") {
       state = {
         ...state,
-        companies: [...state.companies, { slug: body!.slug, name: body!.name, program: "", pipeline: false }],
+        companies: [...state.companies, { slug: body!.slug, name: body!.name, program: "", has_runs: false }],
       };
       return answer(state, 201);
     }
@@ -87,8 +87,9 @@ describe("Company picker", () => {
     expect(put?.headers["X-CTI-Console"]).toBe("1");
     expect(brandReads()).toBeGreaterThan(before);
     expect(screen.getByRole("note")).toHaveTextContent(
-      "The pipeline runs for GeneLabs only for now, so Acme Biotech has no reports or runs yet.",
+      "Acme Biotech has no pipeline runs yet. Fill in what the pipeline should watch in data/companies/acme/profile.json",
     );
+    expect(screen.getByRole("note")).toHaveTextContent("COMPANY=acme scripts/run-local.sh bulletin-scan");
   });
 
   it("names the shown company on every write, so a stale tab cannot save elsewhere", async () => {

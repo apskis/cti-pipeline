@@ -114,10 +114,11 @@ company opens on its Branding tab.
 - **Kept apart.** Each company has its own branding, stakeholders, `out/` and `logs/`
   under `data/companies/<slug>/`. Every page reads the shown company's folders only, so
   another company's report is a 404, not a leak.
-- **GeneLabs reads the repo root.** The pipeline runs for GeneLabs only until it takes a
-  company of its own, so GeneLabs keeps `out/`, `logs/` and `config/stakeholders.json`
-  where the pipeline and scheduled runs write them. Other companies have no reports yet,
-  and a note under the header says so.
+- **GeneLabs reads the repo root.** GeneLabs keeps `out/`, `logs/` and
+  `config/stakeholders.json` where the pipeline and scheduled runs wrote them before
+  companies existed. Every other company's runs (`COMPANY=<slug>
+  scripts/run-local.sh <component>`) write into its own folder. Until a company's first
+  run, a note under the header says how to start one.
 - **Remembered.** The choice is kept in `data/console.json` for the next start. With none
   saved, the console opens on `CTI_CONSOLE_COMPANY` (default `genelabs`).
 - **A stale tab cannot write elsewhere.** Every write names the company the page shows

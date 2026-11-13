@@ -1,12 +1,13 @@
 """The companies the console can show, and which one it shows now.
 
 Each company is a folder, data/companies/<slug>/, holding its brand (company.json and
-assets/), its stakeholder list, and its own out/ and logs/. The console reads only the
-active company's folders, so one company's reports and people never show under another.
+assets/), its facts for the pipeline (profile.json and reference/), its stakeholder list,
+and its own out/ and logs/. The console reads only the active company's folders, so one
+company's reports and people never show under another.
 
-The pipeline company (GeneLabs) is the exception until the pipeline runs per company:
-its reports, logs and stakeholders stay at the repo root where the pipeline writes them.
-Its brand still lives here, so a save from the Branding tab no longer changes the repo.
+GeneLabs is the exception: its reports, logs and stakeholders stay at the repo root, where
+the pipeline and scheduled runs wrote them before companies existed. Its brand and facts
+still live here, so a save in the console no longer changes the repo.
 
 Committed folders under config/companies/ are only first copies: each is copied into
 data/ once, and _starter/ is what a new, blank company begins from.
@@ -31,6 +32,9 @@ MAX_COMPANIES = 100
 STATE_FILE = "console.json"
 # What a new company copies from its source: the brand only, never people or reports.
 BRAND_PARTS = ("company.json", "assets")
+# What the pipeline knows about a company. A new company always starts these from the
+# blank starter: a copied brand does not make another company's products or peers its own.
+FACT_PARTS = ("profile.json", "reference")
 
 Slug = Annotated[str, StringConstraints(pattern=COMPANY_SLUG.pattern)]
 Name = Annotated[str, StringConstraints(min_length=1, max_length=200, strip_whitespace=True)]
@@ -62,8 +66,8 @@ class CompanyOut(BaseModel):
     slug: str
     name: str
     program: str
-    # True for the one company the pipeline writes reports for today.
-    pipeline: bool
+    # Whether its out/ holds anything yet, so the page can say how to start a first run.
+    has_runs: bool
 
 
 class CompanyList(BaseModel):
@@ -96,7 +100,11 @@ class Companies:
 
     # ------------------------------------------------------------------ setup
     def _seed(self) -> None:
-        """Copy each committed company in once. An existing folder is never touched."""
+        """Copy each committed company in once. Nothing already in data/ is overwritten.
+
+        A copy made before companies had facts gets the committed profile.json and
+        reference/ added beside its brand, so it can run without being made again.
+        """
         self.root.mkdir(parents=True, exist_ok=True)
         templates = self.settings.templates_dir
         if not templates.is_dir():
@@ -104,8 +112,11 @@ class Companies:
         for source in sorted(templates.iterdir()):
             target = self.root / source.name
             committed = COMPANY_SLUG.match(source.name) and (source / "company.json").is_file()
-            if committed and not target.exists():
-                self._copy_brand(source, target)
+            if not committed:
+                continue
+            if not target.exists():
+                self._copy_parts(source, target, BRAND_PARTS)
+            self._copy_parts(source, target, FACT_PARTS)
 
     def _first_active(self) -> str:
         """The company picked last time, else the one the console was started with."""
@@ -137,11 +148,12 @@ class Companies:
         if not isinstance(raw, dict):
             raw = {}
         name, program = raw.get("name"), raw.get("program")
+        out_dir = self.workspace(slug).out_dir
         return CompanyOut(
             slug=slug,
             name=name if isinstance(name, str) and name.strip() else slug,
             program=program if isinstance(program, str) else "",
-            pipeline=slug == PIPELINE_COMPANY,
+            has_runs=out_dir.is_dir() and any(out_dir.iterdir()),
         )
 
     def listing(self) -> CompanyList:
@@ -187,7 +199,10 @@ class Companies:
         return self.listing()
 
     def create(self, item: CompanyIn) -> CompanyList:
-        """A new company folder: a copy of `source`'s brand, or the blank starter."""
+        """A new company folder: a copy of `source`'s brand, or the blank starter.
+
+        Its facts (profile.json, reference/) always come from the starter.
+        """
         with self._lock:
             target = self.root / item.slug
             if target.exists():
@@ -205,7 +220,8 @@ class Companies:
             partial = self.root / f".{item.slug}.part"
             shutil.rmtree(partial, ignore_errors=True)
             try:
-                self._copy_brand(source, partial)
+                self._copy_parts(source, partial, BRAND_PARTS)
+                self._copy_parts(self.settings.templates_dir / STARTER, partial, FACT_PARTS)
                 raw = json.loads((partial / "company.json").read_text(encoding="utf-8"))
                 raw["slug"] = item.slug
                 raw["name"] = item.name
@@ -222,16 +238,19 @@ class Companies:
         return self.listing()
 
     @staticmethod
-    def _copy_brand(source: Path, target: Path) -> None:
-        target.mkdir(parents=True)
-        for part in BRAND_PARTS:
-            path = source / part
+    def _copy_parts(source: Path, target: Path, parts: tuple[str, ...]) -> None:
+        """Copy the named files and folders that `target` does not have yet."""
+        target.mkdir(parents=True, exist_ok=True)
+        for part in parts:
+            path, dest = source / part, target / part
+            if dest.exists():
+                continue
             if path.is_dir():
                 # Earlier versions of a picture (.bak) and writes in progress stay behind.
                 skip = shutil.ignore_patterns("*.bak", "*.part")
-                shutil.copytree(path, target / part, ignore=skip)
+                shutil.copytree(path, dest, ignore=skip)
             elif path.is_file():
-                shutil.copy2(path, target / part)
+                shutil.copy2(path, dest)
 
     def _write_state(self) -> None:
         partial = self.state.with_suffix(".part")

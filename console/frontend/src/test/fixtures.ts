@@ -236,7 +236,7 @@ export const BRAND_PREVIEW: BrandPreview = {
 export const COMPANIES: CompanyList = {
   active: "genelabs",
   companies: [
-    { slug: "acme", name: "Acme Biotech", program: "Cyber Threat Intelligence", pipeline: false },
-    { slug: "genelabs", name: "GeneLabs", program: "Cyber Threat Intelligence", pipeline: true },
+    { slug: "acme", name: "Acme Biotech", program: "Cyber Threat Intelligence", has_runs: false },
+    { slug: "genelabs", name: "GeneLabs", program: "Cyber Threat Intelligence", has_runs: true },
   ],
 };

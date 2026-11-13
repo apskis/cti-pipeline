@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { useState } from "react";
 
 import { BrandLockup, ThemeSwitch } from "./components/Brand";
-import { CompanyPicker, NoPipelineNote } from "./components/CompanyPicker";
+import { CompanyPicker, NoRunsNote } from "./components/CompanyPicker";
 import { type Route, useRoute } from "./lib/route";
 import { ThemeProvider } from "./lib/theme";
 import BuiltPage from "./pages/BuiltPage";
@@ -83,7 +83,7 @@ const App = () => {
             ))}
           </nav>
           <main>
-            <NoPipelineNote />
+            <NoRunsNote />
             <Page route={route} />
           </main>
         </div>
