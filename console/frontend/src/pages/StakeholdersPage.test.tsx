@@ -8,6 +8,7 @@ import {
   COMPANIES,
   DELIVERABLES,
   DOCUMENT,
+  ME,
   NO_STAKEHOLDERS,
   STAKEHOLDERS,
 } from "../test/fixtures";
@@ -24,6 +25,7 @@ function mockApi(list = STAKEHOLDERS) {
     const url = String(input);
     calls.push({ url, init });
     if (url === "/api/companies") return answer(COMPANIES);
+    if (url === "/api/me") return answer(ME);
     if (init?.method === "DELETE") return Promise.resolve(new Response(null, { status: 204 }));
     if (init?.method === "POST" && url.endsWith("/start-from-example")) return answer(STAKEHOLDERS, 201);
     if (init?.method === "POST") {
@@ -95,7 +97,9 @@ describe("Stakeholders", () => {
         ? answer({ detail: [{ loc: ["body", "email"], msg: "does not look like an email address" }] }, 422)
         : String(input) === "/api/companies"
           ? answer(COMPANIES)
-          : answer(String(input).startsWith("/api/stakeholders") ? STAKEHOLDERS : DELIVERABLES),
+          : String(input) === "/api/me"
+            ? answer(ME)
+            : answer(String(input).startsWith("/api/stakeholders") ? STAKEHOLDERS : DELIVERABLES),
     );
     render(<App />);
     await userEvent.type(await screen.findByLabelText("Name (required)"), "X");

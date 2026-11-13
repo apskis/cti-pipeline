@@ -10,7 +10,8 @@ import uvicorn
 from .api import create_app
 
 # Loopback only, on purpose, and not configurable: the output holds internal threat
-# intelligence and the API has no authentication.
+# intelligence. Sign in (CTI_AUTH=oidc) decides who may see what, but the console is not
+# built to face a network yet; hosting it behind HTTPS is a later phase.
 HOST = "127.0.0.1"
 
 

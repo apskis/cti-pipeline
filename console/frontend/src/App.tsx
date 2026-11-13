@@ -2,6 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import clsx from "clsx";
 import { useState } from "react";
 
+import { ApiError, useCompanies, useMe } from "./api/client";
+import { Account, NoCompany, SignIn } from "./components/Account";
 import { BrandLockup, ThemeSwitch } from "./components/Brand";
 import { CompanyPicker, NoRunsNote } from "./components/CompanyPicker";
 import { type Route, useRoute } from "./lib/route";
@@ -43,15 +45,17 @@ const Page = ({ route }: { route: Route }) => {
   }
 };
 
-const App = () => {
-  // One client per mount, so tests never share a cache.
-  const [client] = useState(
-    () => new QueryClient({ defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } } }),
-  );
+/** The console, once it is known who is using it and that they have a company. */
+const Console = () => {
   const route = useRoute();
+  const me = useMe();
+  const companies = useCompanies();
+  // The page draws at once; only signed out and no company stop it. Until /api/me answers,
+  // buttons that need a role stay hidden rather than appearing and vanishing.
+  if (me.error instanceof ApiError && me.error.status === 401) return <SignIn />;
+  if (companies.data?.active === "") return <NoCompany />;
+  const local = me.data?.auth !== "oidc";
   return (
-    <ThemeProvider>
-      <QueryClientProvider client={client}>
         <div className="mx-auto max-w-6xl px-4 py-6 md:px-8">
           <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b-[3px] border-accent pb-4">
             <BrandLockup />
@@ -59,9 +63,11 @@ const App = () => {
               <div className="flex flex-wrap items-center gap-3 sm:justify-end">
                 <CompanyPicker />
                 <ThemeSwitch />
+                <Account />
               </div>
               <p className="text-xs text-muted">
-                Local only. Nothing here changes the pipeline; only companies, their branding and stakeholders are saved.
+                {local ? "Local only. " : ""}Nothing here changes the pipeline; only companies, their branding and
+                stakeholders are saved.
               </p>
             </div>
           </header>
@@ -87,6 +93,18 @@ const App = () => {
             <Page route={route} />
           </main>
         </div>
+  );
+};
+
+const App = () => {
+  // One client per mount, so tests never share a cache.
+  const [client] = useState(
+    () => new QueryClient({ defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } } }),
+  );
+  return (
+    <ThemeProvider>
+      <QueryClientProvider client={client}>
+        <Console />
       </QueryClientProvider>
     </ThemeProvider>
   );

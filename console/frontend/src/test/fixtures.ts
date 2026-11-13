@@ -1,12 +1,13 @@
 import type {
-  CompanyList,
   Audience,
   Brand,
   BrandPreview,
+  CompanyList,
   Cve,
   CveRegister,
   Deliverable,
   DeliverableDocument,
+  Me,
   Run,
   RunDetail,
   Session,
@@ -231,6 +232,16 @@ export const BRAND_PREVIEW: BrandPreview = {
     { label: "Accent on white (links)", foreground: "#167d61", background: "#ffffff", ratio: 5.07, needed: 4.5, ok: true },
   ],
   ok: true,
+};
+
+/** The local console's one user, who may do everything. */
+export const ME: Me = {
+  auth: "off",
+  name: "Local user",
+  email: "",
+  platform_admin: true,
+  can_manage: true,
+  roles: {},
 };
 
 export const COMPANIES: CompanyList = {

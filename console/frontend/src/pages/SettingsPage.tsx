@@ -28,6 +28,8 @@ import {
   useSettled,
 } from "../lib/branding";
 import { SETTINGS_SECTIONS, type SettingsSection, settingsHref } from "../lib/route";
+import { ReadOnlyNote } from "../components/Account";
+import { useAccess } from "../lib/access";
 
 const fieldClass = "w-full rounded-md border border-line bg-surface px-2 py-1.5 text-sm";
 const buttonClass =
@@ -130,7 +132,7 @@ const ImageField = ({ field, version }: { field: (typeof IMAGE_FIELDS)[number]; 
 };
 
 /** Names and colours are a draft until saved; images save as soon as they are picked. */
-const BrandingForm = ({ brand }: { brand: Brand }) => {
+const BrandingForm = ({ brand, readOnly = false }: { brand: Brand; readOnly?: boolean }) => {
   const saved = draftOf(brand);
   const [draft, setDraft] = useState<BrandInput>(saved);
   const [message, setMessage] = useState<string | null>(null);
@@ -167,6 +169,8 @@ const BrandingForm = ({ brand }: { brand: Brand }) => {
   const dark = preview.data?.dark ?? brand.dark;
   return (
     <form onSubmit={submit} className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+      {/* A viewer sees every field and the preview, with nothing that would be refused. */}
+      <fieldset disabled={readOnly} className="contents">
       <div className="space-y-6">
         <fieldset className="space-y-3">
           <legend className="mb-2 font-medium">Names</legend>
@@ -259,21 +263,24 @@ const BrandingForm = ({ brand }: { brand: Brand }) => {
           </p>
         )}
       </aside>
+      </fieldset>
     </form>
   );
 };
 
 const BrandingTab = () => {
   const brand = useBrand();
+  const { canWrite } = useAccess();
   if (!brand.data) return <LoadState error={brand.error} onRetry={() => void brand.refetch()} />;
   return (
     <>
+      {!canWrite && <ReadOnlyNote what={`${brand.data.name}'s branding`} />}
       <p className="mb-4 text-sm text-muted">
         How {brand.data.name}'s reports and this console look. Saved to{" "}
         <code>data/companies/{brand.data.slug}/</code>, the folder the report builders read.
       </p>
       {/* Keyed by company, so a different company starts a fresh draft. */}
-      <BrandingForm key={brand.data.slug} brand={brand.data} />
+      <BrandingForm key={brand.data.slug} brand={brand.data} readOnly={!canWrite} />
     </>
   );
 };
@@ -290,7 +297,8 @@ const CompanyRow = ({
   active: boolean;
   busy: boolean;
   onShow: () => void;
-  onCopy: () => void;
+  /** Absent for someone who may not add companies. */
+  onCopy?: () => void;
 }) => (
   <li className="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-surface px-3 py-2">
     <div className="min-w-0 flex-1">
@@ -312,10 +320,12 @@ const CompanyRow = ({
         Show this company
       </button>
     )}
-    <button type="button" className={buttonClass} onClick={onCopy} aria-label={`Copy ${company.name}`}>
-      <Copy aria-hidden size={14} />
-      Copy
-    </button>
+    {onCopy && (
+      <button type="button" className={buttonClass} onClick={onCopy} aria-label={`Copy ${company.name}`}>
+        <Copy aria-hidden size={14} />
+        Copy
+      </button>
+    )}
   </li>
 );
 
@@ -335,6 +345,7 @@ const CompaniesTab = () => {
   const [slugTouched, setSlugTouched] = useState(false);
   const [source, setSource] = useState("");
   const nameInput = useRef<HTMLInputElement>(null);
+  const { canManage } = useAccess();
 
   if (!companies.data) return <LoadState error={companies.error} onRetry={() => void companies.refetch()} />;
   const { active, companies: list } = companies.data;
@@ -388,7 +399,7 @@ const CompaniesTab = () => {
               active={company.slug === active}
               busy={busy}
               onShow={() => pick.mutate(company.slug)}
-              onCopy={() => copyOf(company)}
+              onCopy={canManage ? () => copyOf(company) : undefined}
             />
           ))}
         </ul>
@@ -399,6 +410,7 @@ const CompaniesTab = () => {
         )}
       </section>
 
+      {canManage && (
       <form
         onSubmit={submit}
         aria-labelledby="add-company-title"
@@ -460,6 +472,7 @@ const CompaniesTab = () => {
           </p>
         )}
       </form>
+      )}
     </div>
   );
 };

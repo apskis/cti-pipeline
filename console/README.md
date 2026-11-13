@@ -127,6 +127,20 @@ company opens on its Branding tab.
 - **Only copies are made.** Adding a company never moves or removes anything. There is no
   delete yet: remove a company's folder under `data/companies/` by hand.
 
+### Sign in and roles
+
+By default the console is for one person on this machine, who may do everything. With
+`CTI_AUTH=oidc` people sign in with Entra ID or Cognito, and roles decide what they see:
+
+- **Platform admin** (`cti-platform-admin`): every company, and adding companies.
+- **Company admin** (`cti-admin-<slug>`): that company, and changing its branding and
+  stakeholders.
+- **Viewer** (`cti-viewer-<slug>`): that company, read only.
+
+Each person keeps their own shown company, the header names them and their role with a
+**Sign out** button, and the page leaves out what their role cannot do. The backend
+refuses it anyway. Setup for both providers is in `docs/console-sign-in.md`.
+
 - **Light, dark or system.** The switch in the header is remembered in this browser.
   System follows Windows. `public/theme-init.js` applies a saved choice before the page
   draws, so it never flashes the other theme.
@@ -198,6 +212,7 @@ purpose: the output is internal threat intelligence and the API has no login.
 | `CTI_CONSOLE_STAKEHOLDERS` | `<repo>/config/stakeholders.json` | GeneLabs' stakeholder list (gitignored) |
 | `CTI_DATA_DIR` | `<repo>/data` | Every company's folder and the remembered choice (gitignored) |
 | `CTI_CONSOLE_COMPANY` | `genelabs` | The company to open with when none has been picked |
+| `CTI_AUTH` | `off` | `oidc` turns on sign in; its other settings are in `docs/console-sign-in.md` |
 
 ### Branded PDFs
 
@@ -249,7 +264,10 @@ Everything is GET except the stakeholder writes.
 | Path | Returns |
 |---|---|
 | `/api/health` | `{"status": "ok"}` |
-| `/api/companies` | Every company and which one is shown |
+| `/api/me` | Who is using the console, their roles, and whether sign in is on |
+| `/api/auth/login`, `/api/auth/callback` | Sign in at the provider and back (`CTI_AUTH=oidc` only) |
+| `POST /api/auth/logout` | Sign out; answers the provider's sign out page to go to |
+| `/api/companies` | The companies this person may see, and which one is shown to them |
 | `PUT /api/companies/active` | Show another company; remembered for the next start |
 | `POST /api/companies` | Add a company, blank or copying another's branding |
 | `/api/brand` | The company's name, legal name, program and console colour tokens for light and dark |

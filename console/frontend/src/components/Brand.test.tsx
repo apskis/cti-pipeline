@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import App from "../App";
 import type { Brand } from "../api/types";
 import { THEME_KEY } from "../lib/theme";
-import { BRAND, COMPANIES, DELIVERABLES, RUNS, SUMMARY } from "../test/fixtures";
+import { BRAND, COMPANIES, DELIVERABLES, ME, RUNS, SUMMARY } from "../test/fixtures";
 
 // jsdom has no canvas; the chart's drawing is Chart.js's business, not ours.
 vi.mock("react-chartjs-2", () => ({ Bar: () => <div data-testid="chart" /> }));
@@ -16,6 +16,7 @@ function mockOverview(brand: Brand | null = BRAND) {
   vi.spyOn(globalThis, "fetch").mockImplementation((input) => {
     const url = String(input);
     if (url === "/api/companies") return answer(COMPANIES);
+    if (url === "/api/me") return answer(ME);
     if (url.startsWith("/api/brand")) return brand ? answer(brand) : answer({ detail: "No brand file" }, 500);
     return answer(url.startsWith("/api/summary") ? SUMMARY : url.startsWith("/api/deliverables") ? DELIVERABLES : RUNS);
   });
