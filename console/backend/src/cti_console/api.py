@@ -19,6 +19,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import FileResponse
 
 from .audience import audience_view
+from .brand import BrandError, load_brand
 from .config import Settings
 from .deliverables import Deliverable, load_checks, save_checks, scan, warm_checks
 from .pdf import Converter, PdfCache, PdfError, WordWorker, word_available
@@ -122,6 +123,23 @@ def create_app(
     @app.get("/api/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    @app.get("/api/brand")
+    def brand() -> dict[str, object]:
+        """Read on each call, so an edited brand file shows on the next page load."""
+        try:
+            found, _ = load_brand(settings.company_dir)
+        except BrandError as exc:
+            raise HTTPException(500, str(exc)) from exc
+        return found.model_dump()
+
+    @app.get("/api/brand/symbol")
+    def brand_symbol() -> FileResponse:
+        try:
+            _, symbol = load_brand(settings.company_dir)
+        except BrandError as exc:
+            raise HTTPException(500, str(exc)) from exc
+        return FileResponse(symbol, media_type="image/png")
 
     @app.get("/api/summary")
     def summary() -> dict[str, object]:

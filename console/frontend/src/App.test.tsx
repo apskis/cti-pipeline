@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import App from "./App";
-import { CVES, DELIVERABLES, DOCUMENT, RUN_DETAIL, RUNS, SUMMARY } from "./test/fixtures";
+import { BRAND, CVES, DELIVERABLES, DOCUMENT, RUN_DETAIL, RUNS, SUMMARY } from "./test/fixtures";
 
 // jsdom has no canvas; the chart's own drawing is Chart.js's business, not ours.
 vi.mock("react-chartjs-2", () => ({ Bar: () => <div data-testid="chart" /> }));
@@ -17,7 +17,13 @@ function mockApi(handler: (url: string) => Promise<Response>) {
 
 const overview = (url: string) =>
   answer(
-    url.startsWith("/api/summary") ? SUMMARY : url.startsWith("/api/deliverables") ? DELIVERABLES : RUNS,
+    url.startsWith("/api/brand")
+      ? BRAND
+      : url.startsWith("/api/summary")
+        ? SUMMARY
+        : url.startsWith("/api/deliverables")
+          ? DELIVERABLES
+          : RUNS,
   );
 
 describe("App", () => {

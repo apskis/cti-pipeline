@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
   Audience,
+  Brand,
   CveRegister,
   Deliverable,
   DeliverableDocument,
@@ -33,6 +34,15 @@ export async function getJson<T>(path: string): Promise<T> {
 // The pipeline writes at most a few times a day, so a minute of staleness is fine and
 // keeps the page from rereading every document on each focus.
 const STALE_MS = 60_000;
+
+export function useBrand() {
+  return useQuery({
+    queryKey: ["brand"],
+    queryFn: () => getJson<Brand>("/api/brand"),
+    // The brand changes only when someone edits company.json; a reload picks that up.
+    staleTime: Infinity,
+  });
+}
 
 export function useSummary() {
   return useQuery({

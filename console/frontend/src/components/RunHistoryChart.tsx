@@ -22,7 +22,7 @@ const SERIES_TOKENS: Record<Series, string> = {
 
 const RunHistoryChart = ({ runs }: { runs: Run[] }) => {
   // Re-read the colour tokens when the theme changes.
-  const { theme } = useTheme();
+  const { theme, painting } = useTheme();
   const days = useMemo(() => costByDay(runs), [runs]);
   const series = useMemo(() => usedSeries(days), [days]);
   if (days.length === 0) {
@@ -43,7 +43,7 @@ const RunHistoryChart = ({ runs }: { runs: Run[] }) => {
   return (
     <div className="relative h-56" role="img" aria-label="Model cost per run day, split by stage">
       <Bar
-        key={theme}
+        key={`${theme}-${painting}`}
         data={data}
         options={{
           responsive: true,
