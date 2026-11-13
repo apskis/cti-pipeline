@@ -4,11 +4,11 @@ Word lays the document out exactly as a reader would see it, banner, palette and
 included, which no HTML rendering matches.
 
 Word is slow the first time it exports in a session (close to a minute on a machine with
-a network printer as its default, while it reads the printer's page metrics) and fast
-after that. So one hidden Word is kept open on a worker thread, warmed up when the
-console starts, and closed after a quiet spell. Each PDF is made once and kept in a cache
-folder outside out/; the cache key carries the source's size and modified time, so a
-rebuilt report gets a fresh PDF on its next view.
+a network printer as its default, while it waits on the printer for its page metrics; a
+sleeping printer makes it worse) and fast after that. So one hidden Word is kept open on a
+worker thread, warmed up when the console starts, and closed only after hours of quiet.
+Each PDF is made once and kept in a cache folder outside out/; the cache key carries the
+source's size and modified time, so a rebuilt report gets a fresh PDF on its next view.
 """
 
 from __future__ import annotations
@@ -30,8 +30,10 @@ from pathlib import Path
 
 # The first export of a Word session can take a minute; a long report adds to that.
 TIMEOUT_S = 180
-# Close Word after this long without a request, so it does not sit in memory all day.
-IDLE_S = 15 * 60
+# Close Word after this long without a request, so it does not sit in memory overnight.
+# Each restart of Word costs the slow first export again, which a reader would wait out;
+# 15 minutes made that happen after every coffee break. A hidden Word holds about 150 MB.
+IDLE_S = 4 * 60 * 60
 
 WD_EXPORT_FORMAT_PDF = 17
 WD_DO_NOT_SAVE_CHANGES = 0

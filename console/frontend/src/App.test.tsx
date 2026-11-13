@@ -130,6 +130,21 @@ describe("App", () => {
     expect(await screen.findByText("Patch now.")).toBeInTheDocument();
   });
 
+  it("offers the text view while Word is still making the PDF", async () => {
+    window.location.hash = "#/reports/CTI26-137";
+    mockApi((url) =>
+      url.startsWith("/api/deliverables/CTI26-137/html")
+        ? answer({ ...DOCUMENT, pdf: true })
+        : url.startsWith("/api/deliverables/CTI26-137/pdf/ready")
+          ? new Promise<Response>(() => {}) // a cold Word, still exporting
+          : answer(DELIVERABLES),
+    );
+    render(<App />);
+    expect(await screen.findByText("Making the branded PDF with Word.")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Read the text instead" }));
+    expect(await screen.findByText("Patch now.")).toBeInTheDocument();
+  });
+
   it("shows only the text view and no PDF download without Word", async () => {
     window.location.hash = "#/reports/CTI26-137";
     mockApi((url) =>
