@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import type { Review } from "../api/types";
 import { DELIVERABLES } from "../test/fixtures";
 import { filterDeliverables } from "../lib/filter";
-import ReviewNote from "./ReviewNote";
+import ReviewNote, { unquote } from "./ReviewNote";
 
 const FLAG: Review = {
   verdict: "flag",
@@ -44,5 +44,11 @@ describe("ReviewNote", () => {
   it("filters the reports list to flagged documents", () => {
     const items = DELIVERABLES.map((d, i) => (i === 0 ? { ...d, review: FLAG } : d));
     expect(filterDeliverables(items, "all", "flagged", "").map((d) => d.id)).toEqual(["CTI26-137"]);
+  });
+
+  it("does not double the quotes the Reviewer already put around a claim", () => {
+    expect(unquote('"Derived from the scan of 12 Sep"')).toBe("Derived from the scan of 12 Sep");
+    expect(unquote("“Chain three”")).toBe("Chain three");
+    expect(unquote("plain claim")).toBe("plain claim");
   });
 });

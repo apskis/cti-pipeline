@@ -8,6 +8,9 @@ import { formatDay } from "../lib/format";
 // The kinds the Reviewer reads. A CVE brief is a table rendered by code from the register.
 const REVIEWED_KINDS = new Set(["bulletin", "hunt", "awareness"]);
 
+/** The Reviewer often quotes the claim itself; strip its quotes so the panel adds one pair. */
+export const unquote = (claim: string): string => claim.trim().replace(/^["“']+|["”']+$/g, "");
+
 /** Only web links become clickable: the Reviewer is a model and its text is untrusted. */
 const isWebLink = (value: string): boolean => /^https?:\/\//i.test(value);
 
@@ -52,7 +55,7 @@ const ReviewNote = ({ kind, review }: { kind: string; review: Review | null }) =
         <ol className="mt-3 list-decimal space-y-2 pl-5">
           {review.findings.map((f, i) => (
             <li key={i}>
-              {f.claim && <p className="italic">"{f.claim}"</p>}
+              {unquote(f.claim) && <p className="italic">"{unquote(f.claim)}"</p>}
               <p>{f.problem}</p>
               {f.source && (
                 <p className="text-xs opacity-80">
