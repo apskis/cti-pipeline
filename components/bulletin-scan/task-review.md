@@ -12,16 +12,25 @@ dedup log or the register. April decides what to do with a flag.
 
 `state/_work/review.json` under the output folder lists this batch: for each item an
 `id`, a `kind` (bulletin, hunt or awareness) and a `path` relative to the output folder.
-Read each document's text with python-docx:
+Read each document's text with python-docx. Print the headers and footers too, tables
+included: the TLP marking usually sits in a footer table, and a reader that skips it
+reports a marking as missing when it is there.
 
 ```
 python3 - <<'PY'
 import docx
 d = docx.Document("<output folder>/<path>")
-print("\n".join(p.text for p in d.paragraphs if p.text.strip()))
-for t in d.tables:
-    for r in t.rows:
-        print(" | ".join(c.text for c in r.cells))
+def show(part, label):
+    for p in part.paragraphs:
+        if p.text.strip():
+            print(f"[{label}] {p.text}")
+    for t in part.tables:
+        for r in t.rows:
+            print(f"[{label} table] " + " | ".join(c.text for c in r.cells))
+show(d, "body")
+for i, sec in enumerate(d.sections):
+    show(sec.header, f"header {i}")
+    show(sec.footer, f"footer {i}")
 PY
 ```
 
@@ -41,7 +50,8 @@ scan found and which sources it used. Read them for context, not as proof.
    affected product. Flag any that differ. "Not yet ingested by NVD" is not a problem.
 3. **House rules.**
    - The only organisation named as the author or owner is GeneLabs.
-   - A TLP marking is present (TLP:CLEAR, TLP:GREEN, TLP:AMBER or TLP:RED).
+   - A TLP marking is present (TLP:CLEAR, TLP:GREEN, TLP:AMBER or TLP:RED) in the body,
+     a header or a footer. Flag it as missing only after reading all three.
    - No placeholder or template text is left: "XX", "NN", "TBD", "lorem", "[insert",
      empty brackets, or a field label with nothing after it.
    - A hunt package carries no findings, verdicts or classifications. It is a work order.
