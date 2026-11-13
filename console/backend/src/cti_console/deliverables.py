@@ -12,11 +12,13 @@ import logging
 import os
 import re
 import threading
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import date, datetime
 from pathlib import Path
 
 from .pipeline import PipelineRules
+from .reviews import Review
+from .reviews import load as load_reviews
 
 log = logging.getLogger(__name__)
 
@@ -38,6 +40,8 @@ class Deliverable:
     modified: str
     status: str  # ok | broken | unchecked
     problem: str | None
+    # The Reviewer's verdict, or None when no review exists for this document.
+    review: Review | None = None
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -173,12 +177,24 @@ def scan(out_dir: Path, rules: PipelineRules) -> list[Deliverable]:
         found = _identify(path, rules)
         if found and found.ident not in chosen:
             chosen[found.ident] = found
-    items = [_build(found, out_dir, first_seen, rules) for found in chosen.values()]
+    reviews = load_reviews(out_dir)
+    items = [_build(found, out_dir, first_seen, rules, reviews) for found in chosen.values()]
     return sorted(items, key=lambda d: (d.first_seen, d.id), reverse=True)
 
 
+def _review(found: _Found, reviews: dict[str, tuple[Review, float]]) -> Review | None:
+    if found.ident not in reviews:
+        return None
+    review, reviewed = reviews[found.ident]
+    return replace(review, stale=found.path.stat().st_mtime > reviewed)
+
+
 def _build(
-    found: _Found, out_dir: Path, first_seen: dict[str, str], rules: PipelineRules
+    found: _Found,
+    out_dir: Path,
+    first_seen: dict[str, str],
+    rules: PipelineRules,
+    reviews: dict[str, tuple[Review, float]],
 ) -> Deliverable:
     modified = datetime.fromtimestamp(found.path.stat().st_mtime)
     status, problem = _status(found, rules)
@@ -191,6 +207,7 @@ def _build(
         modified=modified.isoformat(timespec="seconds"),
         status=status,
         problem=problem,
+        review=_review(found, reviews),
     )
 
 

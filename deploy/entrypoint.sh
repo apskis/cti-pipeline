@@ -36,18 +36,23 @@ fi
 # BUILD_MODEL:  model for the builder passes, which fill templates from a finished scan
 #               and do not need the scan model. Defaults to Haiku 4.5 on either backend;
 #               set BUILD_MODEL="$ANTHROPIC_MODEL" to build with the scan model again.
+# REVIEW_MODEL: model for the reviewer pass, which checks the builders' documents against
+#               their sources. That is judgement, so it defaults to the scan model.
 case "$MODEL_BACKEND" in
   bedrock)
     : "${ANTHROPIC_MODEL:?set ANTHROPIC_MODEL to a Bedrock inference-profile id}"
     : "${AWS_REGION:=us-east-1}"
     export CLAUDE_CODE_USE_BEDROCK=1
     : "${BUILD_MODEL:=us.anthropic.claude-haiku-4-5-20251001-v1:0}"
+    : "${REVIEW_MODEL:=$ANTHROPIC_MODEL}"
     echo "[entrypoint] model backend: Bedrock  model=$ANTHROPIC_MODEL region=$AWS_REGION"
     ;;
   subscription)
     : "${CLAUDE_CODE_OAUTH_TOKEN:?set CLAUDE_CODE_OAUTH_TOKEN (from 'claude setup-token') for subscription mode}"
     unset CLAUDE_CODE_USE_BEDROCK || true
     : "${BUILD_MODEL:=haiku}"
+    # Empty means the plan's default model, the same one the scan uses.
+    : "${REVIEW_MODEL:=${ANTHROPIC_MODEL:-}}"
     echo "[entrypoint] model backend: Claude subscription${ANTHROPIC_MODEL:+  model=$ANTHROPIC_MODEL}"
     ;;
   *) echo "unknown MODEL_BACKEND=$MODEL_BACKEND (use bedrock|subscription)"; exit 2 ;;
@@ -100,6 +105,8 @@ run_claude() {
 }
 
 echo "[entrypoint] component=$COMPONENT mode=$MODE cloud=${CLOUD:-aws}"
+# The reviewer checks only documents saved from here on, so a run reviews what it built.
+RUN_STARTED="$(date +%s)"
 
 # Feed digest: fetching the feeds and filtering them to the window needs no judgement, and
 # doing it inside the scan session cost a turn per feed with the whole context re-read each
@@ -149,6 +156,27 @@ if [ -f "$BUILD_TASK" ]; then
       break
     fi
   done
+fi
+
+# Reviewer pass: a fresh session, with no share in the builders' context, checks each
+# document built this run against its sources and NVD and writes state/reviews/<ID>.json.
+# It only flags: Edit and Write are withheld so it cannot change a document. A reviewer
+# failure is logged and ignored, because the documents are already built and an
+# unreviewed document is still worth shipping. REVIEW=0 turns the pass off; REVIEW_ALL=1
+# reviews older unreviewed documents too (REVIEW_BATCH at a time), e.g. with SKIP_SCAN=1.
+REVIEW_TASK="$CDIR/task-review.md"
+if [ -f "$REVIEW_TASK" ] && [ "${REVIEW:-1}" != "0" ]; then
+  REVIEW_LIST="$OUTPUT_DIR/state/_work/review.json"
+  SINCE=(--since "$RUN_STARTED")
+  [ "${REVIEW_ALL:-0}" = "1" ] && SINCE=()
+  if python3 scripts/review_queue.py "${SINCE[@]}" --batch "${REVIEW_BATCH:-6}" --out "$REVIEW_LIST"; then
+    echo "[entrypoint] reviewer pass model=${REVIEW_MODEL:-plan default}"
+    # The prompt comes first: --disallowedTools takes a list and would swallow it.
+    run_claude review \
+      "Read ${REVIEW_TASK} and review every document listed in ${REVIEW_LIST}. The output folder is ${OUTPUT_DIR}. Report one line per document." \
+      ${REVIEW_MODEL:+--model "$REVIEW_MODEL"} --disallowedTools Edit Write \
+      || echo "[entrypoint] reviewer pass failed; documents ship unreviewed (REVIEW_ALL=1 reviews them later)"
+  fi
 fi
 
 # Reporting is the analysis layer only: Claude wrote analysis_result.json, and the

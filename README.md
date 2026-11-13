@@ -31,6 +31,11 @@ Model tokens are most of the bill, so the defaults keep them down:
   template filling passes; the scan keeps `ANTHROPIC_MODEL`. Set `BUILD_MODEL=$ANTHROPIC_MODEL`
   to undo. `BUILD_PASSES` (default 2) and `BUILD_BATCH` (default 4) cap builder sessions per
   run; anything left builds on the next run.
+- **One reviewer pass per run.** After the builders, a fresh session checks the documents
+  this run built against their sources and NVD and writes `state/reviews/<ID>.json`. It
+  flags only and cannot edit. `REVIEW_MODEL` defaults to the scan model, `REVIEW_BATCH`
+  (default 6) caps the documents per run, and `REVIEW=0` turns it off. A failed review
+  never stops the run from shipping.
 - **No model for program-console.** It is a plain Python refresh, so the entrypoint never
   starts a Claude session for it.
 - **Cost per run is logged.** Every session prints a `[cost]` line (cost, turns, tokens,

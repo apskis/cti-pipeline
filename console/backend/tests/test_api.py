@@ -19,7 +19,7 @@ def test_health(client: TestClient) -> None:
 def test_summary(client: TestClient) -> None:
     body = client.get("/api/summary").json()
     assert body["counts"]["bulletin"] == 2
-    assert len(body["stages"]) == 6
+    assert len(body["stages"]) == 7
 
 
 def test_runs_newest_first_and_filtered(client: TestClient) -> None:
@@ -90,7 +90,7 @@ def test_run_detail(client: TestClient) -> None:
     runs = client.get("/api/runs", params={"component": "bulletin-scan"}).json()
     body = client.get(f"/api/runs/{runs[1]['id']}").json()
     assert [s["label"] for s in body["sessions"]] == ["scan", "build-1", "build-2"]
-    assert len(body["stages"]) == 6
+    assert len(body["stages"]) == 7
     assert [d["id"] for d in body["written"]] == ["CTI26-02"]
     assert body["report"]["name"] == "scan-2026-11-10.md"
     html = body["report"]["html"]

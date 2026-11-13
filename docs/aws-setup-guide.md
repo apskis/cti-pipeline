@@ -205,6 +205,7 @@ scheduled run picks up from the last good state in S3.
 | `MODEL_BACKEND` | `bedrock` | Use Bedrock with the task role's credentials |
 | `ANTHROPIC_MODEL` | Sonnet profile id (Haiku for documentation-sync) | Main model |
 | `BUILD_MODEL` | Haiku profile id | Builder passes |
+| `REVIEW_MODEL` | unset (uses `ANTHROPIC_MODEL`) | Reviewer pass; `REVIEW=0` turns it off |
 | `ANTHROPIC_SMALL_FAST_MODEL`, `ANTHROPIC_DEFAULT_HAIKU_MODEL` | Haiku profile id | Claude Code's background calls |
 | `CLOUD` | `aws` | Restore from and ship to S3 |
 | `OUTPUT_BUCKET` | `cti-pipeline-out-<account>` | Where state lives |

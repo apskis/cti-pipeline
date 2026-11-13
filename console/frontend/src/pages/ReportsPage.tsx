@@ -6,6 +6,7 @@ import { useDeliverables } from "../api/client";
 import type { DeliverableStatus } from "../api/types";
 import DocStatus from "../components/DocStatus";
 import LoadState from "../components/LoadState";
+import StatusPill from "../components/StatusPill";
 import ReportReader from "../components/ReportReader";
 import { filterDeliverables, type StatusFilter } from "../lib/filter";
 import { formatDay } from "../lib/format";
@@ -17,6 +18,7 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: "ok", label: "OK" },
   { value: "broken", label: "Broken" },
   { value: "unchecked", label: "Not checked" },
+  { value: "flagged", label: "Flagged by the Reviewer" },
 ];
 
 const fieldClass = "rounded-md border border-line bg-surface px-2 py-1.5 text-sm";
@@ -113,7 +115,10 @@ const ReportsPage = ({ selected }: { selected: string | null }) => {
                   <span>
                     {d.id} · {formatDay(d.first_seen)}
                   </span>
-                  {showStatus(d.status) && <DocStatus status={d.status} />}
+                  <span className="flex gap-1">
+                    {d.review?.verdict === "flag" && <StatusPill status="warn" label="Flagged" />}
+                    {showStatus(d.status) && <DocStatus status={d.status} />}
+                  </span>
                 </span>
                 <span className="mt-0.5 block text-sm">{d.title}</span>
               </a>

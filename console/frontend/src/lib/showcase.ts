@@ -41,6 +41,17 @@ export const AGENTS: Agent[] = [
     statusNote: "Runs locally today",
   },
   {
+    persona: "Reviewer",
+    name: "Document review",
+    role: "Check",
+    cadence: "After each build",
+    model: "Sonnet 4.5 in the cloud, Opus locally",
+    why: "Reads each new document cold, with none of the Writer's context, and checks every claim against its source and every CVE against NVD. That is judgement, so it gets the strong model. It flags problems and never edits: a person decides.",
+    tools: ["NVD", "Web fetch"],
+    status: "live",
+    statusNote: "Runs locally today",
+  },
+  {
     persona: "Reporter",
     name: "Reporting",
     role: "Report",
@@ -136,7 +147,19 @@ export const HANDOFFS: Handoff[] = [
   {
     actor: "Coordinator",
     model: null,
-    does: "Checks every document, rebuilds the ID counters and ships the output.",
+    does: "Lists the documents this run built and starts a fresh Reviewer.",
+    leaves: "Review list",
+  },
+  {
+    actor: "Reviewer",
+    model: "Sonnet 4.5 or Opus",
+    does: "Checks each document against its sources and NVD and flags what does not hold up. It cannot edit a document.",
+    leaves: "One review per document",
+  },
+  {
+    actor: "Coordinator",
+    model: null,
+    does: "Checks every document, rebuilds the ID counters and ships the output with its reviews.",
     leaves: null,
   },
 ];
@@ -187,6 +210,12 @@ export const FLOW: FlowStep[] = [
     what: "Fresh sessions build four documents at a time. Anything not finished stays pending for the next run, never lost.",
   },
   {
+    title: "Review documents",
+    by: "model",
+    who: "Sonnet 4.5 or Opus",
+    what: "A fresh Reviewer checks each new document's claims against its sources and NVD. It flags, never edits, and a failed review never stops a run from shipping.",
+  },
+  {
     title: "Check and finalize",
     by: "code",
     who: "Python",
@@ -224,7 +253,7 @@ export const PRACTICES: Practice[] = [
   },
   {
     title: "Checks the model cannot skip",
-    body: "A Splunk query linter, programmatic checks on every .docx and a sanitization gate for posts that leave the security team. The pipeline proves its own output.",
+    body: "A Splunk query linter, programmatic checks on every .docx and a sanitization gate for posts that leave the security team. Then a second model, with clean context, checks the facts. The pipeline proves its own output.",
   },
   {
     title: "Cost you can see",
@@ -248,11 +277,6 @@ export interface RoadmapItem {
 
 // Ideas weighed and kept for later, with what has to be true before each is worth doing.
 export const ROADMAP: RoadmapItem[] = [
-  {
-    title: "A Reviewer agent",
-    when: "Next",
-    body: "A fresh session that checks each finished document against its sources before it ships, and flags weak or unsupported claims. A model checking another model's work, with clean context so it does not share the Writer's blind spots.",
-  },
   {
     title: "Writers in parallel",
     when: "When run time matters",

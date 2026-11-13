@@ -33,7 +33,7 @@ $Out = Join-Path (Get-Location) "out\$Component"
 New-Item -ItemType Directory -Force -Path $Out | Out-Null
 # One-off overrides from the shell win over .env, e.g. $env:SKIP_SCAN=1 to build only.
 $Extra = @()
-foreach ($Name in "SKIP_SCAN", "BUILD_PASSES") {
+foreach ($Name in "SKIP_SCAN", "BUILD_PASSES", "REVIEW", "REVIEW_ALL", "REVIEW_MODEL") {
   $Value = [Environment]::GetEnvironmentVariable($Name)
   if ($Value) { $Extra += @("-e", "$Name=$Value") }
 }

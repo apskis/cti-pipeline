@@ -15,18 +15,21 @@ describe("agent names", () => {
     expect(sessionName("bulletin-scan", "scan")).toBe("Analyst");
     expect(sessionName("bulletin-scan", "build-2")).toBe("Writer, pass 2");
     expect(sessionName("reporting", "scan")).toBe("Reporter");
+    expect(sessionName("bulletin-scan", "review")).toBe("Reviewer");
   });
 
   it("lists the agents in a run once each, in order", () => {
-    const agents = runAgents("bulletin-scan", ["scan", "build-1", "build-2"]);
-    expect(agents).toEqual(["Analyst", "Writer"]);
-    expect(joinAgents(agents)).toBe("the Analyst and the Writer");
+    const agents = runAgents("bulletin-scan", ["scan", "build-1", "build-2", "review"]);
+    expect(agents).toEqual(["Analyst", "Writer", "Reviewer"]);
+    expect(joinAgents(agents)).toBe("the Analyst, the Writer and the Reviewer");
+    expect(joinAgents(["Analyst", "Writer"])).toBe("the Analyst and the Writer");
     expect(joinAgents(["Writer"])).toBe("the Writer");
   });
 
   it("says who does each stage and who made each kind", () => {
     expect(stageAgent("scan")).toBe("Analyst");
     expect(stageAgent("build")).toBe("Writer");
+    expect(stageAgent("review")).toBe("Reviewer");
     expect(stageAgent("deliver")).toBe("Coordinator");
     expect(kindAgents("weekly")).toBe("Written by the Reporter");
     expect(kindAgents("hunt")).toBe("Picked by the Analyst, written by the Writer");
@@ -37,7 +40,7 @@ describe("agent names", () => {
     for (const c of ["bulletin-scan", "reporting", "perimeter-scan", "threat-hunting", "documentation-sync", "program-console"]) {
       expect(personas).toContain(componentAgent(c));
     }
-    for (const key of ["feeds", "scan", "triage", "build", "check", "deliver"]) {
+    for (const key of ["feeds", "scan", "triage", "build", "review", "check", "deliver"]) {
       expect(personas).toContain(stageAgent(key));
     }
   });
