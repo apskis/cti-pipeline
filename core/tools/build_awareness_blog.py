@@ -60,7 +60,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 # ------------------------------------------------------------------ brand assets
-HEADER_ASPECT = 230.0 / 1800.0   # height / width of the header image
+HEADER_ASPECT = BRAND.banner_aspect   # height / width of the company banner
 
 
 def _header_image(doc, skill_dir):

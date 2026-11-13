@@ -47,7 +47,7 @@ DEFAULT_WORDMARK = str(BRAND.logo)
 DEFAULT_BANNER = str(BRAND.banner)
 DEFAULT_TEMPLATE = os.path.join(ASSETS, "cti_doc_template.docx")
 
-BANNER_ASPECT = 230.0 / 1800.0   # height / width of the house header image
+BANNER_ASPECT = BRAND.banner_aspect   # height / width of the company banner
 BANNER_MAX_WIDTH_IN = 7.0        # header width; narrower text widths win
 
 
