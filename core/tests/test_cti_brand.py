@@ -108,10 +108,26 @@ def test_a_company_slug_cannot_leave_the_companies_folder(
         cti_brand.company_dir()
 
 
-def test_the_default_company_is_genelabs(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_the_default_company_is_genelabs(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     monkeypatch.delenv(cti_brand.COMPANY_DIR_ENV, raising=False)
     monkeypatch.delenv(cti_brand.COMPANY_ENV, raising=False)
+    monkeypatch.setenv(cti_brand.DATA_DIR_ENV, str(tmp_path))  # no console copy yet
     assert cti_brand.company_dir() == GENELABS
+
+
+def test_the_console_copy_wins_over_the_committed_one(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The Branding tab saves into data/, so that is what the next document uses."""
+    monkeypatch.delenv(cti_brand.COMPANY_DIR_ENV, raising=False)
+    monkeypatch.setenv(cti_brand.COMPANY_ENV, "acme")
+    monkeypatch.setenv(cti_brand.DATA_DIR_ENV, str(tmp_path))
+    assert cti_brand.company_dir() == cti_brand.COMPANIES_DIR / "acme"
+    saved = make_company(tmp_path / "companies", name="Acme")
+    assert saved.name == "acme"
+    assert cti_brand.company_dir() == saved
 
 
 def test_a_bulletin_is_built_in_the_chosen_company_brand(tmp_path: Path) -> None:

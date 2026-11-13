@@ -1,15 +1,21 @@
 """The company brand every CTI document is built in.
 
-Each company has one folder, config/companies/<slug>/, holding company.json and its
-logo, banner and symbol. The document builders read the brand here instead of each
-carrying its own palette, so changing how a company's documents look is one edit.
+Each company has one folder holding company.json and its logo, banner and symbol. The
+document builders read the brand here instead of each carrying its own palette, so
+changing how a company's documents look is one edit.
+
+The console keeps each company in data/companies/<slug>/ and saves the Branding tab
+there. config/companies/<slug>/ is the committed first copy, used when data/ has none
+(a fresh checkout, or the cloud image, which leaves data/ out).
 
 Standard library only: every builder imports this, including the ones copied out of
 the repo and run on their own.
 
 Which company:
     CTI_COMPANY_DIR   full path to a company folder (wins when set)
-    CTI_COMPANY       slug under config/companies (default "genelabs")
+    CTI_COMPANY       slug, looked up in data/companies then config/companies
+                      (default "genelabs")
+    CTI_DATA_DIR      where data/ is, if not at the repo root
 """
 
 from __future__ import annotations
@@ -25,6 +31,7 @@ from pathlib import Path
 DEFAULT_COMPANY = "genelabs"
 COMPANY_ENV = "CTI_COMPANY"
 COMPANY_DIR_ENV = "CTI_COMPANY_DIR"
+DATA_DIR_ENV = "CTI_DATA_DIR"
 # core/tools/cti_brand.py -> the repo root is two folders up from this file's folder.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 COMPANIES_DIR = REPO_ROOT / "config" / "companies"
@@ -99,7 +106,8 @@ def company_dir() -> Path:
         raise BrandError(
             f"{COMPANY_ENV}={slug!r} is not a company slug (a to z, 0 to 9, -)"
         )
-    return COMPANIES_DIR / slug
+    data = Path(os.environ.get(DATA_DIR_ENV, REPO_ROOT / "data")) / "companies" / slug
+    return data if (data / "company.json").is_file() else COMPANIES_DIR / slug
 
 
 def _text(raw: dict[str, object], key: str) -> str:

@@ -24,12 +24,19 @@ if [ "${2:-}" = "--build" ] || ! docker image inspect "$IMAGE" >/dev/null 2>&1; 
 fi
 
 mkdir -p "out/$COMPONENT"
+# The brand the console keeps (data/companies/<slug>/), read only, so a Branding tab save
+# reaches the next run. Without it the image uses the committed config/companies copy.
+# The pipeline only runs for GeneLabs until it takes a company of its own.
+BRAND=()
+if [ -f data/companies/genelabs/company.json ]; then
+  BRAND=(-v "$PWD/data/companies/genelabs:/app/company:ro" -e CTI_COMPANY_DIR=/app/company)
+fi
 # One-off overrides from the shell win over .env, e.g. SKIP_SCAN=1 to build only.
 EXTRA=()
 for name in SKIP_SCAN BUILD_PASSES REVIEW REVIEW_ALL REVIEW_MODEL; do
   [ -n "${!name:-}" ] && EXTRA+=(-e "$name=${!name}")
 done
 docker run --rm --env-file .env \
-  -e COMPONENT="$COMPONENT" -e MODE="${MODE:-weekly}" -e CLOUD=local ${EXTRA[@]+"${EXTRA[@]}"} \
+  -e COMPONENT="$COMPONENT" -e MODE="${MODE:-weekly}" -e CLOUD=local ${EXTRA[@]+"${EXTRA[@]}"}   ${BRAND[@]+"${BRAND[@]}"} \
   -v "$PWD/out/$COMPONENT:/app/out" "$IMAGE"
 echo "output: out/$COMPONENT/"

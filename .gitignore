@@ -16,6 +16,8 @@ dist/
 config/stakeholders.json
 config/stakeholders.json.bak
 config/stakeholders.json.part
+# Each company's brand, stakeholders, reports and logs, kept by the console.
+data/
 # Branding tab saves: the previous version and a write in progress.
 config/companies/**/*.bak
 config/companies/**/*.part

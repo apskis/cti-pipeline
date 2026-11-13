@@ -37,9 +37,14 @@ def png(width: int, height: int) -> bytes:
 
 
 def _client(settings: Settings, company: Path | None = None) -> TestClient:
+    """A console showing `company` (a folder made by _company), else GeneLabs."""
     if company is not None:
-        settings = dataclasses.replace(settings, company_dir=company)
-    return TestClient(create_app(settings, pdf_ready=False), base_url="http://127.0.0.1")
+        settings = dataclasses.replace(settings, company=company.name)
+    return TestClient(
+        create_app(settings, pdf_ready=False),
+        base_url="http://127.0.0.1",
+        headers={"X-CTI-Company": settings.company},
+    )
 
 
 def _raw(folder: Path) -> dict[str, object]:
@@ -47,8 +52,9 @@ def _raw(folder: Path) -> dict[str, object]:
 
 
 def _company(tmp_path: Path, **changes: object) -> Path:
-    """A copy of the GeneLabs folder, so tests never change the committed one."""
-    folder = tmp_path / "acme"
+    """A copy of the GeneLabs folder among the test's companies, so tests never change
+    the committed one."""
+    folder = tmp_path / "data" / "companies" / "acme"
     shutil.copytree(GENELABS, folder)
     raw = _raw(folder)
     raw.update(changes)
@@ -118,7 +124,8 @@ def test_bad_console_colours_are_refused(
 
 def test_an_image_outside_the_company_folder_is_refused(settings: Settings, tmp_path: Path) -> None:
     (tmp_path / "secret.png").write_bytes(png(20, 20))
-    assets = {"logo": "assets/logo.png", "banner": "assets/banner.png", "symbol": "../secret.png"}
+    escape = "../../../secret.png"  # from data/companies/acme up to the test folder
+    assets = {"logo": "assets/logo.png", "banner": "assets/banner.png", "symbol": escape}
     response = _client(settings, _company(tmp_path, assets=assets)).get("/api/brand/assets/symbol")
     assert response.status_code == 500
     assert "inside" in response.json()["detail"]
@@ -132,23 +139,33 @@ def test_an_image_that_is_not_a_png_is_refused(settings: Settings, tmp_path: Pat
     assert "not a PNG" in response.json()["detail"]
 
 
-def test_a_missing_brand_file_says_where_it_looked(settings: Settings, tmp_path: Path) -> None:
-    response = _client(settings, tmp_path).get("/api/brand")
+def test_a_brand_file_removed_while_running_says_where_it_looked(
+    settings: Settings, tmp_path: Path
+) -> None:
+    folder = _company(tmp_path)
+    client = _client(settings, folder)
+    assert client.get("/api/brand").status_code == 200
+    (folder / "company.json").unlink()
+    response = client.get("/api/brand")
     assert response.status_code == 500
     assert "No brand file" in response.json()["detail"]
 
 
 def test_a_company_slug_cannot_climb_out(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("CTI_CONSOLE_COMPANY_DIR", raising=False)
     monkeypatch.setenv("CTI_CONSOLE_COMPANY", "../secrets")
     with pytest.raises(ValueError, match="slug"):
         Settings.from_env()
 
 
-def test_the_company_is_chosen_by_slug(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("CTI_CONSOLE_COMPANY_DIR", raising=False)
+def test_the_starting_company_and_data_folder_come_from_the_environment(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     monkeypatch.setenv("CTI_CONSOLE_COMPANY", "acme")
-    assert Settings.from_env().company_dir == REPO_ROOT / "config" / "companies" / "acme"
+    monkeypatch.setenv("CTI_DATA_DIR", str(tmp_path))
+    found = Settings.from_env()
+    assert found.company == "acme"
+    assert found.data_dir == tmp_path.resolve()
+    assert found.templates_dir == REPO_ROOT / "config" / "companies"
 
 
 # ---------------------------------------------------------------------- preview

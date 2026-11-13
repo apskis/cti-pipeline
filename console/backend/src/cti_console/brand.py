@@ -1,6 +1,6 @@
 """The company brand: read for the console, and changed from the Branding tab.
 
-The same company.json the document builders read (config/companies/<slug>/), so the
+The same company.json the document builders read (data/companies/<slug>/), so the
 console and the reports cannot disagree. A save here changes the next report built.
 core/tools/cti_brand.py checks the file again for the builders.
 """
