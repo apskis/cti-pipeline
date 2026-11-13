@@ -34,8 +34,12 @@ const BrandedPdf = ({ id, onShowText }: { id: string; onShowText: () => void }) 
         <LoaderCircle aria-hidden size={20} className="animate-spin motion-reduce:animate-none" />
         <p>Making the branded PDF with Word.</p>
         <p className="text-xs">
-          The first one after the console starts can take up to a minute. After that it is quick.
+          This takes a second or two, but up to a minute when Word has just started: after the
+          console starts or after hours without a PDF.
         </p>
+        <button type="button" onClick={onShowText} className={`${LINK_BUTTON} mt-2`}>
+          Read the text instead
+        </button>
       </div>
     );
   }
