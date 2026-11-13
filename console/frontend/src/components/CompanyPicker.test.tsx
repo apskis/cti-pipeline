@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../App";
 import type { Brand, CompanyList } from "../api/types";
-import { BRAND, BRAND_PREVIEW, COMPANIES, DELIVERABLES, RUNS, SUMMARY } from "../test/fixtures";
+import { BRAND, BRAND_PREVIEW, COMPANIES, DELIVERABLES, ME, RUNS, SUMMARY } from "../test/fixtures";
 
 vi.mock("react-chartjs-2", () => ({ Bar: () => <div data-testid="chart" /> }));
 
@@ -40,6 +40,7 @@ function mockApi() {
       return answer(state);
     }
     if (url === "/api/companies") return answer(state);
+    if (url === "/api/me") return answer(ME);
     if (url === "/api/brand/preview") return answer(BRAND_PREVIEW);
     if (url.startsWith("/api/brand")) return answer(state.active === "acme" ? ACME : BRAND);
     if (url.startsWith("/api/summary")) return answer(SUMMARY);

@@ -210,6 +210,19 @@ export interface BrandPreview {
   ok: boolean;
 }
 
+/** The person using the console, and what they may change. */
+export interface Me {
+  /** "off": one person on this machine, who may do everything. "oidc": signed in. */
+  auth: "off" | "oidc";
+  name: string;
+  email: string;
+  platform_admin: boolean;
+  /** May add companies. */
+  can_manage: boolean;
+  /** Companies this person has a role in, beyond what a platform admin has everywhere. */
+  roles: Record<string, "admin" | "viewer">;
+}
+
 /** One company the console can show. */
 export interface Company {
   slug: string;

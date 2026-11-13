@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import App from "./App";
-import { BRAND, COMPANIES, CVES, DELIVERABLES, DOCUMENT, RUN_DETAIL, RUNS, SUMMARY } from "./test/fixtures";
+import { BRAND, COMPANIES, CVES, DELIVERABLES, DOCUMENT, ME, RUN_DETAIL, RUNS, SUMMARY } from "./test/fixtures";
 
 // jsdom has no canvas; the chart's own drawing is Chart.js's business, not ours.
 vi.mock("react-chartjs-2", () => ({ Bar: () => <div data-testid="chart" /> }));
@@ -13,7 +13,11 @@ const answer = (body: unknown, status = 200) =>
 
 function mockApi(handler: (url: string) => Promise<Response>) {
   return vi.spyOn(globalThis, "fetch").mockImplementation((input) =>
-    String(input) === "/api/companies" ? answer(COMPANIES) : handler(String(input)),
+    String(input) === "/api/companies"
+      ? answer(COMPANIES)
+      : String(input) === "/api/me"
+        ? answer(ME)
+        : handler(String(input)),
   );
 }
 
@@ -78,7 +82,11 @@ describe("App", () => {
       "The console backend did not answer.",
     );
     fetchMock.mockImplementation((input) =>
-      String(input) === "/api/companies" ? answer(COMPANIES) : overview(String(input)),
+      String(input) === "/api/companies"
+        ? answer(COMPANIES)
+        : String(input) === "/api/me"
+          ? answer(ME)
+          : overview(String(input)),
     );
     await userEvent.click(screen.getByRole("button", { name: "Retry" }));
     expect(await screen.findByText("151")).toBeInTheDocument();

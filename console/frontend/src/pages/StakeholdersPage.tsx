@@ -8,6 +8,8 @@ import LoadState from "../components/LoadState";
 import { KIND_LABELS, kindLabel } from "../lib/kinds";
 import { newStakeholderHref, reportHref, stakeholderHref } from "../lib/route";
 import { CHANNEL_LABELS, reportsFor, splitList } from "../lib/stakeholders";
+import { ReadOnlyNote } from "../components/Account";
+import { useAccess } from "../lib/access";
 
 const fieldClass = "w-full rounded-md border border-line bg-surface px-2 py-1.5 text-sm";
 const buttonClass =
@@ -197,6 +199,7 @@ const StakeholderForm = ({ id, initial, kinds }: FormProps) => {
 
 const StakeholderDetail = ({ person, audience }: { person: Stakeholder; audience?: Audience }) => {
   const { remove } = useStakeholderWrites();
+  const { canWrite } = useAccess();
   const [confirming, setConfirming] = useState(false);
   const reports = useMemo(() => reportsFor(person, audience), [person, audience]);
 
@@ -210,16 +213,18 @@ const StakeholderDetail = ({ person, audience }: { person: Stakeholder; audience
           </h2>
           {person.role && <p className="text-sm text-muted">{person.role}</p>}
         </div>
-        <div className="flex gap-2">
-          <a href={stakeholderHref(`${person.id}${EDIT}`)} className={buttonClass}>
-            <Pencil aria-hidden size={16} />
-            Edit
-          </a>
-          <button type="button" onClick={() => setConfirming(true)} className={buttonClass}>
-            <Trash2 aria-hidden size={16} />
-            Delete
-          </button>
-        </div>
+        {canWrite && (
+          <div className="flex gap-2">
+            <a href={stakeholderHref(`${person.id}${EDIT}`)} className={buttonClass}>
+              <Pencil aria-hidden size={16} />
+              Edit
+            </a>
+            <button type="button" onClick={() => setConfirming(true)} className={buttonClass}>
+              <Trash2 aria-hidden size={16} />
+              Delete
+            </button>
+          </div>
+        )}
       </header>
 
       {confirming && (
@@ -311,6 +316,7 @@ const StakeholderDetail = ({ person, audience }: { person: Stakeholder; audience
 
 /** Teams the reports ask questions of that nobody on the list covers. */
 const Gaps = ({ audience }: { audience?: Audience }) => {
+  const { canWrite } = useAccess();
   const gaps = audience?.unmatched ?? [];
   if (gaps.length === 0) return null;
   return (
@@ -318,18 +324,22 @@ const Gaps = ({ audience }: { audience?: Audience }) => {
       <h2 id="gaps-title" className="text-sm font-medium">
         Named in reports, nobody on file ({gaps.length})
       </h2>
-      <p className="mt-1 text-xs text-muted">
-        Add a stakeholder, or add the name to someone&apos;s &quot;also known as&quot;.
-      </p>
+      {canWrite && (
+        <p className="mt-1 text-xs text-muted">
+          Add a stakeholder, or add the name to someone&apos;s &quot;also known as&quot;.
+        </p>
+      )}
       <ul className="mt-2 max-h-64 overflow-y-auto text-sm">
         {gaps.map((g) => (
           <li key={g.team} className="flex items-center justify-between gap-2 py-1">
             <span className="min-w-0 truncate" title={g.reports.join(", ")}>
               {g.team} <span className="text-xs text-muted">· {g.reports.length}</span>
             </span>
-            <a href={newStakeholderHref(g.team)} className="shrink-0 text-xs underline">
-              Add
-            </a>
+            {canWrite && (
+              <a href={newStakeholderHref(g.team)} className="shrink-0 text-xs underline">
+                Add
+              </a>
+            )}
           </li>
         ))}
       </ul>
@@ -339,6 +349,7 @@ const Gaps = ({ audience }: { audience?: Audience }) => {
 
 const NoList = ({ hasExample }: { hasExample: boolean }) => {
   const { startFromExample } = useStakeholderWrites();
+  const { canWrite } = useAccess();
   return (
     <div className="mx-auto max-w-lg rounded-xl border border-line bg-surface p-6 text-center">
       <UserRound aria-hidden className="mx-auto text-muted" />
@@ -352,6 +363,7 @@ const NoList = ({ hasExample }: { hasExample: boolean }) => {
           {startFromExample.error.message}
         </p>
       )}
+      {canWrite && (
       <div className="mt-4 flex flex-wrap justify-center gap-2">
         {hasExample && (
           <button
@@ -368,6 +380,7 @@ const NoList = ({ hasExample }: { hasExample: boolean }) => {
           Add the first stakeholder
         </a>
       </div>
+      )}
     </div>
   );
 };
@@ -377,6 +390,7 @@ const StakeholdersPage = ({ selected }: { selected: string | null }) => {
   const audience = useAudience();
   const deliverables = useDeliverables();
   const [query, setQuery] = useState("");
+  const { canWrite } = useAccess();
 
   const people = list.data?.stakeholders;
   const kinds = useMemo(() => {
@@ -409,7 +423,9 @@ const StakeholdersPage = ({ selected }: { selected: string | null }) => {
   if (!list.data.exists && newTeam === null) return <NoList hasExample={list.data.has_example} />;
 
   let panel;
-  if (newTeam !== null) {
+  if (!canWrite && (newTeam !== null || wantsEdit)) {
+    panel = <ReadOnlyNote what="this company's stakeholders" />;
+  } else if (newTeam !== null) {
     panel = <StakeholderForm key={`new:${newTeam}`} id={null} initial={{ ...EMPTY, team: newTeam }} kinds={kinds} />;
   } else if (editing) {
     panel = <StakeholderForm key={`edit:${person.id}`} id={person.id} initial={person} kinds={kinds} />;
@@ -441,10 +457,12 @@ const StakeholdersPage = ({ selected }: { selected: string | null }) => {
               onChange={(e) => setQuery(e.target.value)}
               className={clsx(fieldClass, "min-w-0 flex-1")}
             />
-            <a href={newStakeholderHref()} className={clsx(buttonClass, "shrink-0")}>
-              <Plus aria-hidden size={16} />
-              Add
-            </a>
+            {canWrite && (
+              <a href={newStakeholderHref()} className={clsx(buttonClass, "shrink-0")}>
+                <Plus aria-hidden size={16} />
+                Add
+              </a>
+            )}
           </div>
           <p className="mt-2 text-xs text-muted" aria-live="polite">
             {people.length} {people.length === 1 ? "stakeholder" : "stakeholders"} in{" "}

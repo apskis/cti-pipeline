@@ -9,6 +9,7 @@ import type {
   CompanyInput,
   CompanyList,
   CveRegister,
+  Me,
   Deliverable,
   DeliverableDocument,
   Run,
@@ -48,6 +49,28 @@ const STALE_MS = 60_000;
 let shownCompany: string | null = null;
 
 const COMPANIES_KEY = ["companies"];
+
+/** Who is using the console. Under sign in, a 401 here means nobody is signed in. */
+export function useMe() {
+  return useQuery({
+    queryKey: ["me"],
+    queryFn: () => getJson<Me>("/api/me"),
+    staleTime: Infinity,
+    // Signed out is an answer, not a fault to retry.
+    retry: (count, error) => !(error instanceof ApiError && error.status === 401) && count < 1,
+  });
+}
+
+/** Sign out here, then at the identity provider when it has a sign out page. */
+export function useSignOut() {
+  return useMutation({
+    mutationFn: () => send<{ redirect: string }>("POST", "/api/auth/logout"),
+    onSuccess: ({ redirect }) => window.location.assign(redirect),
+  });
+}
+
+/** Where the sign in button goes; the backend sends the browser on to the provider. */
+export const SIGN_IN_URL = "/api/auth/login";
 
 export function useCompanies() {
   return useQuery({
