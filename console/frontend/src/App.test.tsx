@@ -198,6 +198,7 @@ describe("App", () => {
     expect(screen.getByRole("link", { name: "How it's built" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByText("Bulletin scan")).toBeInTheDocument();
     expect(screen.getByText("How the agents work together")).toBeInTheDocument();
+    expect(screen.getByText("Writers in parallel")).toBeInTheDocument();
     expect(screen.getAllByText("The Analyst").length).toBe(2);
     expect(screen.getAllByText("Haiku 4.5").length).toBeGreaterThan(0);
     expect(screen.getByText("Prefetch feeds")).toBeInTheDocument();
