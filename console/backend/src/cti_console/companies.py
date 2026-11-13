@@ -11,6 +11,10 @@ still live here, so a save in the console no longer changes the repo.
 
 Committed folders under config/companies/ are only first copies: each is copied into
 data/ once, and _starter/ is what a new, blank company begins from.
+
+Which company is shown is remembered per person: the local single user has one choice,
+and with sign in on each signed in person has their own, so one person switching never
+changes what another sees.
 """
 
 from __future__ import annotations
@@ -25,6 +29,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, StringConstraints
 
+from .auth import Principal
 from .config import COMPANY_SLUG, PIPELINE_COMPANY, Settings
 
 STARTER = "_starter"
@@ -71,6 +76,7 @@ class CompanyOut(BaseModel):
 
 
 class CompanyList(BaseModel):
+    # Empty when the person may see no company at all.
     active: str
     companies: list[CompanyOut]
 
@@ -97,6 +103,7 @@ class Companies:
         self._lock = threading.Lock()
         self._seed()
         self._active = self._first_active()
+        self._users = self._saved_users()
 
     # ------------------------------------------------------------------ setup
     def _seed(self) -> None:
@@ -132,6 +139,16 @@ class Companies:
             raise CompanyError(f"No companies in {self.root}", 500)
         return found[0]
 
+    def _saved_users(self) -> dict[str, str]:
+        """Each signed in person's last choice, by their provider subject."""
+        try:
+            saved = json.loads(self.state.read_text(encoding="utf-8")).get("users")
+        except (OSError, ValueError, AttributeError):
+            return {}
+        if not isinstance(saved, dict):
+            return {}
+        return {k: v for k, v in saved.items() if isinstance(k, str) and isinstance(v, str)}
+
     # ------------------------------------------------------------------ reading
     def _exists(self, slug: str) -> bool:
         return bool(COMPANY_SLUG.match(slug)) and (self.root / slug / "company.json").is_file()
@@ -156,14 +173,27 @@ class Companies:
             has_runs=out_dir.is_dir() and any(out_dir.iterdir()),
         )
 
-    def listing(self) -> CompanyList:
+    def listing(self, who: Principal) -> CompanyList:
+        """The companies `who` may read, and the one shown to them."""
+        visible = [s for s in self._slugs() if who.can_read(s)]
         return CompanyList(
-            active=self.active_slug(), companies=[self._describe(s) for s in self._slugs()]
+            active=self.active_slug(who) or "",
+            companies=[self._describe(s) for s in visible],
         )
 
-    def active_slug(self) -> str:
+    def active_slug(self, who: Principal) -> str | None:
+        """The company shown to `who`: their last choice while they may still read it,
+        else the console's own choice, else the first they may read, else none."""
         with self._lock:
-            return self._active
+            mine = self._active if who.subject is None else self._users.get(who.subject)
+            fallback = self._active
+        # A chosen company whose folder has gone stays chosen, so the page says what is
+        # missing instead of quietly showing another company under the same header.
+        if mine and who.can_read(mine):
+            return mine
+        if fallback and self._exists(fallback) and who.can_read(fallback):
+            return fallback
+        return next((s for s in self._slugs() if who.can_read(s)), None)
 
     def workspace(self, slug: str) -> Workspace:
         if not self._exists(slug):
@@ -189,16 +219,21 @@ class Companies:
         )
 
     # ------------------------------------------------------------------ changing
-    def pick(self, slug: str) -> CompanyList:
-        """Make `slug` the active company, and remember it for the next start."""
-        if not self._exists(slug):
+    def pick(self, slug: str, who: Principal) -> CompanyList:
+        """Show `slug` to `who`, and remember it for their next visit."""
+        # The same answer for a company that is missing and one they may not see, so the
+        # reply does not tell them which other companies exist.
+        if not self._exists(slug) or not who.can_read(slug):
             raise CompanyError(f"No company {slug}", 404)
         with self._lock:
-            self._active = slug
+            if who.subject is None:
+                self._active = slug
+            else:
+                self._users[who.subject] = slug
             self._write_state()
-        return self.listing()
+        return self.listing(who)
 
-    def create(self, item: CompanyIn) -> CompanyList:
+    def create(self, item: CompanyIn, who: Principal) -> CompanyList:
         """A new company folder: a copy of `source`'s brand, or the blank starter.
 
         Its facts (profile.json, reference/) always come from the starter.
@@ -211,7 +246,7 @@ class Companies:
                 raise CompanyError(f"The console holds at most {MAX_COMPANIES} companies", 409)
             if item.source is None:
                 source = self.settings.templates_dir / STARTER
-            elif self._exists(item.source):
+            elif self._exists(item.source) and who.can_read(item.source):
                 source = self.root / item.source
             else:
                 raise CompanyError(f"No company {item.source} to copy", 404)
@@ -235,7 +270,7 @@ class Companies:
                 os.replace(partial, target)
             finally:
                 shutil.rmtree(partial, ignore_errors=True)
-        return self.listing()
+        return self.listing(who)
 
     @staticmethod
     def _copy_parts(source: Path, target: Path, parts: tuple[str, ...]) -> None:
@@ -254,5 +289,6 @@ class Companies:
 
     def _write_state(self) -> None:
         partial = self.state.with_suffix(".part")
-        partial.write_text(json.dumps({"active": self._active}) + "\n", encoding="utf-8")
+        state = {"active": self._active, "users": self._users}
+        partial.write_text(json.dumps(state) + "\n", encoding="utf-8")
         os.replace(partial, self.state)

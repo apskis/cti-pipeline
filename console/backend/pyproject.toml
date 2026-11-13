@@ -13,6 +13,7 @@ dependencies = [
     "markdown-it-py>=3,<5",
     # Drives Word to make the branded PDFs. Windows only; elsewhere the PDF view is off.
     "pywin32>=306; sys_platform == 'win32'",
+    "pyjwt[crypto]>=2.9,<3",
 ]
 
 [project.optional-dependencies]
@@ -41,3 +42,7 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI dependencies are declared as defaults; Depends returns a marker, not state.
+extend-immutable-calls = ["fastapi.Depends"]
