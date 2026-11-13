@@ -112,6 +112,11 @@ $env:SKIP_SCAN = "1"; $env:BUILD_PASSES = "12"; .\scripts\run-local.ps1 bulletin
 Remove-Item Env:SKIP_SCAN, Env:BUILD_PASSES
 ```
 
+After the builder passes the Reviewer checks what this run built and writes
+`out/bulletin-scan/state/reviews/<ID>.json`; the console shows each verdict in the
+reader. To review older documents without a scan, set `SKIP_SCAN=1` and `REVIEW_ALL=1`.
+It checks `REVIEW_BATCH` documents (default 6) per run. `REVIEW=0` turns the pass off.
+
 ## 6. Check the result
 
 - The log ends with a `[cost]` line per Claude session. On your plan the dollar figure is
