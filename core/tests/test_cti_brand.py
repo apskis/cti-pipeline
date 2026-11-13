@@ -160,3 +160,7 @@ def test_a_bulletin_is_built_in_the_chosen_company_brand(tmp_path: Path) -> None
     assert "Acme Corp" in footer
     assert "Acme Enterprise Information Security" in core
     assert "GeneLabs" not in body + footer + core
+
+
+def test_the_banner_shape_comes_from_the_image() -> None:
+    assert parse_brand(GENELABS).banner_aspect == 230 / 1800

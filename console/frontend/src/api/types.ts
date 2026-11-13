@@ -158,14 +158,54 @@ export interface Audience {
   unmatched: { team: string; reports: string[] }[];
 }
 
-/** The company's brand, from config/companies/<slug>/company.json. */
-export interface Brand {
-  slug: string;
+/** The seven document colours, six digit hex without #, as company.json holds them. */
+export interface Palette {
+  primary: string;
+  accent: string;
+  text: string;
+  muted: string;
+  rule: string;
+  tint: string;
+  zebra: string;
+}
+
+/** What the Branding tab can change. The slug and images are changed elsewhere. */
+export interface BrandInput {
   name: string;
   legal_name: string;
+  department: string;
   /** The program the console belongs to, such as "Cyber Threat Intelligence". */
   program: string;
+  /** The contact line in report footers. */
+  contact: string;
+  palette: Palette;
+}
+
+/** The company's brand, from config/companies/<slug>/company.json. */
+export interface Brand extends BrandInput {
+  slug: string;
   /** Colour tokens for each theme, by name without the --color- prefix, as #rrggbb. */
   light: Record<string, string>;
   dark: Record<string, string>;
+  /** Changes whenever the file or an image changes, so cached images can be dropped. */
+  version: string;
+}
+
+export type BrandImage = "logo" | "banner" | "symbol";
+
+export interface ContrastCheck {
+  label: string;
+  foreground: string;
+  background: string;
+  ratio: number;
+  needed: number;
+  ok: boolean;
+}
+
+/** The console colours a palette gives, and every contrast check, before saving. */
+export interface BrandPreview {
+  light: Record<string, string>;
+  dark: Record<string, string>;
+  checks: ContrastCheck[];
+  ok: boolean;
 }

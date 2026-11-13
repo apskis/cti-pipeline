@@ -35,7 +35,7 @@ describe("Brand and theme", () => {
     render(<App />);
     expect(await screen.findByRole("heading", { level: 1, name: "GeneLabs" })).toBeInTheDocument();
     expect(screen.getByText("Cyber Threat Intelligence")).toBeInTheDocument();
-    expect(document.querySelector('img[src="/api/brand/symbol"]')).not.toBeNull();
+    expect(document.querySelector('img[src^="/api/brand/assets/symbol"]')).not.toBeNull();
     expect(document.title).toBe("GeneLabs CTI console");
     expect(await screen.findByText("151")).toBeInTheDocument();
   });
@@ -72,7 +72,7 @@ describe("Brand and theme", () => {
     mockOverview(null);
     render(<App />);
     expect(await screen.findByRole("heading", { level: 1, name: "CTI console" }, { timeout: 4000 })).toBeInTheDocument();
-    expect(document.querySelector('img[src="/api/brand/symbol"]')).toBeNull();
+    expect(document.querySelector('img[src^="/api/brand/assets/symbol"]')).toBeNull();
   });
 
   it("switches theme, remembers it, and hands back to the system", async () => {

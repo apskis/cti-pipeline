@@ -16,3 +16,6 @@ dist/
 config/stakeholders.json
 config/stakeholders.json.bak
 config/stakeholders.json.part
+# Branding tab saves: the previous version and a write in progress.
+config/companies/**/*.bak
+config/companies/**/*.part

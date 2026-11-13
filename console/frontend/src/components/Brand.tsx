@@ -2,11 +2,9 @@ import clsx from "clsx";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useLayoutEffect } from "react";
 
-import { useBrand } from "../api/client";
+import { brandImageUrl, useBrand } from "../api/client";
 import { type ThemeChoice, useTheme } from "../lib/theme";
 
-// Served by the backend from the company's folder, config/companies/<slug>/.
-const SYMBOL_URL = "/api/brand/symbol";
 // Shown when the brand file cannot be read, so the page still says what it is.
 const FALLBACK_NAME = "CTI console";
 
@@ -14,9 +12,9 @@ const FALLBACK_NAME = "CTI console";
  * The company's symbol. A dark mark would vanish on the charcoal page, so in dark mode
  * it can sit on a small tile, coloured by the brand's symbol-tile token.
  */
-export const BrandSymbol = ({ className }: { className?: string }) => (
+export const BrandSymbol = ({ className, version }: { className?: string; version?: string }) => (
   <span className={clsx("inline-flex shrink-0 items-center justify-center rounded-md bg-symbol-tile p-0.5", className)}>
-    <img src={SYMBOL_URL} alt="" aria-hidden className="h-full w-auto" />
+    <img src={brandImageUrl("symbol", version)} alt="" aria-hidden className="h-full w-auto" />
   </span>
 );
 
@@ -38,7 +36,7 @@ export const BrandLockup = () => {
   const name = brand?.name ?? (isError ? FALLBACK_NAME : "");
   return (
     <div className="flex items-center gap-3">
-      {brand ? <BrandSymbol className="h-11" /> : <span aria-hidden className="h-11 w-11" />}
+      {brand ? <BrandSymbol className="h-11" version={brand.version} /> : <span aria-hidden className="h-11 w-11" />}
       <span aria-hidden className="h-9 w-px bg-rung" />
       <div className="leading-tight">
         <h1 aria-busy={!brand && !isError} className="min-h-7 text-xl font-semibold tracking-tight text-brand">

@@ -1,8 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
   Audience,
   Brand,
+  BrandImage,
+  BrandInput,
+  BrandPreview,
   CveRegister,
   Deliverable,
   DeliverableDocument,
@@ -184,6 +187,51 @@ export function useStakeholderWrites() {
     }),
     startFromExample: useMutation({
       mutationFn: () => send<unknown>("POST", "/api/stakeholders/start-from-example"),
+      onSuccess: refresh,
+    }),
+  };
+}
+
+/** An image of the company's, with the brand version so a replaced one is fetched again. */
+export const brandImageUrl = (kind: BrandImage, version: string | undefined): string =>
+  `/api/brand/assets/${kind}${version ? `?v=${version}` : ""}`;
+
+/**
+ * The console colours and contrast checks a draft gives. Sent only for a complete
+ * draft; the last answer stays on screen while the next one is worked out.
+ */
+export function useBrandPreview(draft: BrandInput | null) {
+  return useQuery({
+    queryKey: ["brand-preview", draft],
+    queryFn: () => send<BrandPreview>("POST", "/api/brand/preview", draft),
+    enabled: draft !== null,
+    placeholderData: keepPreviousData,
+    staleTime: Infinity,
+  });
+}
+
+/** Save the names and colours, or replace an image; the whole page then shows the result. */
+export function useBrandWrites() {
+  const client = useQueryClient();
+  const refresh = (brand: Brand) => client.setQueryData(["brand"], brand);
+  return {
+    save: useMutation({
+      mutationFn: (input: BrandInput) => send<Brand>("PUT", "/api/brand", input),
+      onSuccess: refresh,
+    }),
+    upload: useMutation({
+      mutationFn: async ({ kind, file }: { kind: BrandImage; file: Blob }) => {
+        const response = await fetch(`/api/brand/assets/${kind}`, {
+          method: "PUT",
+          headers: { "Content-Type": "image/png", "X-CTI-Console": "1" },
+          body: file,
+        });
+        if (!response.ok) {
+          const detail = await response.json().catch(() => null);
+          throw new ApiError(saveProblem(response.status, detail), response.status);
+        }
+        return (await response.json()) as Brand;
+      },
       onSuccess: refresh,
     }),
   };

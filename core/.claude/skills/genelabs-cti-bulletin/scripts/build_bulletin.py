@@ -724,7 +724,7 @@ def set_base_style(doc):
 _ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets")
 DEFAULT_WORDMARK = str(BRAND.logo)
 DEFAULT_HEADER = str(BRAND.banner)
-HEADER_ASPECT = 230.0 / 1800.0   # height / width of the header image
+HEADER_ASPECT = BRAND.banner_aspect   # height / width of the company banner
 HEADER_MAX_WIDTH = Inches(7.0)
 
 

@@ -37,13 +37,30 @@ Both default to `genelabs`.
 Severity, category and TLP colours mean the same thing for every company, so they stay
 in the builders.
 
+## Change a company's brand
+
+Open the console's **Settings, Branding** tab. Names and colours are a draft until you
+save; the tab previews the console in light and dark and a report page as you type, and
+checks every pair of colours for contrast. Text needs 4.5:1 against its background, and
+charts and lines need 3:1 (WCAG AA). A save that fails a check is refused, with the pair
+named. The console's own light and dark colours are worked out from the seven document
+colours, so the `console` block is rewritten on every save.
+
+Images save as soon as they are picked: PNG only, up to 2 MB, 16 to 4000 pixels a side,
+and of a shape the reports can hold (logo 1.5 to 8 times as wide as tall, banner 4 to
+12, symbol 0.3 to 3). The previous file is kept beside the new one as `.bak`, which git
+ignores.
+
+A save changes the files in the company's folder. For `genelabs`, that is this
+repository, so it shows up as a change to commit or discard.
+
 ## Add a company
 
 1. Copy `genelabs/` to a new folder named for the company's slug.
-2. Change the names, colours and images. Images must be PNG.
-3. Build a document with `CTI_COMPANY=<slug>` and start the console with
-   `CTI_CONSOLE_COMPANY=<slug>` to check them.
+2. Start the console with `CTI_CONSOLE_COMPANY=<slug>` and change it on the Branding
+   tab, or edit `company.json` and the images by hand.
+3. Build a document with `CTI_COMPANY=<slug>` to check it.
 
 Not yet branded per company: the console's favicon, the weekly and quarterly report
-package (`core/tools/reporting`), and the company facts in the agents' prompts. Those
-come in later phases.
+package (`core/tools/reporting`), and the company facts in the agents' prompts. A company
+picker comes in phase 3. Those come in later phases.

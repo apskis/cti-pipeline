@@ -2,7 +2,8 @@
 
 A local view of what the pipeline produced: runs, stages, costs and every deliverable,
 and who each one is for. It reads `out/` and `logs/`, never writes to them, and makes no
-model calls. The one thing it saves is the stakeholder list, on this machine.
+model calls. It saves two things, on this machine: the stakeholder list, and the company's
+branding from the Settings page.
 It is not part of the pipeline image (`.dockerignore` leaves `console/` out).
 
 ## Run it
@@ -100,6 +101,9 @@ before the brand loads. Once `/api/brand` answers, the company's own tokens for 
 on show are set on `<html>` over them. Tokens a company leaves out keep the
 `index.css` value. Choose another company with `CTI_CONSOLE_COMPANY=<slug>` or
 `CTI_CONSOLE_COMPANY_DIR=<folder>` when starting the backend, then reload the page.
+
+The **Settings** page's **Branding** tab changes the company's names, colours and images,
+with a live preview and contrast checks; see `config/companies/README.md`.
 
 - **Light, dark or system.** The switch in the header is remembered in this browser.
   System follows Windows. `public/theme-init.js` applies a saved choice before the page
@@ -222,7 +226,10 @@ Everything is GET except the stakeholder writes.
 |---|---|
 | `/api/health` | `{"status": "ok"}` |
 | `/api/brand` | The company's name, legal name, program and console colour tokens for light and dark |
-| `/api/brand/symbol` | The company's symbol, a PNG from its folder |
+| `/api/brand/assets/{logo,banner,symbol}` | One of the company's images, a PNG from its folder |
+| `POST /api/brand/preview` | The console colours a draft palette gives, and every contrast check, without saving |
+| `PUT /api/brand` | Save names, palette and the derived console colours; refused if a contrast check fails |
+| `PUT /api/brand/assets/{kind}` | Replace an image with the PNG in the body, after checking its size and shape |
 | `/api/summary` | Counts per kind, CVEs tracked, total model cost, the last scan run and its six stages |
 | `/api/runs?component=&limit=` | Runs, newest first, each with its sessions and cost |
 | `/api/runs/{id}` | One run: its sessions, stages, documents saved while it ran, and its run report as HTML |

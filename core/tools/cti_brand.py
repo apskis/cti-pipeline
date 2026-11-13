@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import struct
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
@@ -72,6 +73,20 @@ class Brand:
     def doc_comments(self) -> str:
         """The core properties comment every builder stamps on its .docx."""
         return f"{self.name} {self.department} | {self.program}"
+
+    @property
+    def banner_aspect(self) -> float:
+        """Height over width of the banner, so the page body clears whatever is uploaded."""
+        width, height = png_size(self.banner)
+        return height / width
+
+
+def png_size(path: Path) -> tuple[int, int]:
+    """Width and height from a PNG's header."""
+    head = path.read_bytes()[:24]
+    if not head.startswith(b"\x89PNG\r\n\x1a\n") or head[12:16] != b"IHDR":
+        raise BrandError(f"{path} is not a PNG")
+    return struct.unpack(">II", head[16:24])
 
 
 def company_dir() -> Path:
