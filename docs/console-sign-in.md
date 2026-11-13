@@ -95,8 +95,7 @@ Sign out ends the console session. Cognito does not publish a sign out page in i
 discovery document, so its own session stays until it expires, and the next sign in may
 not ask for a password.
 
-## Sharing it
+## Not yet
 
-The console listens on this machine only. To let others reach it, share it through a dev
-tunnel with `scripts/console-share.ps1`: see `docs/console-share.md`. With an `https://`
-`CTI_CONSOLE_URL`, the cookies are marked Secure. Hosting it in a cloud is a later step.
+The console still listens on this machine only. Hosting it in a cloud, behind HTTPS, is a
+later phase; `CTI_CONSOLE_URL` with `https://` already makes the cookies Secure.

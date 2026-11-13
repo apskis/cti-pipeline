@@ -1,6 +1,4 @@
 .env
-# The console share settings hold its sign in secrets (scripts/console-share.ps1).
-.env.console
 out/
 logs/
 *.log

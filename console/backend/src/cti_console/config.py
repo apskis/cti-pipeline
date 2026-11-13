@@ -38,9 +38,6 @@ class Settings:
     data_dir: Path
     # The company the console opens with, until one is picked in the header.
     company: str = PIPELINE_COMPANY
-    # The built page (console/frontend/dist). When set, the backend serves it too, so a
-    # tunnel can point at one port. Unset, the page comes from Vite as before.
-    static_dir: Path | None = None
 
     @property
     def scripts_dir(self) -> Path:
@@ -76,9 +73,4 @@ class Settings:
             ).resolve(),
             data_dir=Path(os.environ.get("CTI_DATA_DIR", repo / "data")).resolve(),
             company=company,
-            static_dir=(
-                Path(os.environ["CTI_CONSOLE_STATIC"]).resolve()
-                if os.environ.get("CTI_CONSOLE_STATIC")
-                else None
-            ),
         )
