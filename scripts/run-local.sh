@@ -26,7 +26,7 @@ fi
 mkdir -p "out/$COMPONENT"
 # One-off overrides from the shell win over .env, e.g. SKIP_SCAN=1 to build only.
 EXTRA=()
-for name in SKIP_SCAN BUILD_PASSES; do
+for name in SKIP_SCAN BUILD_PASSES REVIEW REVIEW_ALL REVIEW_MODEL; do
   [ -n "${!name:-}" ] && EXTRA+=(-e "$name=${!name}")
 done
 docker run --rm --env-file .env \
