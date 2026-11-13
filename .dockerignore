@@ -6,6 +6,9 @@
 !.env.example
 out/
 logs/
+# The console's companies: stakeholders and reports. A run is given its brand with
+# a read only mount instead (scripts/run-local.*).
+data/
 *.log
 __pycache__/
 .venv/

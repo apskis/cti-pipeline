@@ -1,0 +1,65 @@
+{
+  "slug": "new-company",
+  "name": "New company",
+  "legal_name": "New company",
+  "department": "Information Security",
+  "program": "Cyber Threat Intelligence",
+  "contact": "Contact the CTI team",
+  "palette": {
+    "primary": "1E3A5F",
+    "accent": "2F6690",
+    "text": "1F2933",
+    "muted": "616E7C",
+    "rule": "B8C4D0",
+    "tint": "EAF0F6",
+    "zebra": "F5F8FB"
+  },
+  "assets": {
+    "logo": "assets/logo.png",
+    "banner": "assets/banner.png",
+    "symbol": "assets/symbol.png"
+  },
+  "console": {
+    "light": {
+      "page": "F4F8FB",
+      "surface": "FFFFFF",
+      "raised": "EAF0F6",
+      "line": "DCE2E8",
+      "ink": "1F2933",
+      "muted": "575E66",
+      "faint": "666D73",
+      "brand": "1E3A5F",
+      "accent": "2F6690",
+      "accent-hover": "28577A",
+      "on-accent": "FFFFFF",
+      "accent-soft": "EAF0F6",
+      "accent-soft-ink": "1E3A5F",
+      "rung": "B8C4D0",
+      "series-scan": "2F6690",
+      "series-build": "B8C4D0",
+      "series-report": "1E3A5F",
+      "series-other": "8F9499"
+    },
+    "dark": {
+      "page": "0D141D",
+      "surface": "162130",
+      "raised": "242E3C",
+      "line": "37404D",
+      "ink": "EAF0F6",
+      "muted": "B5BCC4",
+      "faint": "959DA7",
+      "brand": "EAF0F6",
+      "accent": "5B9ACA",
+      "accent-hover": "82B2D7",
+      "on-accent": "0D141D",
+      "accent-soft": "1B2F43",
+      "accent-soft-ink": "EAF0F6",
+      "rung": "909BA8",
+      "symbol-tile": "EAF0F6",
+      "series-scan": "5B9ACA",
+      "series-build": "B8C4D0",
+      "series-report": "CDDFED",
+      "series-other": "808893"
+    }
+  }
+}

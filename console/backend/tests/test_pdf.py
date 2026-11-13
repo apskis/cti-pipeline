@@ -102,7 +102,7 @@ def test_failed_conversion_leaves_no_file(settings: Settings) -> None:
     response = client.get("/api/deliverables/CTI26-01/pdf/ready")
     assert response.status_code == 502
     assert "Word could not convert" in response.json()["detail"]
-    assert list((settings.cache_dir / "pdf").glob("*")) == []
+    assert list((settings.cache_dir / "pdf").rglob("*.pdf")) == []
 
 
 def test_no_word_means_503(settings: Settings, word: FakeWord) -> None:

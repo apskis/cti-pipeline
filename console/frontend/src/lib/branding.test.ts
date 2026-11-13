@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { BRAND } from "../test/fixtures";
-import { completeDraft, draftOf, isHex, normaliseHex, sameDraft, tokenStyle } from "./branding";
+import { completeDraft, draftOf, isHex, isSlug, normaliseHex, sameDraft, slugOf, tokenStyle } from "./branding";
 import { parseRoute } from "./route";
 
 describe("branding helpers", () => {
@@ -39,5 +39,22 @@ describe("branding helpers", () => {
     expect(parseRoute("#/settings")).toEqual({ page: "settings", section: "branding" });
     expect(parseRoute("#/settings/branding")).toEqual({ page: "settings", section: "branding" });
     expect(parseRoute("#/settings/nope")).toEqual({ page: "settings", section: "branding" });
+  });
+});
+
+describe("company short names", () => {
+  it("makes a folder safe short name from a company name", () => {
+    expect(slugOf("Acme Biotech, Inc.")).toBe("acme-biotech-inc");
+    expect(slugOf("  Société Générale ")).toBe("societe-generale");
+    expect(slugOf("---")).toBe("");
+    expect(slugOf("x".repeat(60))).toHaveLength(40);
+  });
+
+  it("accepts only what the backend accepts", () => {
+    expect(isSlug("acme-eu")).toBe(true);
+    expect(isSlug("-acme")).toBe(false);
+    expect(isSlug("Acme")).toBe(false);
+    expect(isSlug("../x")).toBe(false);
+    expect(isSlug("")).toBe(false);
   });
 });

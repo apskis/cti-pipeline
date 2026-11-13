@@ -209,3 +209,24 @@ export interface BrandPreview {
   checks: ContrastCheck[];
   ok: boolean;
 }
+
+/** One company the console can show. */
+export interface Company {
+  slug: string;
+  name: string;
+  program: string;
+  /** The one company the pipeline writes reports for today. */
+  pipeline: boolean;
+}
+
+export interface CompanyList {
+  active: string;
+  companies: Company[];
+}
+
+/** A new company: a copy of `source`'s brand, or the blank starter when null. */
+export interface CompanyInput {
+  name: string;
+  slug: string;
+  source: string | null;
+}

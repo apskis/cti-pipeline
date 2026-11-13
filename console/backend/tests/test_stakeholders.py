@@ -28,7 +28,11 @@ PERSON = {
 
 @pytest.fixture()
 def client(settings: Settings) -> TestClient:
-    return TestClient(create_app(settings, pdf_ready=False), base_url=LOCAL)
+    return TestClient(
+        create_app(settings, pdf_ready=False),
+        base_url=LOCAL,
+        headers={"X-CTI-Company": settings.company},
+    )
 
 
 def test_empty_until_first_save(client: TestClient, settings: Settings) -> None:

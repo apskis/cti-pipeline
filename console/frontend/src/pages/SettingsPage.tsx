@@ -1,9 +1,16 @@
 import clsx from "clsx";
-import { RotateCcw, Save, Upload } from "lucide-react";
-import { type ChangeEvent, type FormEvent, useState } from "react";
+import { Copy, Plus, RotateCcw, Save, Upload } from "lucide-react";
+import { type ChangeEvent, type FormEvent, useRef, useState } from "react";
 
-import { brandImageUrl, useBrand, useBrandPreview, useBrandWrites } from "../api/client";
-import type { Brand, BrandImage, BrandInput, Palette } from "../api/types";
+import {
+  brandImageUrl,
+  useBrand,
+  useBrandPreview,
+  useBrandWrites,
+  useCompanies,
+  useCompanyWrites,
+} from "../api/client";
+import type { Brand, BrandImage, BrandInput, Company, Palette } from "../api/types";
 import { ConsolePreview, ContrastList, DocumentPreview } from "../components/BrandPreviews";
 import LoadState from "../components/LoadState";
 import {
@@ -12,9 +19,11 @@ import {
   draftOf,
   IMAGE_FIELDS,
   isHex,
+  isSlug,
   MAX_TEXT,
   normaliseHex,
   sameDraft,
+  slugOf,
   TEXT_FIELDS,
   useSettled,
 } from "../lib/branding";
@@ -26,7 +35,7 @@ const buttonClass =
 const primaryClass =
   "inline-flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-sm text-on-accent hover:bg-accent-hover disabled:opacity-50";
 
-const SECTION_LABELS: Record<SettingsSection, string> = { branding: "Branding" };
+const SECTION_LABELS: Record<SettingsSection, string> = { branding: "Branding", companies: "Companies" };
 
 /** One colour: a picker and the hex beside it, kept in step. */
 const ColourField = ({
@@ -261,11 +270,197 @@ const BrandingTab = () => {
     <>
       <p className="mb-4 text-sm text-muted">
         How {brand.data.name}'s reports and this console look. Saved to{" "}
-        <code>config/companies/{brand.data.slug}/</code>, the file the report builders read.
+        <code>data/companies/{brand.data.slug}/</code>, the folder the report builders read.
       </p>
       {/* Keyed by company, so a different company starts a fresh draft. */}
       <BrandingForm key={brand.data.slug} brand={brand.data} />
     </>
+  );
+};
+
+/** One company in the list: what it is, and buttons to show it or copy it. */
+const CompanyRow = ({
+  company,
+  active,
+  busy,
+  onShow,
+  onCopy,
+}: {
+  company: Company;
+  active: boolean;
+  busy: boolean;
+  onShow: () => void;
+  onCopy: () => void;
+}) => (
+  <li className="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-surface px-3 py-2">
+    <div className="min-w-0 flex-1">
+      <p className="text-sm font-medium">
+        {company.name}
+        {active && (
+          <span className="ml-2 rounded bg-accent-soft px-1.5 py-0.5 text-xs font-medium text-accent-soft-ink">
+            Shown now
+          </span>
+        )}
+      </p>
+      <p className="text-xs text-muted">
+        Short name <code>{company.slug}</code>.{" "}
+        {company.pipeline ? "The pipeline writes its reports." : "No pipeline runs for it yet."}
+      </p>
+    </div>
+    {!active && (
+      <button type="button" className={buttonClass} disabled={busy} onClick={onShow}>
+        Show this company
+      </button>
+    )}
+    <button type="button" className={buttonClass} onClick={onCopy} aria-label={`Copy ${company.name}`}>
+      <Copy aria-hidden size={14} />
+      Copy
+    </button>
+  </li>
+);
+
+const slugProblem = (slug: string, taken: boolean): string => {
+  if (taken) return "Another company already uses this short name.";
+  if (slug !== "" && !isSlug(slug)) return "Start with a letter or digit; use only a to z, 0 to 9 and hyphens.";
+  return "";
+};
+
+/** Every company, and a form to add one, blank or copied from another's branding. */
+const CompaniesTab = () => {
+  const companies = useCompanies();
+  const { pick, create } = useCompanyWrites();
+  const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+  // The short name follows the name until it is typed into; after that it is left alone.
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [source, setSource] = useState("");
+  const nameInput = useRef<HTMLInputElement>(null);
+
+  if (!companies.data) return <LoadState error={companies.error} onRetry={() => void companies.refetch()} />;
+  const { active, companies: list } = companies.data;
+  const taken = list.some((c) => c.slug === slug);
+  const ready = name.trim() !== "" && isSlug(slug) && !taken;
+  const busy = create.isPending || pick.isPending;
+  const problem = slugProblem(slug, taken);
+
+  const changeName = (value: string, follow = !slugTouched) => {
+    setName(value);
+    if (follow) setSlug(slugOf(value));
+  };
+  const copyOf = (company: Company) => {
+    setSource(company.slug);
+    setSlugTouched(false);
+    changeName(`${company.name} copy`, true);
+    nameInput.current?.focus();
+  };
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (!ready) return;
+    create.mutate(
+      { name: name.trim(), slug, source: source || null },
+      {
+        // A new company is shown at once, on its Branding tab, where it is set up next.
+        onSuccess: () =>
+          pick.mutate(slug, {
+            onSuccess: () => {
+              window.location.hash = settingsHref("branding");
+            },
+          }),
+      },
+    );
+  };
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+      <section aria-labelledby="company-list-title" className="space-y-2">
+        <h3 id="company-list-title" className="font-medium">
+          Companies
+        </h3>
+        <p className="text-xs text-muted">
+          Each company has its own branding, stakeholders, reports and logs. The console shows one at a time; pick it
+          here or in the header.
+        </p>
+        <ul className="space-y-2">
+          {list.map((company) => (
+            <CompanyRow
+              key={company.slug}
+              company={company}
+              active={company.slug === active}
+              busy={busy}
+              onShow={() => pick.mutate(company.slug)}
+              onCopy={() => copyOf(company)}
+            />
+          ))}
+        </ul>
+        {pick.isError && (
+          <p role="alert" className="text-xs text-fail-ink">
+            Not switched. {pick.error.message}
+          </p>
+        )}
+      </section>
+
+      <form
+        onSubmit={submit}
+        aria-labelledby="add-company-title"
+        className="space-y-3 self-start rounded-lg border border-line bg-surface p-4"
+      >
+        <h3 id="add-company-title" className="font-medium">
+          Add a company
+        </h3>
+        <label className="block text-sm">
+          <span className="font-medium">Company name</span>
+          <input
+            ref={nameInput}
+            value={name}
+            onChange={(e) => changeName(e.target.value)}
+            maxLength={MAX_TEXT}
+            required
+            className={clsx(fieldClass, "mt-1")}
+          />
+        </label>
+        <label className="block text-sm">
+          <span className="font-medium">Short name</span>
+          <span className="block text-xs text-muted">Names its folder. Lower case letters, digits and hyphens.</span>
+          <input
+            value={slug}
+            onChange={(e) => {
+              setSlugTouched(true);
+              setSlug(e.target.value.toLowerCase());
+            }}
+            maxLength={40}
+            required
+            spellCheck={false}
+            aria-invalid={problem !== ""}
+            aria-describedby="slug-problem"
+            className={clsx(fieldClass, "mt-1 font-mono")}
+          />
+          <span id="slug-problem" className="block text-xs text-fail-ink">
+            {problem}
+          </span>
+        </label>
+        <label className="block text-sm">
+          <span className="font-medium">Start from</span>
+          <select value={source} onChange={(e) => setSource(e.target.value)} className={clsx(fieldClass, "mt-1")}>
+            <option value="">A blank brand, to fill in</option>
+            {list.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {`A copy of ${c.name}'s branding`}
+              </option>
+            ))}
+          </select>
+          <span className="block text-xs text-muted">Only branding is copied, never stakeholders, reports or logs.</span>
+        </label>
+        <button type="submit" className={primaryClass} disabled={!ready || busy}>
+          <Plus aria-hidden size={14} />
+          {create.isPending ? "Adding" : "Add and show it"}
+        </button>
+        {create.isError && (
+          <p role="alert" className="text-xs text-fail-ink">
+            Not added. {create.error.message}
+          </p>
+        )}
+      </form>
+    </div>
   );
 };
 
@@ -290,6 +485,7 @@ const SettingsPage = ({ section }: { section: SettingsSection }) => (
       ))}
     </nav>
     {section === "branding" && <BrandingTab />}
+    {section === "companies" && <CompaniesTab />}
   </section>
 );
 

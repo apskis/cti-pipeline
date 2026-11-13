@@ -37,8 +37,16 @@ foreach ($Name in "SKIP_SCAN", "BUILD_PASSES", "REVIEW", "REVIEW_ALL", "REVIEW_M
   $Value = [Environment]::GetEnvironmentVariable($Name)
   if ($Value) { $Extra += @("-e", "$Name=$Value") }
 }
+# The brand the console keeps (data\companies\<slug>\), read only, so a Branding tab save
+# reaches the next run. Without it the image uses the committed config\companies copy.
+# The pipeline only runs for GeneLabs until it takes a company of its own.
+$Brand = @()
+$BrandDir = Join-Path (Get-Location) "data\companies\genelabs"
+if (Test-Path (Join-Path $BrandDir "company.json")) {
+  $Brand = @("-v", "${BrandDir}:/app/company:ro", "-e", "CTI_COMPANY_DIR=/app/company")
+}
 docker run --rm --env-file $EnvFile `
-  -e COMPONENT=$Component -e MODE=$Mode -e CLOUD=local @Extra `
+  -e COMPONENT=$Component -e MODE=$Mode -e CLOUD=local @Extra @Brand `
   -v "${Out}:/app/out" $Image
 $Code = $LASTEXITCODE
 Remove-Item $EnvFile -ErrorAction SilentlyContinue

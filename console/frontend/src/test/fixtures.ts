@@ -1,4 +1,5 @@
 import type {
+  CompanyList,
   Audience,
   Brand,
   BrandPreview,
@@ -230,4 +231,12 @@ export const BRAND_PREVIEW: BrandPreview = {
     { label: "Accent on white (links)", foreground: "#167d61", background: "#ffffff", ratio: 5.07, needed: 4.5, ok: true },
   ],
   ok: true,
+};
+
+export const COMPANIES: CompanyList = {
+  active: "genelabs",
+  companies: [
+    { slug: "acme", name: "Acme Biotech", program: "Cyber Threat Intelligence", pipeline: false },
+    { slug: "genelabs", name: "GeneLabs", program: "Cyber Threat Intelligence", pipeline: true },
+  ],
 };

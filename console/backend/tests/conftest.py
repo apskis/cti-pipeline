@@ -186,4 +186,5 @@ def settings(tmp_path: Path) -> Settings:
         logs_dir=logs,
         cache_dir=tmp_path / "cache",
         stakeholders_file=tmp_path / "config" / "stakeholders.json",
+        data_dir=tmp_path / "data",
     )

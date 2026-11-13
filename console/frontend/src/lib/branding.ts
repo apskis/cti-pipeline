@@ -73,3 +73,19 @@ export function useSettled<T>(value: T, ms = 300): T {
 export function tokenStyle(tokens: Record<string, string>): Record<string, string> {
   return Object.fromEntries(Object.entries(tokens).map(([name, value]) => [`--color-${name}`, value]));
 }
+
+const SLUG = /^[a-z0-9][a-z0-9-]{0,39}$/;
+
+/** A company's short name names its folder, so it is held to the backend's shape. */
+export const isSlug = (value: string): boolean => SLUG.test(value);
+
+/** A short name made from a company name: "Acme Biotech, Inc." becomes "acme-biotech-inc". */
+export const slugOf = (name: string): string =>
+  name
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "") // the accents NFKD split off: é becomes e
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+/, "")
+    .slice(0, 40)
+    .replace(/-+$/, "");

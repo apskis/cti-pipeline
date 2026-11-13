@@ -5,21 +5,34 @@ reports and console look. Nothing else in the repo carries a company's colours, 
 or logo.
 
 ```
-config/companies/<slug>/
+<slug>/
   company.json
   assets/logo.png      footer logo on every document
   assets/banner.png    page header image on every document
   assets/symbol.png    the mark beside the name in the console
 ```
 
+## Where they live
+
+- **`data/companies/<slug>/`** is each company's working folder: its brand, and for every
+  company but GeneLabs its stakeholders, `out/` and `logs/` too. The console keeps it and
+  the Branding tab saves into it. `data/` is gitignored and kept out of the pipeline
+  image, because it holds people and reports.
+- **`config/companies/<slug>/`** (this folder) holds committed first copies. The console
+  copies each into `data/` once, on its first start, and never again, so a saved brand
+  is not overwritten. `genelabs/` is the GeneLabs brand; `_starter/` is the neutral
+  brand a blank company begins from, with placeholder images, and is never listed.
+
 ## Who reads it
 
 | Reader | Reads | Chooses the company with |
 |---|---|---|
-| Document builders (bulletin, hunt package and report, advisory, documentation, restyler, hand off, awareness blog, CVE brief, exposure briefing) | `core/tools/cti_brand.py` | `CTI_COMPANY=<slug>` or `CTI_COMPANY_DIR=<folder>` |
-| Console | `console/backend/src/cti_console/brand.py`, served at `/api/brand` | `CTI_CONSOLE_COMPANY=<slug>` or `CTI_CONSOLE_COMPANY_DIR=<folder>` |
+| Document builders (bulletin, hunt package and report, advisory, documentation, restyler, hand off, awareness blog, CVE brief, exposure briefing) | `core/tools/cti_brand.py` | `CTI_COMPANY=<slug>` (looked up in `data/companies`, then here) or `CTI_COMPANY_DIR=<folder>` |
+| Console | `console/backend/src/cti_console/brand.py`, served at `/api/brand` | The **Company** list in the header |
 
-Both default to `genelabs`.
+Both default to `genelabs`. A local run (`scripts/run-local.*`) hands the container
+`data/companies/genelabs/` read only, so a Branding tab save reaches the next run. A
+cloud image has no `data/` and uses the committed copy here.
 
 ## The fields
 
@@ -51,16 +64,17 @@ and of a shape the reports can hold (logo 1.5 to 8 times as wide as tall, banner
 12, symbol 0.3 to 3). The previous file is kept beside the new one as `.bak`, which git
 ignores.
 
-A save changes the files in the company's folder. For `genelabs`, that is this
-repository, so it shows up as a change to commit or discard.
+A save changes the files in `data/companies/<slug>/`, not this repository. To make a
+saved brand the committed GeneLabs default (for the cloud image), copy its
+`company.json` and `assets/` back here and commit them.
 
 ## Add a company
 
-1. Copy `genelabs/` to a new folder named for the company's slug.
-2. Start the console with `CTI_CONSOLE_COMPANY=<slug>` and change it on the Branding
-   tab, or edit `company.json` and the images by hand.
+1. In the console, open **Settings, Companies** and add it, blank or as a copy of
+   another company's branding. It opens on its Branding tab.
+2. Set its names, colours and images there.
 3. Build a document with `CTI_COMPANY=<slug>` to check it.
 
-Not yet branded per company: the console's favicon, the weekly and quarterly report
-package (`core/tools/reporting`), and the company facts in the agents' prompts. A company
-picker comes in phase 3. Those come in later phases.
+Not yet per company: the pipeline itself (it runs for GeneLabs only), the console's
+favicon, the weekly and quarterly report package (`core/tools/reporting`), and the
+company facts in the agents' prompts. Those come in phase 4.

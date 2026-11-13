@@ -90,20 +90,41 @@ marked. Bulletin and hunt IDs link into the reader.
 
 ### Look and theme
 
-The console wears the brand of one company, read from
-`config/companies/<slug>/company.json` (see `config/companies/README.md`), the same file
-the document builders use. The default is GeneLabs. The header shows the company's
+The console wears the brand of the company it shows, read from
+`data/companies/<slug>/company.json` (see `config/companies/README.md`), the same file
+the document builders use. The header shows the company's
 symbol, a divider and its name as one lockup, with its program name beneath; the browser
 tab is named after it.
 
 The colour tokens in `src/index.css` hold the GeneLabs values, so the page draws in them
 before the brand loads. Once `/api/brand` answers, the company's own tokens for the theme
 on show are set on `<html>` over them. Tokens a company leaves out keep the
-`index.css` value. Choose another company with `CTI_CONSOLE_COMPANY=<slug>` or
-`CTI_CONSOLE_COMPANY_DIR=<folder>` when starting the backend, then reload the page.
+`index.css` value.
 
 The **Settings** page's **Branding** tab changes the company's names, colours and images,
 with a live preview and contrast checks; see `config/companies/README.md`.
+
+### Companies
+
+The console holds any number of companies and shows one at a time. Pick it from the
+**Company** list in the header, or on **Settings, Companies**, which also adds a company:
+blank (a neutral slate brand to fill in) or a copy of another company's branding. A new
+company opens on its Branding tab.
+
+- **Kept apart.** Each company has its own branding, stakeholders, `out/` and `logs/`
+  under `data/companies/<slug>/`. Every page reads the shown company's folders only, so
+  another company's report is a 404, not a leak.
+- **GeneLabs reads the repo root.** The pipeline runs for GeneLabs only until it takes a
+  company of its own, so GeneLabs keeps `out/`, `logs/` and `config/stakeholders.json`
+  where the pipeline and scheduled runs write them. Other companies have no reports yet,
+  and a note under the header says so.
+- **Remembered.** The choice is kept in `data/console.json` for the next start. With none
+  saved, the console opens on `CTI_CONSOLE_COMPANY` (default `genelabs`).
+- **A stale tab cannot write elsewhere.** Every write names the company the page shows
+  (`X-CTI-Company`). If another tab has switched since, the write is refused and the page
+  asks to be reloaded.
+- **Only copies are made.** Adding a company never moves or removes anything. There is no
+  delete yet: remove a company's folder under `data/companies/` by hand.
 
 - **Light, dark or system.** The switch in the header is remembered in this browser.
   System follows Windows. `public/theme-init.js` applies a saved choice before the page
@@ -173,7 +194,9 @@ purpose: the output is internal threat intelligence and the API has no login.
 | `CTI_CONSOLE_OUT` | `<repo>/out` | Pipeline output to read |
 | `CTI_CONSOLE_LOGS` | `<repo>/logs` | Run logs to read |
 | `CTI_CONSOLE_CACHE` | `<repo>/console/.cache` | Branded PDFs the console made (gitignored) |
-| `CTI_CONSOLE_STAKEHOLDERS` | `<repo>/config/stakeholders.json` | The stakeholder list (gitignored) |
+| `CTI_CONSOLE_STAKEHOLDERS` | `<repo>/config/stakeholders.json` | GeneLabs' stakeholder list (gitignored) |
+| `CTI_DATA_DIR` | `<repo>/data` | Every company's folder and the remembered choice (gitignored) |
+| `CTI_CONSOLE_COMPANY` | `genelabs` | The company to open with when none has been picked |
 
 ### Branded PDFs
 
@@ -225,6 +248,9 @@ Everything is GET except the stakeholder writes.
 | Path | Returns |
 |---|---|
 | `/api/health` | `{"status": "ok"}` |
+| `/api/companies` | Every company and which one is shown |
+| `PUT /api/companies/active` | Show another company; remembered for the next start |
+| `POST /api/companies` | Add a company, blank or copying another's branding |
 | `/api/brand` | The company's name, legal name, program and console colour tokens for light and dark |
 | `/api/brand/assets/{logo,banner,symbol}` | One of the company's images, a PNG from its folder |
 | `POST /api/brand/preview` | The console colours a draft palette gives, and every contrast check, without saving |
