@@ -128,7 +128,7 @@ const Flow = () => (
         code, no model call
       </span>
     </p>
-    <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+    <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
       {FLOW.map((step, i) => (
         <li
           key={step.title}
@@ -241,7 +241,7 @@ const BuiltPage = () => (
 
     <Section
       title="How one run flows"
-      lead="Two of the eight steps use a model. Everything around them is plain code, which keeps runs cheap, repeatable and easy to debug."
+      lead="Three of the nine steps use a model. Everything around them is plain code, which keeps runs cheap, repeatable and easy to debug."
     >
       <Flow />
     </Section>
@@ -288,7 +288,7 @@ const BuiltPage = () => (
       title="Roadmap"
       lead="Ideas weighed and kept for later, each with what has to be true before it is worth the cost."
     >
-      <ol className="grid gap-3 md:grid-cols-3">
+      <ol className="grid gap-3 md:grid-cols-2">
         {ROADMAP.map((item) => (
           <li key={item.title} className="flex flex-col rounded-xl border border-line bg-surface p-4">
             <span className="self-start rounded-full bg-accent-soft px-2 py-0.5 text-xs text-accent-soft-ink">

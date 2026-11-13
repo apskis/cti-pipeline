@@ -31,6 +31,7 @@
   --color-unknown-ink: #3e4a46;
   --color-series-scan: #167d61;
   --color-series-build: #a2bfae;
+  --color-series-review: #b7791f;
   --color-series-report: #103b32;
   --color-series-other: #7f8b86;
   --font-sans: Aptos, "Segoe UI Variable", "Segoe UI", system-ui, Arial, sans-serif;
@@ -65,6 +66,7 @@
     --color-unknown-ink: #cfd8d5;
     --color-series-scan: #3fb48c;
     --color-series-build: #a2bfae;
+    --color-series-review: #e0a84a;
     --color-series-report: #d7ebe0;
     --color-series-other: #7d8a86;
     color-scheme: dark;
@@ -95,6 +97,7 @@
   --color-unknown-ink: #cfd8d5;
   --color-series-scan: #3fb48c;
   --color-series-build: #a2bfae;
+  --color-series-review: #e0a84a;
   --color-series-report: #d7ebe0;
   --color-series-other: #7d8a86;
   color-scheme: dark;

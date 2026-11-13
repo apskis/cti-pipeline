@@ -17,10 +17,11 @@ describe("showcase copy", () => {
     expect(prose.filter((text) => /[-‐-―]/.test(text))).toEqual([]);
   });
 
-  it("marks exactly the scan and build steps as model work", () => {
+  it("marks exactly the scan, build and review steps as model work", () => {
     expect(FLOW.filter((f) => f.by === "model").map((f) => f.title)).toEqual([
       "Scan",
       "Build documents",
+      "Review documents",
     ]);
   });
 

@@ -65,7 +65,7 @@ def search_count(report: str) -> int | None:
 
 
 def scan_stage(out_dir: Path, run: Run) -> Stage:
-    minutes = round(sum(s.duration_s for s in run.sessions if not s.is_build) / 60)
+    minutes = round(sum(s.duration_s for s in run.sessions if not s.is_follow_on) / 60)
     day = run.started.date().isoformat()
     report = _read(out_dir / "bulletin-scan" / "reports" / f"scan-{day}.md")
     if report is None:
@@ -133,6 +133,31 @@ def build_stage(runs: list[Run], day: date) -> Stage:
     return Stage("build", "Build", f"{len(passes)} passes", status, note)
 
 
+def review_stage(runs: list[Run], items: list[Deliverable], day: date) -> Stage:
+    """The Reviewer's pass on this day: how many documents it checked and flagged."""
+    sessions = [
+        s
+        for r in runs
+        if r.component == "bulletin-scan"
+        for s in r.sessions
+        if s.label == "review" and s.started.date() == day
+    ]
+    if not sessions:
+        return Stage("review", "Review", "not run", "unknown", "No reviewer pass on this day")
+    if any(not s.ok for s in sessions):
+        return Stage("review", "Review", "failed", "fail", "The reviewer pass failed")
+    reviewed = [d for d in items if d.review and d.review.checked_at.startswith(day.isoformat())]
+    flagged = [d for d in reviewed if d.review and d.review.verdict == "flag"]
+    note = f"Flagged: {', '.join(d.id for d in flagged[:5])}" if flagged else "No document flagged"
+    return Stage(
+        "review",
+        "Review",
+        f"{len(reviewed)} docs, {len(flagged)} flagged",
+        "warn" if flagged else "ok",
+        note,
+    )
+
+
 def check_stage(items: list[Deliverable]) -> Stage:
     checked = [d for d in items if d.status != "unchecked"]
     broken = [d for d in checked if d.status == "broken"]
@@ -161,6 +186,7 @@ def pipeline_stages(
         scan_stage(out_dir, run),
         triage_stage(out_dir, day),
         build_stage(runs, day),
+        review_stage(runs, items, day),
         check_stage(items),
         deliver_stage(items, day),
     ]

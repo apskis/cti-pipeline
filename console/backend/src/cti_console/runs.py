@@ -39,6 +39,11 @@ class Session:
     def is_build(self) -> bool:
         return self.label.startswith("build")
 
+    @property
+    def is_follow_on(self) -> bool:
+        """A builder or reviewer session: it continues the run its scan started."""
+        return self.is_build or self.label == "review"
+
 
 @dataclass
 class Run:
@@ -60,7 +65,7 @@ class Run:
 
     @property
     def kind(self) -> str:
-        if any(not s.is_build for s in self.sessions):
+        if any(not s.is_follow_on for s in self.sessions):
             return "scan"
         return "build only"
 
@@ -125,7 +130,7 @@ def group_runs(sessions: list[Session]) -> list[Run]:
     current: dict[str, Run] = {}
     for s in sessions:
         run = current.get(s.component)
-        starts_new = run is None or not s.is_build or s.started - run.ended > RUN_GAP
+        starts_new = run is None or not s.is_follow_on or s.started - run.ended > RUN_GAP
         if starts_new:
             run = Run(component=s.component, mode=s.mode)
             current[s.component] = run

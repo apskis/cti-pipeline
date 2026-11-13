@@ -12,6 +12,7 @@ const doc = (id: string, kind: string, firstSeen: string, status: Deliverable["s
   modified: `${firstSeen}T12:00:00`,
   status,
   problem: null,
+  review: null,
 });
 
 describe("pickFeatured", () => {

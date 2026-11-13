@@ -45,6 +45,22 @@ export interface Summary {
 
 export type DeliverableStatus = "ok" | "broken" | "unchecked";
 
+export interface ReviewFinding {
+  claim: string;
+  problem: string;
+  source: string;
+}
+
+/** The Reviewer's verdict on one document. Written by a model: render as text only. */
+export interface Review {
+  verdict: "pass" | "flag";
+  summary: string;
+  checked_at: string;
+  findings: ReviewFinding[];
+  /** The document changed after this review, so the verdict may be out of date. */
+  stale: boolean;
+}
+
 export interface Deliverable {
   id: string;
   kind: string;
@@ -54,6 +70,7 @@ export interface Deliverable {
   modified: string;
   status: DeliverableStatus;
   problem: string | null;
+  review: Review | null;
 }
 
 /** A deliverable with its body as HTML. Untrusted: sanitize before rendering. */

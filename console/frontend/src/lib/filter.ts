@@ -1,6 +1,10 @@
 import type { Deliverable, DeliverableStatus } from "../api/types";
 
-export type StatusFilter = "all" | DeliverableStatus;
+export type StatusFilter = "all" | DeliverableStatus | "flagged";
+
+const matchesStatus = (d: Deliverable, status: StatusFilter): boolean =>
+  status === "all" ||
+  (status === "flagged" ? d.review?.verdict === "flag" : d.status === status);
 
 /** The Reports list after the kind, status and search filters. Search matches ID and title. */
 export function filterDeliverables(
@@ -13,7 +17,7 @@ export function filterDeliverables(
   return items.filter(
     (d) =>
       (kind === "all" || d.kind === kind) &&
-      (status === "all" || d.status === status) &&
+      matchesStatus(d, status) &&
       (!needle || `${d.id} ${d.title}`.toLowerCase().includes(needle)),
   );
 }

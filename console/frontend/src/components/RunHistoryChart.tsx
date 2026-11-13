@@ -16,6 +16,7 @@ const token = (name: string): string =>
 const SERIES_TOKENS: Record<Series, string> = {
   scan: "--color-series-scan",
   build: "--color-series-build",
+  review: "--color-series-review",
   report: "--color-series-report",
   other: "--color-series-other",
 };

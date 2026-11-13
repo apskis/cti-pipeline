@@ -15,6 +15,8 @@ const COMPONENT_AGENT: Record<string, string> = {
 };
 
 export const WRITER = "Writer";
+/** Checks the Writer's documents against their sources in a fresh session. Flags only. */
+export const REVIEWER = "Reviewer";
 
 export const componentAgent = (component: string): string =>
   COMPONENT_AGENT[component] ?? "Agent";
@@ -22,8 +24,11 @@ export const componentAgent = (component: string): string =>
 const isBuild = (label: string): boolean => label.startsWith("build");
 
 /** The agent behind one model session, from the label the cost log gives it. */
-export const sessionAgent = (component: string, label: string): string =>
-  isBuild(label) ? WRITER : componentAgent(component);
+export function sessionAgent(component: string, label: string): string {
+  if (isBuild(label)) return WRITER;
+  if (label === "review") return REVIEWER;
+  return componentAgent(component);
+}
 
 /** "Writer, pass 2" for builder sessions, the bare role name otherwise. */
 export function sessionName(component: string, label: string): string {
@@ -50,6 +55,7 @@ const STAGE_AGENT: Record<string, string> = {
   scan: "Analyst",
   triage: "Analyst",
   build: WRITER,
+  review: REVIEWER,
   check: COORDINATOR,
   deliver: COORDINATOR,
 };
