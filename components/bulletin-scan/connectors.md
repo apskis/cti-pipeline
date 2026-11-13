@@ -5,7 +5,7 @@ intel471_, claroty_). The cloud POC enables nvd, enrich and ics only, so a norma
 run never needs it. Text below is moved verbatim from `task.md`.
 
 *** SPLUNK — RUN THE LINTER BEFORE EVERY QUERY. NO EXCEPTIONS. ***
-Invoke the "genelabs-splunk-spl" skill and run
+Invoke the "cti-splunk-spl" skill and run
 `python "<Shared tooling>\splunk_spl_lint.py" "<SPL>" [--timed]` before every splunk_run_query call.
 Exit 1 means DO NOT RUN IT. The hard rules it enforces, which are April's, 2026-08-27:
   1. NEVER `index=` without `sourcetype=`. An index holds many sourcetypes with different fields — <firewall-index> alone carries <vendor>:traffic (~500M/day, no url), <vendor>:threat (~300M/day, has url) and <vendor>:firewall_cloud. An index-only search scans data you did not want and returns fields you cannot rely on.
@@ -32,7 +32,7 @@ BROKEN, LOUD, SAFE:
 
 PATCH STATE: no automated PER-CVE exposure answer exists; never write a per-CVE exposure count. But falcon_search_applications gives a PRODUCT join and splunk_run_query reaches the unsensored estate. Run BOTH before writing "possible exposure, verify" — that phrase is for what you could not measure, not what you did not try.
 
-FINISHED INTELLIGENCE — for every named actor or campaign run intel471_reports. Where it disputes or qualifies press reporting, SAY SO and prefer its assessment, carrying hedging words verbatim. Cross-reference actors against the log so a recurring actor reads as continuing activity. THE ABSENCE OF A REPORT IS INFORMATION: where a breach ALERT exists but no finished report does, or where a government disclosure names an actor Intel 471 holds nothing on, say so — it speaks to the coverage GeneLabs buys.
+FINISHED INTELLIGENCE — for every named actor or campaign run intel471_reports. Where it disputes or qualifies press reporting, SAY SO and prefer its assessment, carrying hedging words verbatim. Cross-reference actors against the log so a recurring actor reads as continuing activity. THE ABSENCE OF A REPORT IS INFORMATION: where a breach ALERT exists but no finished report does, or where a government disclosure names an actor Intel 471 holds nothing on, say so — it speaks to the coverage {{company}} buys.
 
 PEER CHECK SOURCE (1), INTEL 471 BREACH ALERTS:
 (1) INTEL 471 BREACH ALERTS — every run, filtered to the window then to "Health care equipment and technology", "Health care providers and services industry", "Pharmaceuticals, biotechnology and life sciences industry".
@@ -43,6 +43,6 @@ PEER CHECK SOURCE (1), INTEL 471 BREACH ALERTS:
   - CROSS-REFERENCE THE ACTOR. A covered actor is continuing activity and may warrant REVISING the existing bulletin.
   - RECORD THE BACKGROUND RATE as one line. The base rate stops any single alert being over-read.
 
-*** EIGHTH SOURCE — THREATQ, FOR INDICATORS. *** Check every IOC before treating it as novel. Already in ThreatQ changes "add as a custom IOC" to "already covered, hunt the behaviour". NOTE THE INVERSE: an indicator IN ThreatQ whose traffic was still ALLOWED is a BLOCKLIST ENFORCEMENT GAP and its own finding — GAP-22, now at THREE instances (most recently 198.51.100.7, held since April, allowed 1,318 times in 14 days), so treat it as a confirmed systemic pipeline problem. AND THE CONVERSE: where NONE of a published indicator set is in ThreatQ or Intel 471, the intelligence is genuinely new to GeneLabs and not covered by any feed.
+*** EIGHTH SOURCE — THREATQ, FOR INDICATORS. *** Check every IOC before treating it as novel. Already in ThreatQ changes "add as a custom IOC" to "already covered, hunt the behaviour". NOTE THE INVERSE: an indicator IN ThreatQ whose traffic was still ALLOWED is a BLOCKLIST ENFORCEMENT GAP and its own finding — GAP-22, now at THREE instances (most recently 198.51.100.7, held since April, allowed 1,318 times in 14 days), so treat it as a confirmed systemic pipeline problem. AND THE CONVERSE: where NONE of a published indicator set is in ThreatQ or Intel 471, the intelligence is genuinely new to {{company}} and not covered by any feed.
 
 *** ASSET SCOPING BEFORE THE HYPOTHESIS: falcon_search_applications for "do we run this"; falcon_search_hosts for "does it have working EDR"; splunk_run_query for the unsensored estate with a BARE CONTROL first; claroty BOTH DOWN (GAP-23) so say "OT could not be assessed", never "no OT exposure". ***

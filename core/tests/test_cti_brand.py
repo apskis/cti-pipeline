@@ -18,7 +18,7 @@ import cti_brand
 from cti_brand import BrandError, parse_brand
 
 GENELABS = cti_brand.COMPANIES_DIR / "genelabs"
-BULLETIN = CORE / ".claude/skills/genelabs-cti-bulletin/scripts/build_bulletin.py"
+BULLETIN = CORE / ".claude/skills/cti-bulletin/scripts/build_bulletin.py"
 
 
 def make_company(tmp_path: Path, **changes: object) -> Path:

@@ -44,9 +44,7 @@ def _raw(folder: Path) -> dict[str, object]:
 
 
 # ---------------------------------------------------------------------- the list
-def test_genelabs_is_copied_in_once_and_listed_as_the_pipeline_company(
-    settings: Settings,
-) -> None:
+def test_genelabs_is_copied_in_once_with_its_facts(settings: Settings) -> None:
     body = _client(settings).get("/api/companies").json()
     assert body["active"] == "genelabs"
     assert body["companies"] == [
@@ -54,14 +52,40 @@ def test_genelabs_is_copied_in_once_and_listed_as_the_pipeline_company(
             "slug": "genelabs",
             "name": "GeneLabs",
             "program": "Cyber Threat Intelligence",
-            "pipeline": True,
+            "has_runs": True,  # the sample output in the repo root out/
         }
     ]
     copy = settings.data_dir / "companies" / "genelabs"
-    committed = TEMPLATES / "genelabs" / "company.json"
-    assert (copy / "company.json").read_bytes() == committed.read_bytes()
+    committed = TEMPLATES / "genelabs"
+    for name in ("company.json", "profile.json", "reference/tech-profile.md"):
+        assert (copy / name).read_bytes() == (committed / name).read_bytes()
     images = sorted(p.name for p in (copy / "assets").iterdir())
     assert images == ["banner.png", "logo.png", "symbol.png"]
+
+
+def test_an_older_copy_gets_its_facts_without_losing_its_brand(settings: Settings) -> None:
+    """A copy seeded before profiles existed holds only the brand; a start adds the facts."""
+    _client(settings)
+    copy = settings.data_dir / "companies" / "genelabs"
+    raw = {**_raw(copy), "name": "GeneLabs Saved"}
+    (copy / "company.json").write_text(json.dumps(raw), encoding="utf-8")
+    (copy / "profile.json").unlink()
+    for note in (copy / "reference").iterdir():
+        note.unlink()
+    (copy / "reference").rmdir()
+
+    _client(settings)
+    assert _raw(copy)["name"] == "GeneLabs Saved"
+    assert (copy / "profile.json").is_file()
+    assert (copy / "reference" / "peer-watchlist.md").is_file()
+
+
+def test_saved_facts_are_never_overwritten(settings: Settings) -> None:
+    _client(settings)
+    profile = settings.data_dir / "companies" / "genelabs" / "profile.json"
+    profile.write_text('{"industry": "edited"}', encoding="utf-8")
+    _client(settings)
+    assert json.loads(profile.read_text(encoding="utf-8")) == {"industry": "edited"}
 
 
 def test_the_starter_is_never_listed(settings: Settings) -> None:
@@ -94,6 +118,11 @@ def test_a_new_company_starts_from_the_neutral_starter(settings: Settings) -> No
     assert raw["palette"] == _raw(TEMPLATES / "_starter")["palette"]
     assert (folder / "out").is_dir() and (folder / "logs").is_dir()
     assert not (folder / "stakeholders.json").exists()
+    starter = TEMPLATES / "_starter"
+    assert (folder / "profile.json").read_bytes() == (starter / "profile.json").read_bytes()
+    assert "STUB" in (folder / "reference" / "tech-profile.md").read_text(encoding="utf-8")
+    listed = {c["slug"]: c["has_runs"] for c in body["companies"]}
+    assert listed["acme"] is False
 
 
 def test_the_starter_brand_passes_every_readability_check() -> None:
@@ -110,6 +139,7 @@ def test_a_duplicate_copies_the_brand_but_not_people_or_reports(settings: Settin
     acme = settings.data_dir / "companies" / "acme"
     (acme / "out" / "report.docx").write_bytes(b"x")
     (acme / "assets" / "logo.png.bak").write_bytes(b"old")
+    (acme / "profile.json").write_text('{"industry": "Acme only"}', encoding="utf-8")
 
     _create(client, name="Acme Europe", slug="acme-eu", source="acme")
     copy = settings.data_dir / "companies" / "acme-eu"
@@ -119,6 +149,9 @@ def test_a_duplicate_copies_the_brand_but_not_people_or_reports(settings: Settin
     assert not (copy / "stakeholders.json").exists()
     assert list((copy / "out").iterdir()) == []
     assert not (copy / "assets" / "logo.png.bak").exists()
+    # A copied brand does not carry the source's products and peers.
+    starter_profile = (TEMPLATES / "_starter" / "profile.json").read_bytes()
+    assert (copy / "profile.json").read_bytes() == starter_profile
 
 
 def test_a_slug_already_taken_is_refused(settings: Settings) -> None:

@@ -3,7 +3,7 @@
 
 Claude Code (the agent) does the analysis that the Azure OpenAI layer used to
 do and writes it as ``analysis_result.json``. This script is the deterministic
-half: it loads that JSON and renders the branded GeneLabs .docx with the
+half: it loads that JSON and renders the company-branded .docx with the
 vendored python-docx renderers. No model call happens here.
 
 Usage:

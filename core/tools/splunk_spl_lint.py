@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lint an SPL query against GeneLabs CTI house rules BEFORE it is sent to Splunk.
+"""Lint an SPL query against the company's CTI house rules BEFORE it is sent to Splunk.
 
 April, 2026-08-27: *"make sure to never use index without sourcetype or index=*"*, and run
 this every time before querying the Splunk MCP.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evidence citation post-pass for GeneLabs CTI documents (hunt reports,
+"""Evidence citation post-pass for company CTI documents (hunt reports,
 exposure advisories, run summaries).
 
 Converts {{E1}} style markers anywhere in the document (body paragraphs and
@@ -28,9 +28,13 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 FONT = "Arial"; MONO = "Consolas"
-# GeneLabs brand kit v1.0: Charcoal body, Forest headings, Emerald rules and links
-ABBEY = "202C29"; DEEP = "103B32"; ORANGE = "167D61"; GREY = "676765"
-LINK = "167D61"; CODE_BG = "F4F4F4"
+# Colours come from the company's brand file, read by cti_brand.py beside this script.
+from cti_brand import load_brand
+
+_PALETTE = load_brand().palette
+# Brand text body, brand primary headings, brand accent rules and links.
+ABBEY = _PALETTE.text; DEEP = _PALETTE.primary; ORANGE = _PALETTE.accent; GREY = _PALETTE.muted
+LINK = _PALETTE.accent; CODE_BG = "F4F4F4"
 MARKER = re.compile(r"\{\{(E\d+)\}\}")
 _bm_id = [9000]
 

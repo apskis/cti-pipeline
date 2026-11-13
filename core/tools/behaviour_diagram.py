@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Behaviour diagrams for the GeneLabs CTI Detection Hand-off.
+"""Behaviour diagrams for the company CTI Detection Hand-off.
 
 April, 2026-08-27: *"use pictures explaining the behavior seen as well for the soc handoff"*.
 
@@ -18,14 +18,29 @@ Liberation Sans, metrically compatible with Arial.
 from PIL import Image, ImageDraw, ImageFont
 import glob, os
 
-ORANGE      = ( 22, 125,  97)   # Emerald #167D61 (name kept so callers need no change)
-ORANGE_DEEP = ( 16,  59,  50)   # Forest #103B32
-TINT        = (234, 243, 238)   # Mist #EAF3EE
-ABBEY       = ( 32,  44,  41)   # Charcoal #202C29
-GREY        = (103, 103, 101)
+# Colours come from the company's brand file, read by cti_profile.py beside this
+# script. Pillow wants RGB tuples, so the brand's hex is converted once here.
+from cti_profile import load_company
+
+_COMPANY = load_company()
+_PALETTE = _COMPANY.brand.palette
+# The example host is drawn in the company's own first domain, so the picture reads
+# as theirs. example.com is reserved for exactly this when no domain is set up.
+EXAMPLE_HOST = "name." + (_COMPANY.profile.domains[0] if _COMPANY.profile.domains else "example.com")
+
+
+def _rgb(hex6):
+    return tuple(int(hex6[i:i + 2], 16) for i in (0, 2, 4))
+
+
+ORANGE      = _rgb(_PALETTE.accent)    # brand accent (name kept so callers need no change)
+ORANGE_DEEP = _rgb(_PALETTE.primary)   # brand primary
+TINT        = _rgb(_PALETTE.tint)      # brand tint
+ABBEY       = _rgb(_PALETTE.text)      # brand text
+GREY        = _rgb(_PALETTE.muted)     # brand muted
 MUTED       = (170, 170, 168)
-LIGHT       = (244, 249, 246)   # pale Mist #F4F9F6
-RULE        = (162, 191, 174)   # Sage #A2BFAE
+LIGHT       = _rgb(_PALETTE.zebra)     # brand zebra, the palest fill
+RULE        = _rgb(_PALETTE.rule)      # brand rule
 WHITE       = (255, 255, 255)
 GREEN       = ( 46, 125,  50)
 RED         = (198,  40,  40)
@@ -209,7 +224,7 @@ def off_estate_asset(w=740, h=235):
             ("find", int(W * 0.75), "THE FINDING", "AS24940, rented", RED,
              ["no sensor", "no logs", "no patch pipeline"])):
         _centre(dr, title, fb, cx, 40 * SS, colour)
-        _centre(dr, "name.genelabs.com", f, cx, y - 62 * SS, ABBEY)
+        _centre(dr, EXAMPLE_HOST, f, cx, y - 62 * SS, ABBEY)
         dr.line((cx, y - 50 * SS, cx, y - 26 * SS), fill=ORANGE, width=4 * SS)
         dr.polygon([(cx, y - 24 * SS), (cx - 7 * SS, y - 36 * SS), (cx + 7 * SS, y - 36 * SS)],
                    fill=ORANGE)

@@ -61,7 +61,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
 
     Template structure:
     - Report ID header (CTI-WK-YYYY-WW)
-    - Title: "Cyber Threat Intelligence Weekly Report" (Forest, 18pt bold)
+    - Title: "Cyber Threat Intelligence Weekly Report" (brand primary, 18pt bold)
     - Date range subtitle
     - Executive Summary
     - This Week at a Glance (metric cards)
@@ -195,7 +195,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
         id_run.font.color.rgb = BrandColors.GRAY_LIGHT
         id_run.font.name = "Consolas"
 
-        # Body: main title, 18pt, Forest — use Normal style so no line/border under title
+        # Body: main title, 18pt, brand primary — use Normal style so no line/border under title
         title_para = self.doc.add_paragraph()
         title_para.style = self.doc.styles["Normal"]
         title_para.paragraph_format.space_before = Pt(4)
@@ -223,10 +223,10 @@ class WeeklyReportGenerator(BaseReportGenerator):
         self.doc.add_paragraph()
 
     def _add_executive_summary(self, analysis_result: dict[str, Any]) -> None:
-        """Add summary: bold Forest heading, white body, tight spacing."""
+        """Add summary: bold brand primary heading, white body, tight spacing."""
         logger.info("Adding Summary section")
 
-        # Heading 1 style: 14pt, Forest
+        # Heading 1 style: 14pt, brand primary
         heading_para = self.doc.add_paragraph()
         heading_para.style = self.doc.styles["Heading 1"]
         heading_para.paragraph_format.space_before = Pt(6)
@@ -267,10 +267,10 @@ class WeeklyReportGenerator(BaseReportGenerator):
             run.font.name = "Arial"
 
     def _add_week_at_glance(self, analysis_result: dict[str, Any]) -> None:
-        """Add 'This Week at a Glance': bold Forest heading; space before subtitle."""
+        """Add 'This Week at a Glance': bold brand primary heading; space before subtitle."""
         logger.info("Adding This Week at a Glance section")
 
-        # Heading 1 style: "This Week at a Glance", 14pt, Forest
+        # Heading 1 style: "This Week at a Glance", 14pt, brand primary
         glance_para = self.doc.add_paragraph()
         glance_para.style = self.doc.styles["Heading 1"]
         glance_para.paragraph_format.space_before = Pt(0)
@@ -442,7 +442,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
         return "N/A"
 
     def _style_heading_1(self, paragraph) -> None:
-        """Apply Heading 1 look: Forest, 14pt, Arial to all runs in the paragraph."""
+        """Apply Heading 1 look: brand primary, 14pt, Arial to all runs in the paragraph."""
         for run in paragraph.runs:
             run.font.color.rgb = BrandColors.FOREST
             run.font.size = FontSizes.HEADING_1
@@ -731,7 +731,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
         header_cells = table.rows[0].cells
         Pt(7)
 
-        # Header row: Forest background, white bold text
+        # Header row: brand primary background, white bold text
         for i, header in enumerate(headers):
             cell = header_cells[i]
             cell.text = header
@@ -1239,7 +1239,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
             # Create threat actor table per CTI_Weekly_Report_Template_Spec.json
             table = self.doc.add_table(rows=1, cols=4)
 
-            # Header row: Forest background, white text
+            # Header row: brand primary background, white text
             headers = ["Origin / Motivation", "Activity Observed", "What to Monitor", "Source"]
             header_cells = table.rows[0].cells
             for i, header in enumerate(headers):
@@ -1349,7 +1349,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
             # Columns: Campaign Name | Threat Actor(s) | Objective | Targets | TTPs | Timeline | Source
             table = self.doc.add_table(rows=1, cols=7)
 
-            # Header row: Forest background, white text
+            # Header row: brand primary background, white text
             headers = ["Campaign Name", "Threat Actor(s)", "Objective", "Targets", "TTPs", "Timeline", "Source"]
             header_cells = table.rows[0].cells
             for i, header in enumerate(headers):
@@ -1611,7 +1611,7 @@ class WeeklyReportGenerator(BaseReportGenerator):
             # Create table: Company | Incident Type | Date | Relevance | Source
             table = self.doc.add_table(rows=1, cols=5)
 
-            # Header row: Forest background, white text
+            # Header row: brand primary background, white text
             headers = ["Organization", "Incident Type", "Date", "Relevance", "Source"]
             header_cells = table.rows[0].cells
             for i, header in enumerate(headers):
@@ -2144,8 +2144,8 @@ class WeeklyReportGenerator(BaseReportGenerator):
         cell = table.rows[0].cells[0]
 
         # Light blue/gray background for the info box
-        self._set_cell_shading(cell, BrandColors.MIST_HEX)  # GeneLabs Mist
-        self._set_cell_borders(cell, BrandColors.SAGE_HEX, "8")  # GeneLabs Sage border
+        self._set_cell_shading(cell, BrandColors.MIST_HEX)  # brand tint
+        self._set_cell_borders(cell, BrandColors.SAGE_HEX, "8")  # brand rule border
 
         # Clear default paragraph
         cell.paragraphs[0].clear()

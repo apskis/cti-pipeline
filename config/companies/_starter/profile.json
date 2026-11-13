@@ -1,0 +1,17 @@
+{
+  "_comment": "What the pipeline knows about this company, beside its brand (company.json). Fill in every field before the first run: an empty list makes that check report 'not set up' rather than 'nothing found'. reference/tech-profile.md and reference/peer-watchlist.md hold the longer notes the scans read.",
+  "analyst": "the Cyber Threat Intelligence (CTI) Lead",
+  "industry": "",
+  "domains": [],
+  "security_contact": "",
+  "osint_source_name": "",
+  "products": "",
+  "flagship_product": "",
+  "own_products": [],
+  "ics_products": [],
+  "strategic_profile": [],
+  "ir_feed_urls": [],
+  "product_keywords": [],
+  "peer_watch_orgs": [],
+  "peer_competitor_orgs": []
+}

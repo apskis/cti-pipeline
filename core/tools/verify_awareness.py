@@ -8,10 +8,26 @@ The assertions below are deliberately blunt: they fail closed.
 import sys, os, re, datetime
 from docx import Document
 
-ABBEY = "202C29"          # house black (GeneLabs Charcoal): the TLP value must render in this
+# The brand and the company's domains come from the company folder, read by
+# cti_brand.py and cti_profile.py beside this script.
+from cti_profile import load_company
+
+COMPANY = load_company()
+BRAND = COMPANY.brand
+ABBEY = BRAND.palette.text  # house black (brand text): the TLP value must render in this
 # Alert and accent colours the TLP value must never take. The retired orange
-# accents stay listed so a return to the old palette is still caught.
-ORANGE_ISH = ("EF6C00", "FF7109", "E05F00", "C62828", "B71C1C", "167D61", "103B32")
+# accents stay listed so a return to the old palette is still caught; the brand
+# primary and accent follow the run's company.
+ORANGE_ISH = ("EF6C00", "FF7109", "E05F00", "C62828", "B71C1C",
+              BRAND.palette.accent, BRAND.palette.primary)
+
+
+def _hostname_patterns(domains):
+    """One banned pattern per company domain. With no domains set up there is
+    nothing to match against, so the check is skipped rather than guessed."""
+    return [(r"\b[a-z0-9-]+\." + re.escape(d.lower()) + r"\b",
+             f"internal {BRAND.name} hostname") for d in domains]
+
 
 def all_text(doc):
     parts = [p.text for p in doc.paragraphs]
@@ -55,14 +71,13 @@ BANNED_PATTERNS = [
     (r"\bAMBER\b|\bTLP:AMBER\b",               "AMBER TLP marking on a public-facing post"),
     (r"\b(CrowdStrike|Falcon|Splunk|Claroty|Rapid7|InsightVM|ThreatQ|Intel\s*471|Shodan|Proofpoint|Okta|Entra)\b",
                                                "named internal security tool or platform"),
-    (r"\b[a-z0-9-]+\.genelabs\.com\b",         "internal GeneLabs hostname"),
     (r"\b(?:linksvc|provideraccess|designstudio|dmapna|edicogenome|pki)\b",
                                                "named internal web property"),
     (r"\bNo EDR\b|\bunsensored\b|\bblocklist gap\b|\bcoverage gap\b|\bnot licensed\b|\bunlicensed\b",
-                                               "statement about an GeneLabs control gap"),
+                                               f"statement about a {BRAND.name} control gap"),
     (r"\bhunt package\b|\btstats\b|\bCQL\b|\bdatamodel\b|\bMITRE\b|\bT1\d{3}\b",
                                                "internal hunt or detection tradecraft"),
-]
+] + _hostname_patterns(COMPANY.profile.domains)
 
 # Things that MUST appear.
 #

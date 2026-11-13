@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # One entrypoint, all components.
 #   COMPONENT       selects components/<name>/task.md
+#   COMPANY         the company to run for (default genelabs): its brand, profile and notes
+#                   come from config/companies/<COMPANY>/, or CTI_COMPANY_DIR when mounted
 #   MODEL_BACKEND   bedrock | subscription  (which model runtime)
 #   CLOUD           aws | azure | local     (where output is shipped; local keeps it in OUTPUT_DIR)
 # Secrets arrive as ENV (Secrets Manager on AWS / Key Vault on Azure); the run
@@ -15,6 +17,15 @@ cd /app
 : "${MODE:=weekly}"
 export MODE
 mkdir -p "$OUTPUT_DIR"
+
+# The company. Builders, the report renderer and the prompts all read CTI_COMPANY (or
+# CTI_COMPANY_DIR, which a local run mounts and which wins). GeneLabs keeps the object
+# store layout it had before companies existed; every other company gets its own prefix,
+# so two companies never restore or overwrite each other's registers and dedup logs.
+: "${COMPANY:=genelabs}"
+[[ "$COMPANY" =~ ^[a-z0-9][a-z0-9-]{0,39}$ ]] || { echo "COMPANY=$COMPANY is not a company slug"; exit 2; }
+export CTI_COMPANY="$COMPANY"
+if [ "$COMPANY" = "genelabs" ]; then STORE_PREFIX="${COMPONENT}"; else STORE_PREFIX="companies/${COMPANY}/${COMPONENT}"; fi
 
 # program-console is a plain Python dashboard refresh. Starting a Claude session for it
 # cost a full model run every hour and did nothing the script cannot, so it runs the
@@ -60,7 +71,6 @@ esac
 
 CDIR="components/${COMPONENT}"
 [ -d "$CDIR" ] || { echo "unknown COMPONENT=$COMPONENT"; exit 2; }
-TASK="$CDIR/task.md"
 
 # Skills are resolved from core/ (/app/.claude is a symlink to it; CLAUDE_PROJECT_DIR too).
 export CLAUDE_PROJECT_DIR=/app/core
@@ -71,9 +81,18 @@ export CLAUDE_PROJECT_DIR=/app/core
 export OUTPUT_DIR REPO_ROOT=/app
 if [ "${CLOUD:-aws}" = "aws" ]; then
   : "${OUTPUT_BUCKET:?set OUTPUT_BUCKET}"
-  echo "[entrypoint] restoring prior state from s3://${OUTPUT_BUCKET}/${COMPONENT}/"
-  aws s3 sync "s3://${OUTPUT_BUCKET}/${COMPONENT}/" "$OUTPUT_DIR" --only-show-errors
+  echo "[entrypoint] restoring prior state from s3://${OUTPUT_BUCKET}/${STORE_PREFIX}/"
+  aws s3 sync "s3://${OUTPUT_BUCKET}/${STORE_PREFIX}/" "$OUTPUT_DIR" --only-show-errors
 fi
+
+# Prompts: the component's task files with the company filled in. Rendered after the
+# restore so a stale copy from the store is replaced, and kept with the state so each
+# run's exact prompt can be read back. A broken profile or placeholder stops here,
+# before anything is paid for.
+PROMPTS="$OUTPUT_DIR/state/_work/prompts"
+rm -rf "$PROMPTS"
+python3 scripts/render_task.py "$COMPONENT" "$PROMPTS"
+TASK="$PROMPTS/task.md"
 
 # Output layout: every config/paths.json key resolves under OUTPUT_DIR and is created
 # now, so a wrong path fails here rather than when a finished document is saved.
@@ -104,7 +123,7 @@ run_claude() {
   return "$rc"
 }
 
-echo "[entrypoint] component=$COMPONENT mode=$MODE cloud=${CLOUD:-aws}"
+echo "[entrypoint] company=$COMPANY component=$COMPONENT mode=$MODE cloud=${CLOUD:-aws}"
 # The reviewer checks only documents saved from here on, so a run reviews what it built.
 RUN_STARTED="$(date +%s)"
 
@@ -132,7 +151,7 @@ fi
 # Builder passes: a single headless session will not carry a dozen documents, so the
 # scan pass only assigns IDs in the dedup log and each builder pass (fresh context)
 # turns a small batch of them into files, until nothing is pending or the cap is hit.
-BUILD_TASK="$CDIR/task-build.md"
+BUILD_TASK="$PROMPTS/task-build.md"
 BUILD_FAILED=0
 if [ -f "$BUILD_TASK" ]; then
   PENDING="$OUTPUT_DIR/state/_work/pending.json"
@@ -164,7 +183,7 @@ fi
 # failure is logged and ignored, because the documents are already built and an
 # unreviewed document is still worth shipping. REVIEW=0 turns the pass off; REVIEW_ALL=1
 # reviews older unreviewed documents too (REVIEW_BATCH at a time), e.g. with SKIP_SCAN=1.
-REVIEW_TASK="$CDIR/task-review.md"
+REVIEW_TASK="$PROMPTS/task-review.md"
 if [ -f "$REVIEW_TASK" ] && [ "${REVIEW:-1}" != "0" ]; then
   REVIEW_LIST="$OUTPUT_DIR/state/_work/review.json"
   SINCE=(--since "$RUN_STARTED")
@@ -197,10 +216,13 @@ python3 scripts/update_state.py finalize
 # file whose size did not change, and losing a state update costs a whole run).
 case "${CLOUD:-aws}" in
   aws)   : "${OUTPUT_BUCKET:?set OUTPUT_BUCKET}"
-         aws s3 cp "$OUTPUT_DIR" "s3://${OUTPUT_BUCKET}/${COMPONENT}/" --recursive --only-show-errors ;;
+         aws s3 cp "$OUTPUT_DIR" "s3://${OUTPUT_BUCKET}/${STORE_PREFIX}/" --recursive --only-show-errors ;;
   azure) : "${STORAGE_ACCOUNT:?}" ; : "${OUTPUT_CONTAINER:?}"
          az login --identity --allow-no-subscriptions >/dev/null
-         az storage blob upload-batch -d "$OUTPUT_CONTAINER" -s "$OUTPUT_DIR" \
+         # GeneLabs uploads to the container root, as it always has; others to their prefix.
+         DEST=()
+         [ "$COMPANY" = "genelabs" ] || DEST=(--destination-path "$STORE_PREFIX")
+         az storage blob upload-batch -d "$OUTPUT_CONTAINER" -s "$OUTPUT_DIR" ${DEST[@]+"${DEST[@]}"} \
             --account-name "$STORAGE_ACCOUNT" --auth-mode login --overwrite true ;;
   # local: OUTPUT_DIR is a folder mounted from your machine, so state already persists
   # between runs and nothing is restored or shipped. No cloud account is touched.
