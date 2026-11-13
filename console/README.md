@@ -141,6 +141,10 @@ Each person keeps their own shown company, the header names them and their role 
 **Sign out** button, and the page leaves out what their role cannot do. The backend
 refuses it anyway. Setup for both providers is in `docs/console-sign-in.md`.
 
+With sign in off the console is for this machine only: it refuses any request that
+arrives through a proxy or tunnel (one carrying `Forwarded` or `X-Forwarded-*` headers),
+because a tunnel rewrites `Host` to localhost and would otherwise get past the host check.
+
 - **Light, dark or system.** The switch in the header is remembered in this browser.
   System follows Windows. `public/theme-init.js` applies a saved choice before the page
   draws, so it never flashes the other theme.
