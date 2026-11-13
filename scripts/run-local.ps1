@@ -2,11 +2,14 @@
 #   .\scripts\run-local.ps1 bulletin-scan
 #   .\scripts\run-local.ps1 reporting -Build          # rebuild after a git pull
 #   .\scripts\run-local.ps1 reporting -Mode quarterly
-# State lives in out\<component>\, the same layout as the S3 bucket.
+#   .\scripts\run-local.ps1 bulletin-scan -Company acme   # run for another company
+# State lives in out\<component>\, the same layout as the S3 bucket. Any company but
+# GeneLabs keeps it in data\companies\<slug>\out\<component>\, where the console reads it.
 param(
   [Parameter(Mandatory = $true)][string]$Component,
   [switch]$Build,
-  [string]$Mode = "weekly"
+  [string]$Mode = "weekly",
+  [ValidatePattern('^[a-z0-9][a-z0-9-]{0,39}$')][string]$Company = "genelabs"
 )
 $ErrorActionPreference = "Stop"
 Set-Location (Join-Path $PSScriptRoot "..")
@@ -29,7 +32,9 @@ if ($Build -or -not $HaveImage) {
 $EnvFile = Join-Path $env:TEMP "cti-pipeline.env"
 [IO.File]::WriteAllText($EnvFile, ((Get-Content .env -Raw) -replace "`r", ""))
 
-$Out = Join-Path (Get-Location) "out\$Component"
+$CompanyDir = Join-Path (Get-Location) "data\companies\$Company"
+if ($Company -eq "genelabs") { $Out = Join-Path (Get-Location) "out\$Component" }
+else { $Out = Join-Path $CompanyDir "out\$Component" }
 New-Item -ItemType Directory -Force -Path $Out | Out-Null
 # One-off overrides from the shell win over .env, e.g. $env:SKIP_SCAN=1 to build only.
 $Extra = @()
@@ -37,17 +42,18 @@ foreach ($Name in "SKIP_SCAN", "BUILD_PASSES", "REVIEW", "REVIEW_ALL", "REVIEW_M
   $Value = [Environment]::GetEnvironmentVariable($Name)
   if ($Value) { $Extra += @("-e", "$Name=$Value") }
 }
-# The brand the console keeps (data\companies\<slug>\), read only, so a Branding tab save
-# reaches the next run. Without it the image uses the committed config\companies copy.
-# The pipeline only runs for GeneLabs until it takes a company of its own.
+# The company folder the console keeps (brand, profile, notes), read only, so a save in
+# the console reaches the next run. Without it the image uses the committed
+# config\companies copy, which only GeneLabs and companies committed there have.
 $Brand = @()
-$BrandDir = Join-Path (Get-Location) "data\companies\genelabs"
-if (Test-Path (Join-Path $BrandDir "company.json")) {
-  $Brand = @("-v", "${BrandDir}:/app/company:ro", "-e", "CTI_COMPANY_DIR=/app/company")
+if (Test-Path (Join-Path $CompanyDir "company.json")) {
+  $Brand = @("-v", "${CompanyDir}:/app/company:ro", "-e", "CTI_COMPANY_DIR=/app/company")
+} elseif (-not (Test-Path "config\companies\$Company\company.json")) {
+  throw "unknown company: $Company (add it in the console, Settings, Companies)"
 }
 docker run --rm --env-file $EnvFile `
-  -e COMPONENT=$Component -e MODE=$Mode -e CLOUD=local @Extra @Brand `
+  -e COMPONENT=$Component -e COMPANY=$Company -e MODE=$Mode -e CLOUD=local @Extra @Brand `
   -v "${Out}:/app/out" $Image
 $Code = $LASTEXITCODE
 Remove-Item $EnvFile -ErrorAction SilentlyContinue
-Write-Host "output: out\$Component\ (exit $Code)"
+Write-Host "output: $Out (exit $Code)"

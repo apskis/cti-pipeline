@@ -1,6 +1,6 @@
 # CTI Weekly Perimeter Scan
 
-You are supporting April, the Cyber Threat Intelligence (CTI) Lead at GeneLabs LLC This runs
+You are supporting {{analyst}} at {{legal_name}}. This runs
 on April's workstation as a scheduled local job. Nobody is present to answer questions, so
 execute autonomously, make reasonable choices, and note every choice you made in the run output.
 Take a write action only where this file asks for that specific action. When in doubt, producing
@@ -29,7 +29,7 @@ written here.
 
 ## STEP 1 - read the skill first
 
-Read `.claude/skills/genelabs-exposure-team-briefing/SKILL.md`. It is the source of truth for the
+Read `.claude/skills/cti-exposure-team-briefing/SKILL.md`. It is the source of truth for the
 format, the column widths, the colour rules and the build. Everything below supplements it; where
 they disagree the skill wins and you should say so in the run output.
 
@@ -81,7 +81,7 @@ the run output, because it means the advisory set is inconsistent.
   marks a MISSING sensor and PRESENT bad traffic. Both are bad news even though one is a "no" and
   one is a "yes".
 - **`n/a` IS NOT `No`.** An external SaaS platform has no endpoint sensor because it is not an
-  GeneLabs host, not because a control is missing. Writing `No` there invents a gap.
+  {{company}} host, not because a control is missing. Writing `No` there invents a gap.
 - **"None seen" IS NOT "No".** Absence of an observed known bad source is not proof none reached
   the asset. Do not tidy that into a cleaner looking `No`.
 
@@ -133,7 +133,7 @@ INHERITED in Appendix A.1 with the date its advisory established it, and make th
 as of that date rather than as of today.
 
 Firewall figures and both flag columns come from Splunk and are INHERITED unless you actually run
-the searches. If you do run them, read `.claude/skills/genelabs-splunk-spl/SKILL.md` first and lint
+the searches. If you do run them, read `.claude/skills/cti-splunk-spl/SKILL.md` first and lint
 every query with `tools/splunk_spl_lint.py` before executing it.
 
 ## STEP 8 - build
@@ -144,7 +144,7 @@ replacement string interprets backslash escapes, so every `\n` in the asset cell
 newline and the file stops parsing. That has broken the builder once already.
 
 ```
-python tools/build_exposure_briefing.py "<output .docx>" ".claude/skills/genelabs-exposure-advisory"
+python tools/build_exposure_briefing.py "<output .docx>" ".claude/skills/cti-exposure-advisory"
 ```
 
 The report id is DERIVED FROM THE OUTPUT FILENAME, so a weekly rebuild cannot ship last week's
@@ -175,7 +175,7 @@ It is pages two onward and it is the working behind page one.
   meeting; and the one unanswered question per row that would move it. This section argues about
   the FORMAT, not about the findings.
 
-Keep the appendix in the house identity: same GeneLabs CTI header, same footer, Arial only, shaded header rows,
+Keep the appendix in the house identity: same company CTI header, same footer, Arial only, shaded header rows,
 and `cantSplit` plus a repeating header row on every appendix table so no row is orphaned across a
 page break.
 
@@ -190,7 +190,7 @@ python scripts/verify_briefing.py "<output .docx>"
 It checks: every page 792 x 612 pt; page one carries every asset and no appendix text; every row
 has an owner; every row links its advisory and every target resolves against a file on disk; zero
 orphaned relationships and zero external targets that are not SharePoint; no `file:///`; Arial
-only; footer DOC # matching the filename, TLP, page field and GeneLabs logo; no flag value broken mid
+only; footer DOC # matching the filename, TLP, page field and company logo; no flag value broken mid
 word; and A.1 carrying one labelled provenance entry per row.
 
 Then also confirm by reading, which the gate cannot do: that no row contradicts the advisory it
@@ -205,7 +205,7 @@ Change the document's shape rather than shaving words, in the order that has act
    information and its width is better spent on prose.
 2. Move width from the columns with spare lines (asset, action) into the two prose columns, which
    are what set every row's height.
-3. Reduce the side margins. The GeneLabs CTI header scales to the body width but stops at
+3. Reduce the side margins. The company CTI header scales to the body width but stops at
    7 inches, so on this landscape page a wider body no longer makes it taller. Measure the
    result rather than assuming it helped.
 4. Put a per row reference inline rather than on its own line.

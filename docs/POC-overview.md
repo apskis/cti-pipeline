@@ -45,7 +45,7 @@ Values go into Secrets Manager (AWS) or Key Vault (Azure), entered by April. Nev
 - EC2 t3.large, security group locked to April's IP on 8000/8089/22, both clouds' egress IPs
   allowlisted on 8089.
 - Fill with **BOTS (Boss of the SOC)** datasets (github.com/splunk/botsv3) for synthetic hunt
-  data. Map real index→sourcetype pairs into the `genelabs-splunk-spl` skill.
+  data. Map real index→sourcetype pairs into the `cti-splunk-spl` skill.
 - `SPLUNK_URL=https://<ip>:8089`, `SPLUNK_TOKEN=<token>`. Add to Secrets Manager / Key Vault,
   then create the threat-hunting task def/job (its deferred step in each runbook).
 

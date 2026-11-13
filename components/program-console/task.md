@@ -10,7 +10,7 @@ changed in the port and both are marked below.
 
 ---
 
-Refresh the GeneLabs CTI Program Dashboard from the files on this machine. Be
+Refresh the {{company}} CTI Program Dashboard from the files on this machine. Be
 quiet: no questions, no task list, no commentary beyond the one line at the end.
 
 Everything needed is in this repo and in the two CTI folders named in `.env`.

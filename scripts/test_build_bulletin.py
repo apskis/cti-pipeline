@@ -13,7 +13,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-BUILDER = ROOT / "core" / ".claude" / "skills" / "genelabs-cti-bulletin" / "scripts" / "build_bulletin.py"
+BUILDER = ROOT / "core" / ".claude" / "skills" / "cti-bulletin" / "scripts" / "build_bulletin.py"
 
 try:
     import docx

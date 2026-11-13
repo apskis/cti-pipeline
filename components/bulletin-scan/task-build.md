@@ -1,6 +1,6 @@
 # Bulletin scan: builder pass
 
-You are the BUILDER pass of the GeneLabs CTI bulletin scan. The scan pass has already
+You are the BUILDER pass of the {{company}} CTI bulletin scan. The scan pass has already
 run today: it researched the feeds, updated the CVE register, and assigned IDs in
 `state/dedup-log.md` for every deliverable it wants. Your only job is to turn a batch of
 those IDs into documents on disk. Nobody replies; there is no time limit; do not defer.
@@ -16,10 +16,10 @@ to confirm a source detail you need for the document.
 
 ## How to build each kind
 
-- **bulletin** (`CTI26-NN`): the `genelabs-cti-bulletin` skill. Audience line starts
+- **bulletin** (`CTI26-NN`): the `cti-bulletin` skill. Audience line starts
   "DRAFT for April's review". Save as `bulletins/2026/CTI26-NN-Title_Case_Slug.docx`.
-  Builder: `python3 core/.claude/skills/genelabs-cti-bulletin/scripts/build_bulletin.py <spec.json> <out.docx>`.
-- **hunt** (`TH26-NN`): the `genelabs-threat-hunt-package` skill, one hypothesis per
+  Builder: `python3 core/.claude/skills/cti-bulletin/scripts/build_bulletin.py <spec.json> <out.docx>`.
+- **hunt** (`TH26-NN`): the `cti-threat-hunt-package` skill, one hypothesis per
   package. The in-repo builder is current: it emits no findings, no classification
   key, no Coverage & Gaps and no blank execution sections, and it ignores the spec
   keys removed on 2026-08-24, so do not supply `status`, `findings`,
@@ -29,11 +29,11 @@ to confirm a source detail you need for the document.
   and SPL queries with CONTROL and BASELINE, and keep every query rule from the skill.
   Apply the QUERY RULES and the VERIFY step in `components/bulletin-scan/formats.md` too.
   Save as `hunts/packages/TH26-NN-Title_Case_Slug.docx`.
-  Builder: `python3 core/.claude/skills/genelabs-threat-hunt-package/scripts/build_hunt.py <spec.json> <out.docx>`.
+  Builder: `python3 core/.claude/skills/cti-threat-hunt-package/scripts/build_hunt.py <spec.json> <out.docx>`.
 - **cve_brief** (`CVE-VM-YYYY-MM-DD`):
-  `python3 core/tools/build_priority_brief.py registers/CVE_Register_2026.xlsx registers/CVE-VM-YYYY-MM-DD.docx core/.claude/skills/genelabs-cti-bulletin`
+  `python3 core/tools/build_priority_brief.py registers/CVE_Register_2026.xlsx registers/CVE-VM-YYYY-MM-DD.docx core/.claude/skills/cti-bulletin`
   If the builder rejects the register, fix the register cell it names and rerun.
-- **awareness** (`AWR-YYYY-MM-DD`): the `genelabs-employee-awareness-blog` skill with the
+- **awareness** (`AWR-YYYY-MM-DD`): the `cti-employee-awareness-blog` skill with the
   topic named in today's report, the writing rules in `components/bulletin-scan/formats.md`,
   `--channel` set, ledger row appended, then rebuild
   `state/awareness-topic-pipeline.md` (STEP 11 of the scan prompt).
@@ -47,7 +47,7 @@ to confirm a source detail you need for the document.
 A spec with the wrong keys produces a document with placeholder text ("TH-26-XX",
 five paragraphs); the driver rejects it and queues it again, so it is wasted work.
 
-- Hunt spec: copy the JSON example in `core/.claude/skills/genelabs-threat-hunt-package/SKILL.md`
+- Hunt spec: copy the JSON example in `core/.claude/skills/cti-threat-hunt-package/SKILL.md`
   (search for `"hunt_id": "TH26-14"`). Top level keys are exactly `hunt_id`, `date`,
   `run_date`, `handoff_note`, `meta`, `hypotheses`, `iocs`, `saved_searches`, `tlp`.
   `hypotheses` is a LIST of objects, each with `title`, `priority`, `trigger_type`,
