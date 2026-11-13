@@ -19,7 +19,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import FileResponse
 
 from .audience import audience_view
-from .brand import BrandError, load_brand
+from .brand import MAX_IMAGE_BYTES, AssetKind, BrandError, BrandIn, BrandStore
 from .config import Settings
 from .deliverables import Deliverable, load_checks, save_checks, scan, warm_checks
 from .pdf import Converter, PdfCache, PdfError, WordWorker, word_available
@@ -124,22 +124,44 @@ def create_app(
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
+    brands = BrandStore(settings.company_dir)
+
+    def brand_call(action):  # type: ignore[no-untyped-def]
+        try:
+            return action()
+        except BrandError as exc:
+            raise HTTPException(exc.status, str(exc)) from exc
+
     @app.get("/api/brand")
     def brand() -> dict[str, object]:
         """Read on each call, so an edited brand file shows on the next page load."""
-        try:
-            found, _ = load_brand(settings.company_dir)
-        except BrandError as exc:
-            raise HTTPException(500, str(exc)) from exc
-        return found.model_dump()
+        return brand_call(brands.load).model_dump()
 
-    @app.get("/api/brand/symbol")
-    def brand_symbol() -> FileResponse:
-        try:
-            _, symbol = load_brand(settings.company_dir)
-        except BrandError as exc:
-            raise HTTPException(500, str(exc)) from exc
-        return FileResponse(symbol, media_type="image/png")
+    @app.get("/api/brand/assets/{kind}")
+    def brand_asset(kind: AssetKind) -> FileResponse:
+        return FileResponse(brand_call(lambda: brands.asset(kind)), media_type="image/png")
+
+    @app.post("/api/brand/preview", dependencies=[Depends(require_console)])
+    def brand_preview(item: BrandIn) -> dict[str, object]:
+        return BrandStore.preview(item).model_dump()
+
+    @app.put("/api/brand", dependencies=[Depends(require_console)])
+    def brand_save(item: BrandIn) -> dict[str, object]:
+        return brand_call(lambda: brands.save(item)).model_dump()
+
+    @app.put("/api/brand/assets/{kind}", dependencies=[Depends(require_console)])
+    async def brand_asset_save(
+        kind: AssetKind, request: Request, content_type: str | None = Header(None)
+    ) -> dict[str, object]:
+        if content_type != "image/png":
+            raise HTTPException(415, "Send the image as image/png")
+        # Read no more than the limit allows, whatever Content-Length claims.
+        data = bytearray()
+        async for chunk in request.stream():
+            data.extend(chunk)
+            if len(data) > MAX_IMAGE_BYTES:
+                raise HTTPException(413, f"The image is over {MAX_IMAGE_BYTES // 1048576} MB")
+        return brand_call(lambda: brands.save_asset(kind, bytes(data))).model_dump()
 
     @app.get("/api/summary")
     def summary() -> dict[str, object]:
