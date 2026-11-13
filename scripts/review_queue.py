@@ -6,8 +6,10 @@ each one against its sources and writes ``state/reviews/<ID>.json``. A document 
 review when it has none, or when it changed after its review was written (a rebuild).
 
 ``--since`` limits the queue to documents saved after that time, which the entrypoint sets
-to the start of the run so a normal run reviews only what it built. Without it every
-unreviewed document is eligible, which is how an older backlog can be reviewed on demand.
+to the start of the run so a normal run reviews only what it built. A document changed
+after its review is queued whatever its date: someone fixed it, so the verdict is out of
+date. Without ``--since`` every unreviewed document is eligible, which is how an older
+backlog can be reviewed on demand.
 
 Exit 0 and write the batch when something needs review; exit 3 when nothing does.
 """
@@ -69,9 +71,10 @@ def candidates(since: float | None) -> list[dict[str, str]]:
             continue
         ident, kind = found
         seen.add(ident)
-        if since is not None and doc.stat().st_mtime < since:
-            continue
         if is_reviewed(ident, doc):
+            continue
+        stale = review_path(ident).exists()  # reviewed once, changed since
+        if since is not None and doc.stat().st_mtime < since and not stale:
             continue
         # A shell is the Writer's problem, already queued for a rebuild; reviewing it
         # would spend a model call to say what the code check already knows.
