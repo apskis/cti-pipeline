@@ -7,23 +7,33 @@ reads as one system. Import from here; never hand pick colours.
 """
 import os
 import re
+import sys
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Emu, Inches, Pt, RGBColor
 
-# ---- corporate palette (shared across all CTI artifacts) -------------------
-# GeneLabs brand kit v1.0: Forest, Emerald, Sage, Mist and Charcoal. The legacy
-# names stay so every importer keeps working; only the values changed.
-ORANGE       = "167D61"   # GeneLabs Emerald: rules, accents
-ORANGE_DEEP  = "103B32"   # GeneLabs Forest: small heading text
-ABBEY        = "202C29"   # GeneLabs Charcoal: body and headline text
-GREY         = "676765"   # corporate grey: meta text, footer
-RULE         = "A2BFAE"   # GeneLabs Sage: light rules (dark canvas check was done on the old grey, not Sage)
-LABEL_FILL   = "EAF3EE"   # GeneLabs Mist: table label column
-CALLOUT_FILL = "EAF3EE"   # GeneLabs Mist: callout and table header fill
-LINK_BLUE    = "167D61"   # hyperlinks render in Emerald
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+# ---- company brand (config/companies/<slug>/company.json) -------------------
+# The palette, logo and banner come from the company's brand file, read by
+# core/tools/cti_brand.py. CTI_TOOLS_DIR points there when this script runs
+# from a copy outside the repo.
+sys.path.insert(0, os.environ.get("CTI_TOOLS_DIR") or os.path.join(HERE, "..", "..", "..", "..", "tools"))
+from cti_brand import load_brand  # noqa: E402
+
+BRAND = load_brand()
+
+# The legacy names stay so every importer keeps working.
+ORANGE       = BRAND.palette.accent    # rules, accents
+ORANGE_DEEP  = BRAND.palette.primary   # small heading text
+ABBEY        = BRAND.palette.text      # body and headline text
+GREY         = BRAND.palette.muted     # meta text, footer
+RULE         = BRAND.palette.rule      # light rules
+LABEL_FILL   = BRAND.palette.tint      # table label column
+CALLOUT_FILL = BRAND.palette.tint      # callout and table header fill
+LINK_BLUE    = BRAND.palette.accent    # hyperlinks
 FONT         = "Arial"
 
 TLP_COLORS = {
@@ -32,10 +42,9 @@ TLP_COLORS = {
 }
 DEFAULT_TLP = "AMBER+STRICT"
 
-HERE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.join(HERE, "..", "assets")
-DEFAULT_WORDMARK = os.path.join(ASSETS, "genelabs_logo.png")
-DEFAULT_BANNER = os.path.join(ASSETS, "genelabs_cti_header.png")
+DEFAULT_WORDMARK = str(BRAND.logo)
+DEFAULT_BANNER = str(BRAND.banner)
 DEFAULT_TEMPLATE = os.path.join(ASSETS, "cti_doc_template.docx")
 
 BANNER_ASPECT = 230.0 / 1800.0   # height / width of the house header image

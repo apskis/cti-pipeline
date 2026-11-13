@@ -33,7 +33,7 @@ format's whole value is that a reader finishes it.
 Usage:
   python build_awareness_blog.py spec.json out.docx <genelabs-cti-bulletin skill dir>
 """
-import json, os, sys, glob, subprocess, tempfile
+import json, os, sys, subprocess, tempfile
 
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
@@ -42,33 +42,25 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-# GeneLabs brand kit v1.0 (legacy names kept)
-ORANGE      = "167D61"   # Emerald: rules and accents
-ORANGE_DEEP = "103B32"   # Forest: small heading text
-ABBEY       = "202C29"   # Charcoal: body text
-GREY        = "676765"
-TINT        = "EAF3EE"   # Mist
-RULE        = "A2BFAE"   # Sage
+# Colours, names, logo and banner come from the company's brand file
+# (config/companies/<slug>/company.json), read by cti_brand.py beside this script.
+from cti_brand import load_brand  # noqa: E402
+
+BRAND = load_brand()
+
+# Legacy names kept.
+ORANGE      = BRAND.palette.accent    # rules and accents
+ORANGE_DEEP = BRAND.palette.primary   # small heading text
+ABBEY       = BRAND.palette.text      # body text
+GREY        = BRAND.palette.muted
+TINT        = BRAND.palette.tint
+RULE        = BRAND.palette.rule
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 # ------------------------------------------------------------------ brand assets
-HEADER_FILE, LOGO_FILE = "genelabs_cti_header.png", "genelabs_logo.png"
 HEADER_ASPECT = 230.0 / 1800.0   # height / width of the header image
-
-
-def _asset(skill_dir, name, legacy_glob=None):
-    """Resolve a brand asset from the bulletin skill's assets/, then from ours."""
-    for base in (os.path.join(skill_dir, "assets"), os.path.join(HERE, "assets")):
-        if os.path.exists(os.path.join(base, name)):
-            return os.path.join(base, name)
-    if legacy_glob:
-        for base in (os.path.join(skill_dir, "assets"), os.path.join(HERE, "assets")):
-            hits = glob.glob(os.path.join(base, legacy_glob))
-            if hits:
-                return hits[0]
-    return None
 
 
 def _header_image(doc, skill_dir):
@@ -77,7 +69,7 @@ def _header_image(doc, skill_dir):
     About 7.0 in wide, or the text width when narrower, aspect kept. The top
     margin grows only when the image would not otherwise fit.
     """
-    path = _asset(skill_dir, HEADER_FILE)
+    path = str(BRAND.banner)
     if not path:
         return False
     for sec in doc.sections:
@@ -182,7 +174,7 @@ def _footer(doc, skill_dir, report_id, tlp):
     top.set(qn("w:space"), "4"); top.set(qn("w:color"), ORANGE)
     b.append(top); pPr.append(b)
 
-    wm = _asset(skill_dir, LOGO_FILE, "*wordmark*.png")
+    wm = str(BRAND.logo)
     if wm:
         _run(line, "", 8)
         line.runs[-1].add_picture(wm, width=Inches(0.62))
@@ -195,7 +187,7 @@ def _footer(doc, skill_dir, report_id, tlp):
     _run(line, "TLP: ", 7.5, color=GREY)
     _run(line, tlp, 7.5, color=ABBEY)
     _run(line, "  |  Employee Security Awareness  |  ", 7.5, color=GREY)
-    _run(line, "© 2026 GeneLabs LLC", 7.5, color=GREY)
+    _run(line, f"© 2026 {BRAND.legal_name}", 7.5, color=GREY)
 
     p2 = f.add_paragraph()
     p2.paragraph_format.space_before = Pt(0)

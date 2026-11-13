@@ -458,7 +458,7 @@ def build(register, out_docx, skill_dir, run_date=None, max_rows=10, appendix=Tr
             "Per-CVE patch state remains unavailable; confirm versions in the InsightVM console."),
         "detail_table": [[SENTINEL, ""]],
         "sources": sources,
-        "footer_contact": "secops@genelabs.com  |  ServiceNow",
+        "footer_contact": B.BRAND.contact,
         "tlp": "AMBER+STRICT",
     }
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fh:

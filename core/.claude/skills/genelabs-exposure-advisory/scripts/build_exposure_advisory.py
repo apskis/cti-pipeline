@@ -24,6 +24,7 @@ from docx.shared import Emu, Pt
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from genelabs_style import (  # noqa: E402
+    BRAND,
     ABBEY, CALLOUT_FILL, DEFAULT_TEMPLATE, GREY, LABEL_FILL, ORANGE, RULE,
     add_banner, border, build_footer, bullet, keep_with_next, para, run,
     set_base_style, shade_cell, shade_paragraph, style_headings, table_borders,
@@ -259,8 +260,7 @@ def build(spec, out_path, template_path=None):
 
     cp = doc.core_properties
     cp.title = spec["title"]
-    cp.comments = ("GeneLabs Enterprise Information Security | "
-                   "Cyber Threat Intelligence")
+    cp.comments = BRAND.doc_comments
     doc.save(out_path)
     return out_path
 

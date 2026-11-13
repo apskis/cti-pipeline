@@ -28,23 +28,33 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-# ---- GeneLabs corporate palette (brand kit v1.0, shared with genelabs-cti-bulletin)
-# Legacy names are kept so importers keep working; only the values changed.
-ORANGE = "103B32"            # GeneLabs Forest: small heading text
-ORANGE_RULE = "167D61"       # GeneLabs Emerald: rules and accents
-ABBEY = "202C29"             # GeneLabs Charcoal: body and headline text
-BLUE = "167D61"              # hyperlinks render in Emerald
-BOX_FILL = "EAF3EE"          # GeneLabs Mist: callout tint
+# ---- company brand (config/companies/<slug>/company.json) -------------------
+# Colours, names, logo and banner come from the company's brand file, read by
+# core/tools/cti_brand.py. CTI_TOOLS_DIR points there when this script runs from
+# a copy outside the repo.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.environ.get("CTI_TOOLS_DIR") or os.path.join(_HERE, "..", "..", "..", "..", "tools"))
+from cti_brand import load_brand  # noqa: E402
+
+BRAND = load_brand()
+
+# Legacy names are kept so importers keep working.
+ORANGE = BRAND.palette.primary          # small heading text
+ORANGE_RULE = BRAND.palette.accent      # rules and accents
+ABBEY = BRAND.palette.text              # body and headline text
+BLUE = BRAND.palette.accent             # hyperlinks
+BOX_FILL = BRAND.palette.tint           # callout tint
 CODE_FILL = "F1F3F4"
-HDR_FILL = "EAF3EE"          # GeneLabs Mist
-GREY = "676765"              # corporate grey
-GENELABS_ORANGE = "103B32"   # GeneLabs Forest: table header fill, white header text
-ZEBRA = "F4F9F6"             # very light green row stripe
-META_LABEL = "EAF3EE"        # GeneLabs Mist: label cells for the metadata header
-BORDER = "A2BFAE"            # GeneLabs Sage (dark canvas check was done on the old grey, not Sage)
+HDR_FILL = BRAND.palette.tint
+GREY = BRAND.palette.muted
+GENELABS_ORANGE = BRAND.palette.primary  # table header fill, white header text
+ZEBRA = BRAND.palette.zebra             # row stripe
+META_LABEL = BRAND.palette.tint         # label cells for the metadata header
+BORDER = BRAND.palette.rule
 WHITE = "FFFFFF"
 FONT = "Arial"
-COPYRIGHT_HOLDER = "GeneLabs LLC"
+
+COPYRIGHT_HOLDER = BRAND.legal_name
 FOOTER_LABEL = "CTI Threat Hunt Package"
 DEFAULT_TLP = "AMBER+STRICT"
 SERVICENOW_URL = ("https://<your-instance>.service-now.com/esp?id=sc_cat_item"
@@ -146,8 +156,8 @@ def _copyright(date_str):
 
 
 _ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets")
-DEFAULT_WORDMARK = os.path.join(_ASSETS, "genelabs_logo.png")
-DEFAULT_HEADER = os.path.join(_ASSETS, "genelabs_cti_header.png")
+DEFAULT_WORDMARK = str(BRAND.logo)
+DEFAULT_HEADER = str(BRAND.banner)
 HEADER_ASPECT = 230.0 / 1800.0   # height / width of the header image
 HEADER_MAX_WIDTH = Inches(7.0)
 
@@ -444,7 +454,7 @@ def build(spec, template_path, out_path):
     else:
         doc = Document()
         if add_header_image(doc):
-            print(f"template not found ({template_path}); using the GeneLabs header image",
+            print(f"template not found ({template_path}); using the {BRAND.name} header image",
                   file=sys.stderr)
         else:
             print(f"template not found ({template_path}); building unbranded", file=sys.stderr)
@@ -567,7 +577,7 @@ def build(spec, template_path, out_path):
     cp = doc.core_properties
     cp.title = "%s %s" % (spec.get("hunt_id", ""), (spec.get("meta") or {}).get("hunt_title", ""))
     cp.category = "Threat Hunt Package"
-    cp.comments = "GeneLabs Enterprise Information Security | Cyber Threat Intelligence"
+    cp.comments = BRAND.doc_comments
     doc.save(out_path)
     return out_path
 

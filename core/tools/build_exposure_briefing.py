@@ -24,12 +24,12 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.shared import Inches, Pt
 
 sys.path.insert(0, os.path.join(sys.argv[2], "scripts"))
-from genelabs_style import (ORANGE, ORANGE_DEEP, ABBEY, GREY, RULE, LABEL_FILL,
+from genelabs_style import (BRAND, ORANGE, ORANGE_DEEP, ABBEY, GREY, RULE, LABEL_FILL, LINK_BLUE,
                             add_banner, build_footer, para, run, set_base_style,
                             shade_cell, table_borders, border, set_grid)
 
 RED, AMBER, GREEN = "C62828", "EF6C00", "2E7D32"
-LINK = "167D61"   # hyperlinks render in GeneLabs Emerald
+LINK = LINK_BLUE   # hyperlinks render in the brand accent
 
 # Where the advisories live. Links are SHAREPOINT, not file:/// - a local profile path
 # only resolves on April's own machine, and this document gets forwarded. Derived from
@@ -532,7 +532,7 @@ def build(out_path, skill_dir):
     _m = _re.match(r"(\d{4}-\d{2}-\d{2})", os.path.basename(out_path))
     _id = "CTI-BRIEF-" + (_m.group(1) if _m else "UNDATED")
     build_footer(doc, _id, "CTI Exposure Briefing",
-                 tlp="AMBER+STRICT", copyright_line="© 2026 GeneLabs LLC All rights reserved.")
+                 tlp="AMBER+STRICT", copyright_line=f"© 2026 {BRAND.legal_name} All rights reserved.")
     doc.save(out_path)
     return out_path
 
