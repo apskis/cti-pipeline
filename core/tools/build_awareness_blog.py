@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GeneLabs Employee Awareness — BLOG format builder.
+"""Company Employee Awareness: BLOG format builder.
 
 A second format for the AWR series, added 2026-08-27 at April's request: shorter,
 illustrated, and laid out to be read rather than filed.
@@ -15,7 +15,7 @@ document", and people scroll past compliance documents.
 
 So this builder does NOT wrap the bulletin builder. It draws its own layout with the
 same palette, the same typeface and the same footer furniture, so it is unmistakably
-GeneLabs, but it is organised like a post: one big claim, an image, a short section,
+the company's, but it is organised like a post: one big claim, an image, a short section,
 an image, and a card of things to do.
 
 WHAT IT KEEPS FROM THE ANALYTICAL FORMAT, DELIBERATELY
@@ -24,14 +24,14 @@ WHAT IT KEEPS FROM THE ANALYTICAL FORMAT, DELIBERATELY
     the format got friendlier — this is still the document with no access control.
   * The three universal instructions: report it, reporting is never a waste of time,
     nobody is in trouble for reporting. `verify_awareness.py` still has to pass.
-  * The GeneLabs header image, the logo, the Emerald rule, the DOC # and Page X of Y.
+  * The company's header image, the logo, the brand accent rule, the DOC # and Page X of Y.
 
 WORD BUDGET. Target 350-450 words of body copy. The long-form post for the same topic
 ran 997. If a draft is over 500, cut a section rather than tightening sentences: the
 format's whole value is that a reader finishes it.
 
 Usage:
-  python build_awareness_blog.py spec.json out.docx <genelabs-cti-bulletin skill dir>
+  python build_awareness_blog.py spec.json out.docx <cti-bulletin skill dir>
 """
 import json, os, sys, subprocess, tempfile
 
@@ -64,7 +64,7 @@ HEADER_ASPECT = BRAND.banner_aspect   # height / width of the company banner
 
 
 def _header_image(doc, skill_dir):
-    """GeneLabs CTI header image in the page header of every section.
+    """Company CTI header image (brand banner) in the page header of every section.
 
     About 7.0 in wide, or the text width when narrower, aspect kept. The top
     margin grows only when the image would not otherwise fit.

@@ -1,15 +1,19 @@
 # Companies
 
 One folder per company. Its `company.json` and `assets/` decide how that company's
-reports and console look. Nothing else in the repo carries a company's colours, name
-or logo.
+reports and console look; its `profile.json` and `reference/` notes decide what the
+pipeline watches for it. Nothing else in the repo carries a company's colours, name,
+logo, products or peers.
 
 ```
 <slug>/
-  company.json
-  assets/logo.png      footer logo on every document
-  assets/banner.png    page header image on every document
-  assets/symbol.png    the mark beside the name in the console
+  company.json                 the brand
+  assets/logo.png              footer logo on every document
+  assets/banner.png            page header image on every document
+  assets/symbol.png            the mark beside the name in the console
+  profile.json                 the facts the prompts and the weekly report use
+  reference/tech-profile.md    what the company runs, read by the scans
+  reference/peer-watchlist.md  competitors, partners and vendors, read by the scans
 ```
 
 ## Where they live
@@ -20,19 +24,23 @@ or logo.
   image, because it holds people and reports.
 - **`config/companies/<slug>/`** (this folder) holds committed first copies. The console
   copies each into `data/` once, on its first start, and never again, so a saved brand
-  is not overwritten. `genelabs/` is the GeneLabs brand; `_starter/` is the neutral
-  brand a blank company begins from, with placeholder images, and is never listed.
+  is not overwritten. A copy from before profiles existed gets `profile.json` and
+  `reference/` added, and nothing else changes. `genelabs/` is GeneLabs; `_starter/` is
+  the neutral brand and blank facts a new company begins from, and is never listed.
 
 ## Who reads it
 
 | Reader | Reads | Chooses the company with |
 |---|---|---|
 | Document builders (bulletin, hunt package and report, advisory, documentation, restyler, hand off, awareness blog, CVE brief, exposure briefing) | `core/tools/cti_brand.py` | `CTI_COMPANY=<slug>` (looked up in `data/companies`, then here) or `CTI_COMPANY_DIR=<folder>` |
+| Pipeline prompts | `scripts/render_task.py` fills the `{{company}}` style placeholders in `components/*/task*.md`, through `core/tools/cti_profile.py` | `COMPANY=<slug>` for the container |
+| Weekly and quarterly reports | `core/tools/reporting/src/core/config.py` (name, colours, industry, products, peers) and the brand banner | The same |
 | Console | `console/backend/src/cti_console/brand.py`, served at `/api/brand` | The **Company** list in the header |
 
-Both default to `genelabs`. A local run (`scripts/run-local.*`) hands the container
-`data/companies/genelabs/` read only, so a Branding tab save reaches the next run. A
-cloud image has no `data/` and uses the committed copy here.
+All default to `genelabs`. A local run (`scripts/run-local.*`, `COMPANY=<slug>` or
+`-Company <slug>`) hands the container `data/companies/<slug>/` read only, so a save in
+the console reaches the next run. A cloud image has no `data/` and uses the committed
+copy here, so a company runs in the cloud only once its folder is committed.
 
 ## The fields
 
@@ -49,6 +57,25 @@ cloud image has no `data/` and uses the committed copy here.
 
 Severity, category and TLP colours mean the same thing for every company, so they stay
 in the builders.
+
+## The profile
+
+`profile.json` holds what the pipeline knows about the company. Text fields may be
+empty and lists may be `[]`: a run then reports that check as NOT SET UP instead of
+treating it as clean.
+
+| Field | Used for |
+|---|---|
+| `analyst` | Who the agents support, "April, the CTI Lead" |
+| `industry` | The company line every prompt opens with, and the strategic report's framing |
+| `domains` | The Shodan certificate check, and the hostname check on awareness posts |
+| `own_products`, `ics_products` | The own product watch: a vulnerability in one goes to the top |
+| `security_contact`, `osint_source_name` | Report footers and source labels |
+| `products`, `flagship_product`, `strategic_profile`, `product_keywords`, `ir_feed_urls` | The weekly and quarterly report analysis |
+| `peer_watch_orgs`, `peer_competitor_orgs` | Peer incident matching in the weekly report. Keep them in step with `reference/peer-watchlist.md` |
+
+Every prompt a run uses is saved with its state, in `state/_work/prompts/`, so what the
+agents were told can be read back.
 
 ## Change a company's brand
 
@@ -71,10 +98,19 @@ saved brand the committed GeneLabs default (for the cloud image), copy its
 ## Add a company
 
 1. In the console, open **Settings, Companies** and add it, blank or as a copy of
-   another company's branding. It opens on its Branding tab.
+   another company's branding. It opens on its Branding tab. A copy takes the brand
+   only: the facts always start blank.
 2. Set its names, colours and images there.
-3. Build a document with `CTI_COMPANY=<slug>` to check it.
+3. Fill in `data/companies/<slug>/profile.json` and the two notes in `reference/`.
+4. Run it: `COMPANY=<slug> scripts/run-local.sh bulletin-scan`, or on Windows
+   `.\scripts\run-local.ps1 bulletin-scan -Company <slug>`. Its reports go to
+   `data/companies/<slug>/out/`, where the console shows them.
+5. To schedule it: `.\scripts\register-schedule.ps1 -Company <slug>`.
 
-Not yet per company: the pipeline itself (it runs for GeneLabs only), the console's
-favicon, the weekly and quarterly report package (`core/tools/reporting`), and the
-company facts in the agents' prompts. Those come in phase 4.
+In the cloud, each company other than GeneLabs keeps its state under
+`companies/<slug>/<component>/` in the bucket, so two companies never share a dedup log
+or register. GeneLabs keeps the layout it had.
+
+Not yet per company: the console's favicon, and what the hunt and connector rules say
+about one company's own Splunk and Falcon (index maps, measured volumes): those were
+measured at GeneLabs and are labelled so.

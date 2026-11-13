@@ -166,7 +166,7 @@ class QuarterlyReportGenerator(BaseReportGenerator):
 
         Args:
             cell: The table cell to apply left border to
-            color_hex: Border color in hex format (e.g., "167D61" for Emerald)
+            color_hex: Border color in hex format (e.g., "167D61")
             size: Border size as string (e.g., "12" for thicker, "4" for thin)
         """
         tc_pr = cell._element.get_or_add_tcPr()
@@ -624,7 +624,7 @@ class QuarterlyReportGenerator(BaseReportGenerator):
         id_run.font.size = FontSizes.SUBTITLE
         id_run.font.color.rgb = BrandColors.GRAY_MEDIUM
 
-        # Main title - Quarterly Strategic Brief (styled like Book Title, Forest, 20pt, centered)
+        # Main title - Quarterly Strategic Brief (styled like Book Title, brand primary, 20pt, centered)
         title_para = self.doc.add_paragraph()
         title_run = title_para.add_run("Quarterly Strategic Brief")
         title_run.font.name = "Arial"
@@ -662,7 +662,7 @@ class QuarterlyReportGenerator(BaseReportGenerator):
         for run in summary_heading.runs:
             run.font.name = "Arial"
             run.font.size = Pt(14)  # Font size 14pt
-            run.font.color.rgb = BrandColors.FOREST  # Forest heading
+            run.font.color.rgb = BrandColors.FOREST  # brand primary heading
             run.font.color.rgb = BrandColors.FOREST
         # Add space after heading
         summary_heading.paragraph_format.space_after = Pt(6)
@@ -718,7 +718,7 @@ and vulnerabilities observed are consistent with those historically used against
         for run in risk_heading.runs:
             run.font.name = "Arial"
             run.font.size = Pt(14)  # Font size 14pt
-            run.font.color.rgb = BrandColors.FOREST  # Forest heading
+            run.font.color.rgb = BrandColors.FOREST  # brand primary heading
             run.font.color.rgb = BrandColors.FOREST
         # Add space before and after heading
         risk_heading.paragraph_format.space_before = Pt(12)
@@ -1051,7 +1051,7 @@ and vulnerabilities observed are consistent with those historically used against
         for run in breach_heading.runs:
             run.font.name = "Arial"
             run.font.size = Pt(14)
-            run.font.color.rgb = BrandColors.FOREST  # Forest heading
+            run.font.color.rgb = BrandColors.FOREST  # brand primary heading
             run.font.color.rgb = BrandColors.FOREST
         breach_heading.paragraph_format.space_before = Pt(12)
         breach_heading.paragraph_format.space_after = Pt(6)
@@ -1108,7 +1108,7 @@ and vulnerabilities observed are consistent with those historically used against
                 cell = table.rows[0].cells[i]
                 cell.paragraphs[0].clear()
 
-                # GeneLabs Mist cell background
+                # brand tint cell background
                 self._set_cell_shading(cell, BrandColors.MIST_HEX)
 
                 # Apply thin gray borders on all sides (no accent border)
@@ -1222,7 +1222,7 @@ and vulnerabilities observed are consistent with those historically used against
                 cell = header_cells[i]
                 cell.paragraphs[0].clear()
 
-                # GeneLabs Forest header fill, white header text
+                # brand primary header fill, white header text
                 self._set_cell_shading(cell, BrandColors.TABLE_HEADER_BG)
 
                 # Header text
@@ -1394,8 +1394,8 @@ and vulnerabilities observed are consistent with those historically used against
         for run in geo_heading.runs:
             run.font.name = "Arial"
             run.font.size = Pt(14)  # Font size 14pt
-            run.font.color.rgb = BrandColors.FOREST  # Forest heading
-            run.font.color.rgb = BrandColors.FOREST  # Forest color
+            run.font.color.rgb = BrandColors.FOREST  # brand primary heading
+            run.font.color.rgb = BrandColors.FOREST  # brand primary
         # Add space before and after heading
         geo_heading.paragraph_format.space_before = Pt(12)
         geo_heading.paragraph_format.space_after = Pt(6)
@@ -1567,7 +1567,7 @@ and vulnerabilities observed are consistent with those historically used against
         GEO_METRICS_BG = "F8FAFC"  # near white — metrics strip bg
         GEO_BULLET_BG_A = "FFFFFF"  # white — relevance and risk rows bg
         GEO_BULLET_BG_B = "F3F4F6"  # light gray — activity row bg
-        GEO_LABEL_COLOR = BrandColors.FOREST  # Forest text for section labels
+        GEO_LABEL_COLOR = BrandColors.FOREST  # brand primary text for section labels
 
         # Create table with 5 rows (header, metrics, relevance, activity, risk) and N columns (one per country)
         table = self.doc.add_table(rows=5, cols=num_countries)
@@ -1775,7 +1775,7 @@ and vulnerabilities observed are consistent with those historically used against
                 exposure_value_run.font.color.rgb = RGBColor(0x06, 0x5F, 0x46)
 
             # ============================================================
-            # ROW 3 — RELEVANCE TO GENELABS (white background)
+            # ROW 3: RELEVANCE TO THE COMPANY (white background)
             # ============================================================
             relevance_cell = table.rows[2].cells[col_idx]
             relevance_cell.width = col_width
@@ -1816,7 +1816,7 @@ and vulnerabilities observed are consistent with those historically used against
             # Section label paragraph
             label_para = relevance_cell.paragraphs[0]
             label_para.paragraph_format.space_after = Pt(3)
-            label_run = label_para.add_run("RELEVANCE TO GENELABS")
+            label_run = label_para.add_run(f"RELEVANCE TO {customer_profile.name.upper()}")
             label_run.font.name = "Arial"
             label_run.font.size = Pt(7)
             label_run.font.bold = True
@@ -1917,7 +1917,7 @@ and vulnerabilities observed are consistent with those historically used against
                 bullet_run.font.color.rgb = RGBColor(0x1A, 0x20, 0x2C)
 
             # ============================================================
-            # ROW 5 — RISK TO GENELABS (white background)
+            # ROW 5: RISK TO THE COMPANY (white background)
             # ============================================================
             risk_cell = table.rows[4].cells[col_idx]
             risk_cell.width = col_width
@@ -1958,7 +1958,7 @@ and vulnerabilities observed are consistent with those historically used against
             # Section label paragraph
             label_para = risk_cell.paragraphs[0]
             label_para.paragraph_format.space_after = Pt(3)
-            label_run = label_para.add_run("RISK TO GENELABS")
+            label_run = label_para.add_run(f"RISK TO {customer_profile.name.upper()}")
             label_run.font.name = "Arial"
             label_run.font.size = Pt(7)
             label_run.font.bold = True
@@ -2064,7 +2064,7 @@ and vulnerabilities observed are consistent with those historically used against
         for run in looking_ahead_heading.runs:
             run.font.name = "Arial"
             run.font.size = Pt(14)
-            run.font.color.rgb = BrandColors.FOREST  # Forest heading
+            run.font.color.rgb = BrandColors.FOREST  # brand primary heading
             run.font.color.rgb = BrandColors.FOREST
         looking_ahead_heading.paragraph_format.space_before = Pt(12)
         looking_ahead_heading.paragraph_format.space_after = Pt(6)
@@ -2137,7 +2137,7 @@ and vulnerabilities observed are consistent with those historically used against
         for run in rec_heading.runs:
             run.font.name = "Arial"
             run.font.size = Pt(14)
-            run.font.color.rgb = BrandColors.FOREST  # Forest heading
+            run.font.color.rgb = BrandColors.FOREST  # brand primary heading
             run.font.color.rgb = BrandColors.FOREST
         rec_heading.paragraph_format.space_before = Pt(12)
         rec_heading.paragraph_format.space_after = Pt(6)
@@ -2199,7 +2199,7 @@ and vulnerabilities observed are consistent with those historically used against
             cell = table.rows[0].cells[0]
             cell.paragraphs[0].clear()
 
-            # GeneLabs Mist callout background
+            # brand tint callout background
             self._set_cell_shading(cell, BrandColors.MIST_HEX)
 
             # Apply borders via XML
@@ -2209,7 +2209,7 @@ and vulnerabilities observed are consistent with those historically used against
                 tc_borders = OxmlElement("w:tcBorders")
                 tc_pr.append(tc_borders)
 
-            # Left border: style SINGLE, size 18, GeneLabs Emerald accent
+            # Left border: style SINGLE, size 18, brand accent
             left_border = tc_borders.find(qn("w:left"))
             if left_border is None:
                 left_border = OxmlElement("w:left")

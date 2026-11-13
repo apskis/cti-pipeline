@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GeneLabs CTI - Open Exposures briefing, LANDSCAPE one pager.
+"""Company CTI: Open Exposures briefing, LANDSCAPE one pager.
 
 A roll-up across every open exposure advisory, built to be talked through with a
 team rather than read alone. One row per exposure and nothing else - the analysis
@@ -8,7 +8,7 @@ belongs in the conversation, not on the page.
 Not the same artifact as an exposure advisory: that is one asset, for its owner.
 This is all of them, for a briefing. Each row names its advisory for the detail.
 
-    python3 build_exposure_briefing.py out.docx <genelabs-exposure-advisory skill dir>
+    python3 build_exposure_briefing.py out.docx <cti-exposure-advisory skill dir>
 
 NOTE for future edits: build the ROWS table by editing this file directly. Do NOT
 patch it with re.sub - a replacement string interprets backslash escapes, so the
@@ -24,7 +24,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.shared import Inches, Pt
 
 sys.path.insert(0, os.path.join(sys.argv[2], "scripts"))
-from genelabs_style import (BRAND, ORANGE, ORANGE_DEEP, ABBEY, GREY, RULE, LABEL_FILL, LINK_BLUE,
+from house_style import (BRAND, ORANGE, ORANGE_DEEP, ABBEY, GREY, RULE, LABEL_FILL, LINK_BLUE,
                             add_banner, build_footer, para, run, set_base_style,
                             shade_cell, table_borders, border, set_grid)
 
@@ -43,6 +43,8 @@ SP_FOLDER_VIEW = ("https://<your-tenant>.sharepoint.com/teams/SecOps/SOC/Shared%
                   "%2FExposure%20Advisories&sortField=Modified&isAscending=false"
                   "&viewid=83b313e0%2Dc946%2D437e%2D830f%2D6b5a756da8d0")
 
+# Everything from here down (advisory files, rows, provenance, steps) is the GeneLabs
+# worked example: replace it with the company's own open advisories for a real run.
 FILES = {
  "CTI-EXP-GLCN01":                    "2026-08-24-GLCN-PRD-TMSF01-Internet-Exposure-Explainer.docx",
  "CTI-EXP-GLUSVWPT01":                "2026-08-24-GLUS-PRD-VWPT01-VendorTunnel-Explainer.docx",

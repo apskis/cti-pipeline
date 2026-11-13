@@ -1,6 +1,6 @@
 ---
 name: cti-setup
-description: "Set up the GeneLabs CTI workbench on this machine, including the Amazon Bedrock connection. Installs dependencies, finds the real CTI Deliverables and CTI Documentation folders on this computer, writes cti.config.json, runs the preflight, proves the toolchain works on a scratch document, and optionally registers the monthly schedule. Use on a fresh clone, when the preflight reports failures, when the folders have moved, or when the person asks for help setting this up."
+description: "Set up the company CTI workbench on this machine, including the Amazon Bedrock connection. Installs dependencies, finds the real CTI Deliverables and CTI Documentation folders on this computer, writes cti.config.json, runs the preflight, proves the toolchain works on a scratch document, and optionally registers the monthly schedule. Use on a fresh clone, when the preflight reports failures, when the folders have moved, or when the person asks for help setting this up."
 ---
 
 # Set up the CTI workbench
@@ -48,7 +48,7 @@ installed and what to install. Do not try to install Python yourself.
 
 ## Phase 1b: Bedrock
 
-This build sends model calls to Claude models in GeneLabs's AWS account. Only
+This build sends model calls to Claude models in the company's AWS account. Only
 Claude Code carries that configuration into the tool loop; Cursor's agent does
 not, because Cursor limits custom keys to chat models. If she is running you
 from Cursor's agent, say so now and point her at Claude Code in the integrated
@@ -109,7 +109,7 @@ This is the step most likely to need actual searching. The example config holds
 the path as it was on the old machine:
 
 ```
-C:/Users/<user>/GeneLabs LLC/Security Operations Center - CTI/CTI Deliverables
+C:/Users/<user>/<legal name>/Security Operations Center - CTI/CTI Deliverables
 ```
 
 OneDrive tenant folder names vary by machine and by account. Do not assume the
@@ -117,7 +117,7 @@ example is right. Look for the folders:
 
 ```powershell
 # Windows
-Get-ChildItem "$env:USERPROFILE" -Directory | Where-Object Name -like "*GeneLabs*"
+Get-ChildItem "$env:USERPROFILE" -Directory | Where-Object Name -like "*<company name>*"
 Get-ChildItem "$env:USERPROFILE" -Directory -Recurse -Depth 3 -ErrorAction SilentlyContinue |
     Where-Object Name -in "CTI Deliverables","CTI Documentation" |
     Select-Object FullName
@@ -170,15 +170,15 @@ Do not test on her real documents. Build a scratch document, restyle it, render
 it, and look at the result.
 
 ```
-python .cursor/skills/genelabs-cti-documentation/scripts/build_cti_doc.py <spec> /tmp/probe.docx
-python .cursor/skills/genelabs-cti-documentation/scripts/restyle_cti_doc.py /tmp/probe.docx /tmp/probe_styled.docx \
+python .cursor/skills/cti-documentation/scripts/build_cti_doc.py <spec> /tmp/probe.docx
+python .cursor/skills/cti-documentation/scripts/restyle_cti_doc.py /tmp/probe.docx /tmp/probe_styled.docx \
     --doc-id "CTI-TEST-01" --marking "CTI Program Documentation"
 python scripts/render_pdf.py /tmp/probe_styled.docx
 ```
 
-Open the PDF and check four things: the GeneLabs CTI header image
-sits clear of the first body element, headings are GeneLabs Forest, the footer
-carries the GeneLabs logo with DOC # and page fields, and there is **no TLP marking**.
+Open the PDF and check four things: the company banner
+sits clear of the first body element, headings are brand primary (`palette.primary` in the
+company's `company.json`), the footer carries the company logo with DOC # and page fields, and there is **no TLP marking**.
 Internal program documentation carries no TLP. If one appears, the restyler is
 not the patched copy from this repository.
 

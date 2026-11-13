@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Append a branded PROPOSED FOLLOW ON HUNTS table to a completed GeneLabs
+Append a branded PROPOSED FOLLOW ON HUNTS table to a completed company
 Threat Hunt Report (.docx).
 
 Usage:
@@ -19,8 +19,8 @@ The spec JSON must carry a top level "proposed_hunts" array. Each entry:
                  "Detection engineering instead"
 }
 
-Run AFTER build_hunt_report.py. Styling matches the GeneLabs house template
-(orange section heading with rule, grey grid table, Arial). Safe to run on a
+Run AFTER build_hunt_report.py. Styling matches the company house template
+(brand primary section heading with rule, grey grid table, Arial). Safe to run on a
 report that already lacks the section; running twice appends twice, so run once.
 """
 import json
@@ -31,13 +31,19 @@ from docx.shared import Pt, RGBColor, Inches
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-# GeneLabs brand kit v1.0 (legacy names kept)
-ORANGE = "103B32"        # Forest: heading text
-ORANGE_RULE = "167D61"   # Emerald: rules and accents
-ABBEY = "202C29"         # Charcoal: body text
-HDR_FILL = "103B32"      # Forest: table header fill, white header text
-BORDER = "A2BFAE"        # Sage
-STRIPE = "F4F9F6"        # very light green row stripe
+# Colours come from the company's brand file
+# (config/companies/<slug>/company.json), read by cti_brand.py beside this script.
+from cti_brand import load_brand
+
+BRAND = load_brand()
+
+# Legacy names kept, so the styling code below reads the same for every company.
+ORANGE = BRAND.palette.primary       # heading text
+ORANGE_RULE = BRAND.palette.accent   # rules and accents
+ABBEY = BRAND.palette.text           # body text
+HDR_FILL = BRAND.palette.primary     # table header fill, white header text
+BORDER = BRAND.palette.rule          # table borders
+STRIPE = BRAND.palette.zebra         # alternate row stripe
 
 DISPO_COLOR = {
     "executed": "1B7837",   # green - executed as pivot hunt

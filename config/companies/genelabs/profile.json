@@ -1,0 +1,57 @@
+{
+  "_comment": "What the pipeline knows about this company, beside its brand (company.json). The scan, hunt, perimeter and reporting prompts read it through scripts/render_task.py and core/tools/cti_profile.py. Keep it sanitized: no real employer, hostname or address. reference/tech-profile.md and reference/peer-watchlist.md hold the longer notes the scans read.",
+  "analyst": "April, the Cyber Threat Intelligence (CTI) Lead",
+  "industry": "genomics, life sciences, and precision manufacturing",
+  "domains": ["genelabs.com"],
+  "security_contact": "secops@genelabs.example",
+  "osint_source_name": "GeneLabs-OSINT",
+  "products": "GCA and SeqSpace",
+  "flagship_product": "HelixSeq X",
+  "own_products": [
+    "HelixSeq X",
+    "HelixSeq Lite",
+    "HelixSeq Micro",
+    "GeneLabs Connected Analytics (GCA)",
+    "SeqSpace Sequence Hub",
+    "RAPIDCALL"
+  ],
+  "ics_products": ["Universal Copy Service", "Local Run Manager"],
+  "strategic_profile": [
+    "Mid market manufacturer of benchtop DNA sequencing instruments and cloud analysis software; core platforms are HelixSeq X, HelixSeq Lite, and HelixSeq Micro.",
+    "Cloud platforms hold customer genomic and clinical data: GeneLabs Connected Analytics (GCA) and SeqSpace Sequence Hub, with RAPIDCALL secondary analysis pipelines. These are the crown jewel data assets and the primary exfiltration targets.",
+    "Custodian of human genomic data, which makes the company a high value target for intellectual property theft and espionage against biotechnology and precision medicine.",
+    "International manufacturing and distribution footprint, creating export control and geopolitical exposure in several markets.",
+    "Extensive third party and supply chain footprint across instruments, reagents, and laboratory software, creating supply chain compromise exposure.",
+    "Operates in a regulated clinical environment; genomic data privacy and cross border data access legislation directly affects the business."
+  ],
+  "ir_feed_urls": [
+    "https://investor.genelabs.example/rss/news-releases.xml",
+    "https://investor.genelabs.example/rss/pressreleases.xml",
+    "https://investor.genelabs.example/news-releases/rss",
+    "https://investor.genelabs.example/rss/news.xml"
+  ],
+  "product_keywords": [
+    "genelabs",
+    "helixseq",
+    "helixseq-lite",
+    "helixseq-mini",
+    "helixseq-micro",
+    "sequencing platform",
+    "gca",
+    "seqspace",
+    "rapidcall"
+  ],
+  "peer_watch_orgs": [
+    "Okta", "Microsoft", "Amazon Web Services", "AWS", "Google", "Snowflake",
+    "Salesforce", "Workday", "ServiceNow", "CrowdStrike", "Zscaler", "Palo Alto Networks",
+    "NVIDIA", "Pure Storage", "Equinix",
+    "Broad Institute", "SOPHiA Genetics", "Microba", "Benchling",
+    "Bristol Myers Squibb", "Merck", "Myriad Genetics", "Kura Oncology"
+  ],
+  "peer_competitor_orgs": [
+    "Thermo Fisher", "Pacific Biosciences", "PacBio", "Oxford Nanopore", "BGI Genomics",
+    "MGI Tech", "Complete Genomics", "Qiagen", "Agilent", "10x Genomics", "Bio-Rad",
+    "Element Biosciences", "Ultima Genomics", "Singular Genomics", "Twist Bioscience",
+    "Guardant Health", "Natera", "Tempus", "Roche"
+  ]
+}

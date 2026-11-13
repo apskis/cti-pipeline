@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Chain-of-reasoning diagrams for GeneLabs CTI appendices.
+"""Chain-of-reasoning diagrams for company CTI appendices.
 
 April, 2026-08-27: *"We need to know your reasoning but it's a lot of words, maybe a
 flow chart using pictures?"*
@@ -15,8 +15,8 @@ WHAT THESE DIAGRAMS ENCODE THAT PROSE HIDES
 Every node carries its EPISTEMIC STATUS in its colour, so a reader can see at a glance
 which parts of the argument are measured and which are inferred:
 
-    MEASURED   solid emerald fill    a connector or query produced this number
-    INFERRED   white, emerald outline a judgement drawn from measured facts
+    MEASURED   solid accent fill     a connector or query produced this number
+    INFERRED   white, accent outline  a judgement drawn from measured facts
     RULED OUT  grey, struck through   a reading that was tested and DISPROVED
     OPEN       dashed outline         the question that would change the conclusion
 
@@ -35,14 +35,25 @@ Labels use Liberation Sans, metrically compatible with Arial.
 from PIL import Image, ImageDraw, ImageFont
 import glob, os, textwrap
 
-ORANGE      = ( 22, 125,  97)   # Emerald #167D61 (name kept so callers need no change)
-ORANGE_DEEP = ( 16,  59,  50)   # Forest #103B32
-TINT        = (234, 243, 238)   # Mist #EAF3EE
-ABBEY       = ( 32,  44,  41)   # Charcoal #202C29
-GREY        = (103, 103, 101)
+# Colours come from the company's brand file, read by cti_brand.py beside this
+# script. Pillow wants RGB tuples, so the brand's hex is converted once here.
+from cti_brand import load_brand
+
+_PALETTE = load_brand().palette
+
+
+def _rgb(hex6):
+    return tuple(int(hex6[i:i + 2], 16) for i in (0, 2, 4))
+
+
+ORANGE      = _rgb(_PALETTE.accent)    # brand accent (name kept so callers need no change)
+ORANGE_DEEP = _rgb(_PALETTE.primary)   # brand primary
+TINT        = _rgb(_PALETTE.tint)      # brand tint
+ABBEY       = _rgb(_PALETTE.text)      # brand text
+GREY        = _rgb(_PALETTE.muted)     # brand muted
 MUTED       = (150, 150, 148)
-LIGHT       = (244, 249, 246)   # pale Mist #F4F9F6
-RULE        = (162, 191, 174)   # Sage #A2BFAE
+LIGHT       = _rgb(_PALETTE.zebra)     # brand zebra, the palest fill
+RULE        = _rgb(_PALETTE.rule)      # brand rule
 WHITE       = (255, 255, 255)
 
 SS = 3

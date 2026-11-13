@@ -3,7 +3,7 @@
 
 WHY THIS EXISTS
 ---------------
-genelabs_style.bullet() emits exactly two runs: the orange bullet glyph, then the
+house_style.bullet() emits exactly two runs: the orange bullet glyph, then the
 whole bullet text as ONE run. There is no way to bold part of a bullet from the
 spec. Before 2026-08-26 the workaround was to write the lead-in of each Why We
 Care bullet in CAPITALS, which April asked to replace with ordinary sentence case

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GeneLabs CTI Detection Hand-off builder.
+"""Company CTI Detection Hand-off builder.
 
 The document CTI sends to Security Monitoring when a finding yields deployable
 detection logic. Report id `CTI-DET-<AssetSlug>`.
@@ -33,7 +33,7 @@ been executed is a guess, and the SOC will find that out at deployment rather th
 review. Run it, record what it returned, and say plainly where it returned nothing.
 
 Usage:
-  python build_detection_handoff.py spec.json out.docx <genelabs-cti-bulletin skill dir>
+  python build_detection_handoff.py spec.json out.docx <cti-bulletin skill dir>
 """
 import json, os, sys
 
@@ -64,7 +64,7 @@ HEADER_ASPECT = BRAND.banner_aspect   # height / width of the company banner
 
 
 def _header_image(doc, skill_dir):
-    """GeneLabs CTI header image in the page header of every section.
+    """Company CTI header image (brand banner) in the page header of every section.
 
     About 7.0 in wide, or the text width when narrower, aspect kept. The top
     margin grows only when the image would not otherwise fit.

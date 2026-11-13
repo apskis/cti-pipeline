@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stamp a CORRECTION NOTICE into an already-issued GeneLabs CTI document.
+"""Stamp a CORRECTION NOTICE into an already issued company CTI document.
 
 Written 2026-08-27, when re-measuring the Splunk estate retracted GAP-13 and re-scoped
 GAP-14, and three exposure advisories already in circulation turned out to assert things
@@ -33,9 +33,13 @@ from docx.shared import Pt, Inches, RGBColor
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-# GeneLabs brand kit v1.0: Emerald accent, Charcoal text, Mist tint, Sage rules
-ORANGE, ABBEY, GREY, TINT, RED = "167D61", "202C29", "676765", "EAF3EE", "C62828"
-RULE = "A2BFAE"
+# Colours come from the company's brand file, read by cti_brand.py beside this script.
+# RED stays fixed: it marks the correction, not the brand.
+from cti_brand import load_brand
+
+_PALETTE = load_brand().palette
+ORANGE, ABBEY, GREY, TINT, RED = _PALETTE.accent, _PALETTE.text, _PALETTE.muted, _PALETTE.tint, "C62828"
+RULE = _PALETTE.rule
 
 
 def _rgb(h):

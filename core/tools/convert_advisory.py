@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract an issued GeneLabs exposure advisory into a spec for the ONE PAGE format.
+"""Extract an issued company exposure advisory into a spec for the ONE PAGE format.
 
 Written 2026-08-27 to migrate six advisories issued in the two-page format. The originating
 specs were not retained, so the rendered .docx is the only source.

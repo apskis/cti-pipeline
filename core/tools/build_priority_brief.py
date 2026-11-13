@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GeneLabs CVE Priority Brief builder.
+"""Company CVE Priority Brief builder.
 
 Renders a one-page, branded .docx priority matrix for the Vulnerability Management
 team from CVE_Register_2026.xlsx.
@@ -10,10 +10,10 @@ daily scan overwrites every run. The brief is a "what moved and what do I do abo
 it" sheet, not a full backlog; the standing queue lives in the CVE Register tab.
 
 ORDER: exploited in the wild first. Within that, an overdue KEV deadline beats an
-imminent one, which beats an undated one; GeneLabs relevance breaks remaining ties.
+imminent one, which beats an undated one; company relevance breaks remaining ties.
 CVSS never leads - a 9.8 nobody is exploiting does not outrank a 7.5 being used today.
 
-Branding is inherited from the genelabs-cti-bulletin builder: this script imports
+Branding is inherited from the cti-bulletin builder: this script imports
 that module and reuses its styling helpers, so the palette, borders, fonts and
 spacing cannot drift from the bulletin set. It never modifies that skill.
 
@@ -24,6 +24,16 @@ Usage:
 import argparse, datetime, json, os, re, subprocess, sys, tempfile
 
 SENTINEL = "__CVE_MATRIX__"
+
+
+def _relevance_headers():
+    """Register column names for company relevance, newest first. New registers say
+    "Company Relevance"; older ones were named after the company, and the oldest
+    GeneLabs registers say "GeneLabs Relevance", so all three still read."""
+    # Beside this script; imported here because only reading a register needs it.
+    from cti_brand import load_brand
+
+    return ("Company Relevance", f"{load_brand().name} Relevance", "GeneLabs Relevance")
 CLOSED = ("remediated", "risk accepted", "not applicable")
 
 
@@ -37,6 +47,9 @@ def read_run(path):
 
     reg, detail = wb["CVE Register"], {}
     hdr = {str(reg.cell(4, c).value).strip(): c for c in range(1, reg.max_column + 1) if reg.cell(4, c).value}
+    # First relevance column the register actually has, picked once, so an empty cell
+    # in it is not mistaken for a missing column.
+    rel = next((n for n in _relevance_headers() if n in hdr), "")
     r = 5
     while reg.cell(r, 1).value:
         g = lambda n: str(reg.cell(r, hdr[n]).value or "").strip() if n in hdr else ""
@@ -44,7 +57,7 @@ def read_run(path):
             "vendor": g("Vendor"), "product": g("Product"), "cvss": g("CVSS"),
             "kev_added": g("KEV Added"), "kev_due": g("KEV Due"),
             "exploit": g("Exploitation Status"), "fixed": g("Fixed Version"),
-            "relevance": g("GeneLabs Relevance"), "hunt": g("Hunt ID"),
+            "relevance": g(rel), "hunt": g("Hunt ID"),
             "status": g("Remediation Status") or "Open", "owner": g("Owner") or "Unassigned",
             "source": g("Source"),
             # Columns 20-22, appended after the 17 the daily scan mandates and after the
@@ -91,7 +104,7 @@ def _due_date(due):
     26-04)' and '2026-09-02 (two weeks, BOD 26-04)', because the deadline basis is
     worth recording next to the date. datetime.date.fromisoformat() rejects both,
     which silently dropped every annotated row into the catch-all bucket and let
-    GeneLabs relevance decide the order instead of the deadline. On 2026-08-21 that
+    company relevance decide the order instead of the deadline. On 2026-08-21 that
     put an MLflow item due 2 Sep above a TrueConf item due 23 Aug. Match the leading
     date and parse that.
     """

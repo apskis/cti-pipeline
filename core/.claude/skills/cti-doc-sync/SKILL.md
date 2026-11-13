@@ -1,11 +1,11 @@
 ---
 name: cti-doc-sync
-description: "Run the monthly GeneLabs CTI documentation sync. Reconciles CTI_Plan.docx, Threat Hunting Plan.docx and CTI_AI_Strategy_Evolving.pptx against the CTI Deliverables folder, which is the source of truth for the portfolio, then updates the state record and writes a run report. Use for the monthly doc sync, the CTI documentation reconciliation, or when asked to bring the plans and the AI strategy deck back in line with what the portfolio actually contains."
+description: "Run the monthly CTI documentation sync. Reconciles CTI_Plan.docx, Threat Hunting Plan.docx and CTI_AI_Strategy_Evolving.pptx against the CTI Deliverables folder, which is the source of truth for the portfolio, then updates the state record and writes a run report. Use for the monthly doc sync, the CTI documentation reconciliation, or when asked to bring the plans and the AI strategy deck back in line with what the portfolio actually contains."
 ---
 
 # CTI Documentation Sync
 
-You maintain April Parker's CTI documentation at GeneLabs. The CTI Deliverables
+You maintain April Parker's CTI documentation at the company. The CTI Deliverables
 folder is the evolving source of truth for the CTI portfolio; the plan documents
 and the strategy deck are maintained representations of that source. Your job is
 to keep those representations accurate, internally consistent, traceable,
@@ -122,26 +122,28 @@ paragraph created from the style name picks up a stray automatic number.
 
 ## Step 3b: apply the house branding
 
-Every document you edit must leave in the GeneLabs CTI house style, which is
-shared with the bulletin and hunt skills: the GeneLabs CTI header image
-sitting clear of the first body element, GeneLabs Forest `103B32` headings and
-Emerald `167D61` rules, Charcoal `202C29` body, corporate grey `676765` meta text,
-Arial throughout, and a footer carrying the GeneLabs logo, the marking text, the copyright line, DOC #
-and live page fields.
+Every document you edit must leave in the company's CTI house style, which is
+shared with the bulletin and hunt skills: the company banner (company.json `assets.banner`,
+resolved by `core/tools/cti_brand.py`) sitting clear of the first body element, brand primary
+(`palette.primary`, `103B32` for GeneLabs) headings and brand accent (`palette.accent`, `167D61`)
+rules, brand text (`palette.text`, `202C29`) body, brand muted (`palette.muted`, `676765`) meta text,
+Arial throughout, and a footer carrying the company logo (company.json `assets.logo`), the marking text, the copyright line, DOC #
+and live page fields. The colours come from the company's `company.json` palette; the example hex
+values are GeneLabs'.
 
 Internal program documentation carries NO TLP marking. TLP is a sharing
 designation, not a classification, so it belongs on bulletins and anything
-leaving GeneLabs, not on the plans. The restyler defaults to no TLP; do not pass
+leaving the company, not on the plans. The restyler defaults to no TLP; do not pass
 `--tlp` on these documents.
 
-Use the `genelabs-cti-documentation` skill. Run the restyle AFTER the content
+Use the `cti-documentation` skill. Run the restyle AFTER the content
 edits, never before.
 
 ```
-python .cursor/skills/genelabs-cti-documentation/scripts/restyle_cti_doc.py in.docx out.docx \
+python .cursor/skills/cti-documentation/scripts/restyle_cti_doc.py in.docx out.docx \
   --doc-id "CTI-PLAN-10" \
   --marking "CTI Program Documentation" \
-  --copyright "© 2026 GeneLabs LLC  |  Proprietary and Confidential — For Internal Use Only"
+  --copyright "© <year> <legal name>  |  Proprietary and Confidential — For Internal Use Only"
 
 python scripts/render_pdf.py out.docx        # then open the PDF and look at it
 ```
@@ -171,7 +173,7 @@ workflows, data and intelligence requirements, integration opportunities,
 governance, security and risk, near, medium and long term priorities, and the
 strategic roadmap and recommendations.
 
-The deck must evolve strategically, not simply accumulate text. Keep the GeneLabs
+The deck must evolve strategically, not simply accumulate text. Keep the company's
 layouts, master, palette and slide design intact; reuse existing slide layouts
 rather than inventing new visual treatments.
 

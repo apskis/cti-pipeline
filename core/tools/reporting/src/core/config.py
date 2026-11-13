@@ -8,36 +8,26 @@ Application settings (limits, timeouts, feature flags) are defined here.
 """
 
 import os
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
 
-# Default supply-chain / tech-stack watchlist for the Peer Incidents section. A breach of any
-# of these orgs is treated as a peer incident regardless of the victim's sector (see
-# CollectorConfig.peer_watch_orgs). Grouped by lens; override wholesale with PEER_WATCH_ORGS.
-_DEFAULT_PEER_WATCH_ORGS = [
-    # Tech stack — identity, cloud, data, SaaS, security (enterprise IT in use)
-    "Okta", "Microsoft", "Amazon Web Services", "AWS", "Google", "Snowflake",
-    "Salesforce", "Workday", "ServiceNow", "CrowdStrike", "Zscaler", "Palo Alto Networks",
-    # Cloud / compute / infrastructure partners (publicly reported)
-    "NVIDIA", "Pure Storage", "Equinix",
-    # Genomics informatics / research partners & lab software
-    "Broad Institute", "SOPHiA Genetics", "Microba", "Benchling",
-    # Diagnostics / pharma partners
-    "Bristol Myers Squibb", "Merck", "Myriad Genetics", "Kura Oncology",
-]
+# The company this run reports for (CTI_COMPANY / CTI_COMPANY_DIR) lives in core/tools.
+_TOOLS = Path(__file__).resolve().parents[3]
+if str(_TOOLS) not in sys.path:
+    sys.path.insert(0, str(_TOOLS))
+import cti_profile  # noqa: E402
 
-# Default competitor watchlist for the Peer Incidents section. A breach of a direct
-# genomics/sequencing/diagnostics competitor is worth knowing even though the competitor is
-# not a supplier or a shared-tech vendor, so competitor hits are kept regardless of confidence
-# (see CollectorConfig.peer_competitor_orgs). Override wholesale with PEER_COMPETITOR_ORGS.
-_DEFAULT_PEER_COMPETITOR_ORGS = [
-    "Thermo Fisher", "Pacific Biosciences", "PacBio", "Oxford Nanopore", "BGI Genomics",
-    "MGI Tech", "Complete Genomics", "Qiagen", "Agilent", "10x Genomics", "Bio-Rad",
-    "Element Biosciences", "Ultima Genomics", "Singular Genomics", "Twist Bioscience",
-    "Guardant Health", "Natera", "Tempus", "Roche",
-]
+# The supply chain, tech stack and competitor watchlists for the Peer Incidents section
+# come from the company's profile.json (peer_watch_orgs, peer_competitor_orgs), so each
+# company watches its own. PEER_WATCH_ORGS / PEER_COMPETITOR_ORGS override them wholesale.
+def _env_or_profile(env: str, attr: str) -> list[str]:
+    if os.environ.get(env):
+        return [o.strip() for o in os.environ[env].split(",") if o.strip()]
+    return list(getattr(cti_profile.load_company().profile, attr))
+
 
 # US + Europe victim countries used to geo-filter sector-peer breach alerts down to the regions
 # that matter (the global breach-alert feed is dominated by small international ransomware
@@ -104,26 +94,17 @@ class CollectorConfig:
     # surfaces even though the victim isn't a healthcare company. Matching is whole-word and
     # case-insensitive, so use the distinctive part of the name ("Okta", not "Okta, Inc.").
     # Override the whole list with the PEER_WATCH_ORGS env var (comma-separated); otherwise the
-    # curated default below is used. Curated from known IT/tech-stack vendors and publicly
-    # reported GeneLabs partners/suppliers — trim or extend to match reality.
+    # company's profile.json list is used.
     peer_watch_orgs: list[str] = field(
-        default_factory=lambda: (
-            [o.strip() for o in os.environ["PEER_WATCH_ORGS"].split(",") if o.strip()]
-            if os.environ.get("PEER_WATCH_ORGS")
-            else list(_DEFAULT_PEER_WATCH_ORGS)
-        )
+        default_factory=lambda: _env_or_profile("PEER_WATCH_ORGS", "peer_watch_orgs")
     )
     # Competitor watchlist — a fourth relevance lens. A breach of a direct competitor is kept
     # regardless of sector or confidence, so a competitor compromise surfaces in Peer Incidents.
     # Whole-word, case-insensitive matching (same as peer_watch_orgs). Override the whole list
-    # with the PEER_COMPETITOR_ORGS env var (comma-separated); otherwise the curated default is
-    # used. Seeded from known genomics/sequencing/diagnostics competitors — trim or extend.
+    # with the PEER_COMPETITOR_ORGS env var (comma-separated); otherwise the company's
+    # profile.json list is used.
     peer_competitor_orgs: list[str] = field(
-        default_factory=lambda: (
-            [o.strip() for o in os.environ["PEER_COMPETITOR_ORGS"].split(",") if o.strip()]
-            if os.environ.get("PEER_COMPETITOR_ORGS")
-            else list(_DEFAULT_PEER_COMPETITOR_ORGS)
-        )
+        default_factory=lambda: _env_or_profile("PEER_COMPETITOR_ORGS", "peer_competitor_orgs")
     )
     # Geo-filter sector-peer breach alerts to US + Europe victims (see _US_EUROPE_COUNTRIES).
     # The global breach-alert feed is dominated by small non-US/EU ransomware victims; this cuts
@@ -503,63 +484,31 @@ class AzureConfig:
 class CustomerProfile:
     """Organization-specific identity used across reports and analysis.
 
-    Loaded from config/customer_profile.yaml (or the path in CUSTOMER_PROFILE_PATH).
-    The defaults below preserve the original single-tenant behavior when no
-    profile file is present, so nothing changes for existing deployments.
+    Built from the run's company folder: the name and colour from company.json, the rest
+    from profile.json (see core/tools/cti_profile.py). CUSTOMER_PROFILE_PATH still points
+    at a YAML file of these fields, for a run outside the company folders.
     """
 
-    name: str = "GeneLabs"
-    brand_color_hex: str = "103B32"  # hex without leading '#' (GeneLabs Forest)
-    security_contact: str = "secops@genelabs.example"
-    osint_source_name: str = "GeneLabs-OSINT"
+    name: str
+    brand_color_hex: str  # hex without leading '#'
+    security_contact: str = ""
+    osint_source_name: str = ""
     # Short industry/sector descriptor used to ground strategic analysis prompts.
-    industry: str = "genomics, life sciences, and precision manufacturing"
+    industry: str = ""
     # Short phrase naming the org's key products/platforms, used in strategic
     # prompt examples and fallback analysis (e.g. "GCA and SeqSpace").
-    products: str = "GCA and SeqSpace"
+    products: str = ""
     # A single flagship product example used in prompt guidance.
-    flagship_product: str = "HelixSeq X"
-    # Durable, threat-relevant attributes of the organization. This is the strategic
-    # "hook sheet" the geopolitical/breach analysis must connect intelligence to, so
-    # relevance stays grounded even when live scraping is thin or fails. Kept in config
-    # (not buried in the prompt) so it is maintainable and single-sourced.
-    strategic_profile: str = (
-        "- Mid market manufacturer of benchtop DNA sequencing instruments and cloud analysis "
-        "software; core platforms are HelixSeq X, HelixSeq Lite, and HelixSeq Micro.\n"
-        "- Cloud platforms hold customer genomic and clinical data: GeneLabs Connected "
-        "Analytics (GCA) and SeqSpace Sequence Hub, with RAPIDCALL secondary analysis "
-        "pipelines. These are the crown jewel data assets and the primary exfiltration targets.\n"
-        "- Custodian of human genomic data, which makes the company a high value target for "
-        "intellectual property theft and espionage against biotechnology and precision medicine.\n"
-        "- International manufacturing and distribution footprint, creating export control and "
-        "geopolitical exposure in several markets.\n"
-        "- Extensive third party and supply chain footprint across instruments, reagents, and "
-        "laboratory software, creating supply chain compromise exposure.\n"
-        "- Operates in a regulated clinical environment; genomic data privacy and cross border "
-        "data access legislation directly affects the business."
-    )
+    flagship_product: str = ""
+    # Durable, threat-relevant attributes of the organization: the strategic "hook sheet"
+    # the geopolitical/breach analysis must connect intelligence to, one "- " line each.
+    strategic_profile: str = ""
     # Candidate investor-relations press-release RSS/Atom (or JSON) feed URLs, tried in
     # order. A feed is far more stable than scraping the JS-rendered news-center HTML.
-    # Pin the one that works for your org (it is logged when it succeeds).
-    ir_feed_urls: tuple[str, ...] = (
-        "https://investor.genelabs.example/rss/news-releases.xml",
-        "https://investor.genelabs.example/rss/pressreleases.xml",
-        "https://investor.genelabs.example/news-releases/rss",
-        "https://investor.genelabs.example/rss/news.xml",
-    )
+    ir_feed_urls: tuple[str, ...] = ()
     # Lowercase keywords (company name + product/platform names) used to detect
     # company-specific grounding in geopolitical relevance bullets.
-    product_keywords: tuple[str, ...] = (
-        "genelabs",
-        "helixseq",
-        "helixseq-lite",
-        "helixseq-mini",
-        "helixseq-micro",
-        "sequencing platform",
-        "gca",
-        "seqspace",
-        "rapidcall",
-    )
+    product_keywords: tuple[str, ...] = ()
 
 
 # Global configuration instances
@@ -648,34 +597,51 @@ def get_feature_config() -> FeatureConfig:
     return config
 
 
-_CUSTOMER_PROFILE_YAML = Path(__file__).resolve().parent.parent.parent / "config" / "customer_profile.yaml"
+
+
+def _profile_from_company() -> CustomerProfile:
+    company = cti_profile.load_company()
+    p = company.profile
+    return CustomerProfile(
+        name=company.brand.name,
+        brand_color_hex=company.brand.palette.primary,
+        security_contact=p.security_contact,
+        osint_source_name=p.osint_source_name,
+        industry=p.industry,
+        products=p.products,
+        flagship_product=p.flagship_product,
+        strategic_profile="\n".join(f"- {line}" for line in p.strategic_profile),
+        ir_feed_urls=p.ir_feed_urls,
+        product_keywords=tuple(k.lower() for k in p.product_keywords),
+    )
 
 
 def _load_customer_profile() -> CustomerProfile:
-    """Load the customer profile from YAML, falling back to defaults if absent."""
-    path = Path(os.environ.get("CUSTOMER_PROFILE_PATH", _CUSTOMER_PROFILE_YAML))
-    defaults = CustomerProfile()
-    if not path.exists():
-        return defaults
-    with open(path, encoding="utf-8") as f:
+    """The run's company, or the YAML file CUSTOMER_PROFILE_PATH names over it."""
+    company = _profile_from_company()
+    override = os.environ.get("CUSTOMER_PROFILE_PATH")
+    if not override:
+        return company
+    with open(override, encoding="utf-8") as f:
         cfg = yaml.safe_load(f) or {}
     keywords = cfg.get("product_keywords")
+    feeds = cfg.get("ir_feed_urls")
     return CustomerProfile(
-        name=cfg.get("name", defaults.name),
-        brand_color_hex=str(cfg.get("brand_color_hex", defaults.brand_color_hex)),
-        security_contact=cfg.get("security_contact", defaults.security_contact),
-        osint_source_name=cfg.get("osint_source_name", defaults.osint_source_name),
-        industry=cfg.get("industry", defaults.industry),
-        products=cfg.get("products", defaults.products),
-        flagship_product=cfg.get("flagship_product", defaults.flagship_product),
-        strategic_profile=cfg.get("strategic_profile", defaults.strategic_profile),
-        ir_feed_urls=tuple(cfg["ir_feed_urls"]) if cfg.get("ir_feed_urls") else defaults.ir_feed_urls,
-        product_keywords=tuple(k.lower() for k in keywords) if keywords else defaults.product_keywords,
+        name=cfg.get("name", company.name),
+        brand_color_hex=str(cfg.get("brand_color_hex", company.brand_color_hex)),
+        security_contact=cfg.get("security_contact", company.security_contact),
+        osint_source_name=cfg.get("osint_source_name", company.osint_source_name),
+        industry=cfg.get("industry", company.industry),
+        products=cfg.get("products", company.products),
+        flagship_product=cfg.get("flagship_product", company.flagship_product),
+        strategic_profile=cfg.get("strategic_profile", company.strategic_profile),
+        ir_feed_urls=tuple(feeds) if feeds else company.ir_feed_urls,
+        product_keywords=tuple(k.lower() for k in keywords) if keywords else company.product_keywords,
     )
 
 
 def get_customer_profile() -> CustomerProfile:
-    """Return the active customer profile (config/customer_profile.yaml or defaults)."""
+    """Return the run's company profile (or the CUSTOMER_PROFILE_PATH override)."""
     return _load_customer_profile()
 
 

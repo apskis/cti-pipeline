@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""GeneLabs Employee Awareness post builder.
+"""Company Employee Awareness post builder.
 
-Wraps the plugin-managed `genelabs-cti-bulletin` builder rather than
+Wraps the plugin-managed `cti-bulletin` builder rather than
 reimplementing it, so the branding cannot drift. NEVER edit that skill — it is
 plugin-managed. This file imports from it and post-processes the result.
 
@@ -13,11 +13,14 @@ Two house deviations for the employee series, both deliberate:
      Bulletin", because this is a different document class with a different reader.
 
 Usage:
-  python build_awareness.py spec.json out.docx <genelabs-cti-bulletin skill dir>
+  python build_awareness.py spec.json out.docx <cti-bulletin skill dir>
 """
 import sys, os, importlib.util
 
-ABBEY = "202C29"   # GeneLabs Charcoal: the house black used for body text
+# The house black is the brand's body text colour, read by cti_brand.py beside this script.
+from cti_brand import load_brand
+
+ABBEY = load_brand().palette.text
 
 
 def _load_bulletin_builder(skill_dir):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Flat illustrations for the GeneLabs employee awareness BLOG format.
+"""Flat illustrations for the company employee awareness BLOG format.
 
 Drawn with Pillow rather than imported, for three reasons that matter here:
 
@@ -8,8 +8,8 @@ Drawn with Pillow rather than imported, for three reasons that matter here:
      single most tired image in security communication and teaches the reader
      nothing.
   2. Licensing. A post that goes to every employee and gets screenshotted needs art
-     GeneLabs owns outright.
-  3. The palette has to be the house palette. Drawing it guarantees that; sourcing it
+     the company owns outright.
+  3. The palette has to be the company's brand palette. Drawing it guarantees that; sourcing it
      guarantees an argument with brand.
 
 There is no SVG converter in this environment (no cairosvg, no rsvg-convert), so
@@ -26,13 +26,24 @@ from PIL import Image, ImageDraw, ImageFont
 import glob, os
 
 # ---------------------------------------------------------------- house palette
-ORANGE      = ( 22, 125,  97)   # Emerald #167D61 (name kept so callers need no change)
-ORANGE_DEEP = ( 16,  59,  50)   # Forest #103B32
-TINT        = (234, 243, 238)   # Mist #EAF3EE
-ABBEY       = ( 32,  44,  41)   # Charcoal #202C29
-GREY        = (103, 103, 101)
-LIGHT       = (244, 249, 246)   # pale Mist #F4F9F6
-RULE        = (162, 191, 174)   # Sage #A2BFAE
+# Colours come from the company's brand file, read by cti_brand.py beside this
+# script. Pillow wants RGB tuples, so the brand's hex is converted once here.
+from cti_brand import load_brand
+
+_PALETTE = load_brand().palette
+
+
+def _rgb(hex6):
+    return tuple(int(hex6[i:i + 2], 16) for i in (0, 2, 4))
+
+
+ORANGE      = _rgb(_PALETTE.accent)    # brand accent (name kept so callers need no change)
+ORANGE_DEEP = _rgb(_PALETTE.primary)   # brand primary
+TINT        = _rgb(_PALETTE.tint)      # brand tint
+ABBEY       = _rgb(_PALETTE.text)      # brand text
+GREY        = _rgb(_PALETTE.muted)     # brand muted
+LIGHT       = _rgb(_PALETTE.zebra)     # brand zebra, the palest fill
+RULE        = _rgb(_PALETTE.rule)      # brand rule
 WHITE       = (255, 255, 255)
 RED         = (198,  40,  40)
 
@@ -393,7 +404,7 @@ def hero_one_key(w=760, h=250):
     _centre(dr, "one password", f, mx, y + 46 * SS, ORANGE_DEEP)
     _centre(dr, "reused", fs, mx, y + 64 * SS, GREY)
 
-    # right - three locks, and only the third one is GeneLabs's
+    # right: three locks, and only the third one is the company's
     rx = int(W * 0.76)
     labels = [("a shop", GREY, WHITE), ("a forum", GREY, WHITE), ("work", ORANGE, TINT)]
     for i, (lab, col, fill) in enumerate(labels):
