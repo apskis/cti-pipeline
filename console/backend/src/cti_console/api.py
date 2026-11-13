@@ -8,6 +8,10 @@ another company cannot save into this one, and they must be allowed to change it
 Writes are guarded three ways: the browser must send a custom header (which forces a
 CORS preflight that only GETs pass, so other sites cannot send it), any Origin must be
 the console's own, and the Host must be the console's (no DNS rebinding).
+
+With sign in off the console is for this machine only, so anything that arrived through a
+proxy or tunnel is refused outright: tunnels rewrite Host to localhost, so the Host check
+alone would let them through.
 """
 
 from __future__ import annotations
@@ -69,6 +73,29 @@ DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.docu
 API_CSP = "default-src 'none'; frame-ancestors 'none'"
 # The one exception: the branded PDF is shown inside the console's own page.
 PDF_CSP = "default-src 'none'; frame-ancestors 'self'"
+# The built page may load nothing from anywhere but itself, the same policy Vite's preview
+# server sends (see console/frontend/vite.config.ts).
+PAGE_CSP = "; ".join(
+    [
+        "default-src 'self'",
+        "script-src 'self'",
+        "style-src 'self'",
+        "connect-src 'self'",
+        "img-src 'self' data:",
+        "font-src 'self'",
+        "frame-src 'self'",
+        "object-src 'none'",
+        "base-uri 'none'",
+        "form-action 'none'",
+        "frame-ancestors 'none'",
+    ]
+)
+# Set by proxies and tunnels (Dev Tunnels, Cloudflare, nginx); never by a browser.
+FORWARDED_HEADERS = ("forwarded", "x-forwarded-for", "x-forwarded-host", "x-forwarded-proto")
+LOCAL_ONLY = (
+    "This console is for the machine it runs on. To share it, turn on sign in "
+    "(CTI_AUTH=oidc); see docs/console-share.md."
+)
 # A signed in person whose groups name no company yet.
 NO_COMPANY = "Your account has no company yet. Ask a platform admin to add you to one."
 # Under CTI_AUTH=off there is one person and these routes do not exist.
@@ -247,6 +274,14 @@ def create_app(
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=hosts)
     writes = [Depends(require_console)]
     company_writes = [Depends(require_console), Depends(require_company)]
+
+    @app.middleware("http")
+    async def local_only(request: Request, call_next):  # type: ignore[no-untyped-def]
+        # Registered before no_sniff, so it runs inside it and its answer gets the same
+        # headers as any other.
+        if not auth.enabled and any(h in request.headers for h in FORWARDED_HEADERS):
+            return PlainTextResponse(LOCAL_ONLY, 403)
+        return await call_next(request)
 
     @app.middleware("http")
     async def no_sniff(request: Request, call_next):  # type: ignore[no-untyped-def]
@@ -537,5 +572,20 @@ def create_app(
     def audience(ctx: CompanyContext = Depends(shown)) -> dict[str, object]:
         """Teams each report names, the stakeholders who match, and teams nobody covers."""
         return audience_view(ctx.settings.out_dir, store_call(ctx.store.load))
+
+    # ---------------------------------------------------------------- the page
+    if settings.static_dir is not None:
+        page_root = settings.static_dir.resolve()
+        page_headers = {"Content-Security-Policy": PAGE_CSP, "Referrer-Policy": "no-referrer"}
+
+        @app.get("/{path:path}", include_in_schema=False)
+        def page(path: str) -> FileResponse:
+            """The built page's files; any other path is the page itself (hash routes)."""
+            if path == "api" or path.startswith("api/"):
+                raise HTTPException(404, "Not Found")
+            target = (page_root / path).resolve()
+            if not path or not target.is_relative_to(page_root) or not target.is_file():
+                target = page_root / "index.html"
+            return FileResponse(target, headers=page_headers)
 
     return app

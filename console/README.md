@@ -141,6 +141,11 @@ Each person keeps their own shown company, the header names them and their role 
 **Sign out** button, and the page leaves out what their role cannot do. The backend
 refuses it anyway. Setup for both providers is in `docs/console-sign-in.md`.
 
+To let others reach the console from this PC, `scripts/console-share.ps1` serves it through
+a Microsoft dev tunnel with sign in on; see `docs/console-share.md`. With sign in off the
+console refuses anything that arrives through a proxy or tunnel. `CTI_CONSOLE_STATIC`
+points the backend at the built page so it serves page and API from one port.
+
 - **Light, dark or system.** The switch in the header is remembered in this browser.
   System follows Windows. `public/theme-init.js` applies a saved choice before the page
   draws, so it never flashes the other theme.
