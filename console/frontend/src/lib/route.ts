@@ -11,8 +11,8 @@ export type Route =
   | { page: "stakeholders"; id: string | null }
   | { page: "settings"; section: SettingsSection };
 
-/** The tabs inside Settings. Branding is the first; more join it as they are built. */
-export const SETTINGS_SECTIONS = ["branding"] as const;
+/** The tabs inside Settings, in the order they show. */
+export const SETTINGS_SECTIONS = ["branding", "companies"] as const;
 export type SettingsSection = (typeof SETTINGS_SECTIONS)[number];
 
 export function parseRoute(hash: string): Route {

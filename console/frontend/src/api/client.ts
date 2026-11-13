@@ -6,6 +6,8 @@ import type {
   BrandImage,
   BrandInput,
   BrandPreview,
+  CompanyInput,
+  CompanyList,
   CveRegister,
   Deliverable,
   DeliverableDocument,
@@ -38,11 +40,57 @@ export async function getJson<T>(path: string): Promise<T> {
 // keeps the page from rereading every document on each focus.
 const STALE_MS = 60_000;
 
+/**
+ * The company this page shows. Every write names it, and the backend refuses one for a
+ * company that is no longer active, so a tab left open on one company cannot save into
+ * another after a switch elsewhere.
+ */
+let shownCompany: string | null = null;
+
+const COMPANIES_KEY = ["companies"];
+
+export function useCompanies() {
+  return useQuery({
+    queryKey: COMPANIES_KEY,
+    queryFn: async () => {
+      const list = await getJson<CompanyList>("/api/companies");
+      shownCompany = list.active;
+      return list;
+    },
+    staleTime: Infinity,
+  });
+}
+
+/** Switch company, or add one; a switch reloads everything the page shows. */
+export function useCompanyWrites() {
+  const client = useQueryClient();
+  return {
+    pick: useMutation({
+      mutationFn: (slug: string) => send<CompanyList>("PUT", "/api/companies/active", { slug }),
+      onSuccess: async (list) => {
+        shownCompany = list.active;
+        client.setQueryData(COMPANIES_KEY, list);
+        // Drop every other answer: each belonged to the company shown before. The brand
+        // is only refetched, so the header keeps the old one until the new one arrives
+        // instead of going blank.
+        await Promise.all([
+          client.resetQueries({ predicate: (query) => !["companies", "brand"].includes(String(query.queryKey[0])) }),
+          client.invalidateQueries({ queryKey: ["brand"], exact: true }),
+        ]);
+      },
+    }),
+    create: useMutation({
+      mutationFn: (input: CompanyInput) => send<CompanyList>("POST", "/api/companies", input),
+      onSuccess: (list) => client.setQueryData(COMPANIES_KEY, list),
+    }),
+  };
+}
+
 export function useBrand() {
   return useQuery({
     queryKey: ["brand"],
     queryFn: () => getJson<Brand>("/api/brand"),
-    // The brand changes only when someone edits company.json; a reload picks that up.
+    // The brand changes when it is saved or the company switches; both refresh it.
     staleTime: Infinity,
   });
 }
@@ -136,13 +184,22 @@ export function useAudience() {
   });
 }
 
-/** The backend refuses a write without this header, so other sites cannot send one. */
-const WRITE_HEADERS = { "Content-Type": "application/json", "X-CTI-Console": "1" };
+/**
+ * The backend refuses a write without X-CTI-Console, so other sites cannot send one, and
+ * one naming a company other than the active one.
+ */
+function writeHeaders(contentType = "application/json"): Record<string, string> {
+  return {
+    "Content-Type": contentType,
+    "X-CTI-Console": "1",
+    ...(shownCompany ? { "X-CTI-Company": shownCompany } : {}),
+  };
+}
 
 async function send<T>(method: "POST" | "PUT" | "DELETE", path: string, body?: unknown): Promise<T> {
   const response = await fetch(path, {
     method,
-    headers: WRITE_HEADERS,
+    headers: writeHeaders(),
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!response.ok) {
@@ -223,7 +280,7 @@ export function useBrandWrites() {
       mutationFn: async ({ kind, file }: { kind: BrandImage; file: Blob }) => {
         const response = await fetch(`/api/brand/assets/${kind}`, {
           method: "PUT",
-          headers: { "Content-Type": "image/png", "X-CTI-Console": "1" },
+          headers: writeHeaders("image/png"),
           body: file,
         });
         if (!response.ok) {

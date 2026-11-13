@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../App";
 import type { Brand, BrandPreview } from "../api/types";
-import { BRAND, BRAND_PREVIEW, DELIVERABLES, RUNS, SUMMARY } from "../test/fixtures";
+import { BRAND, BRAND_PREVIEW, COMPANIES, DELIVERABLES, RUNS, SUMMARY } from "../test/fixtures";
 
 vi.mock("react-chartjs-2", () => ({ Bar: () => <div data-testid="chart" /> }));
 
@@ -29,6 +29,7 @@ function mockApi(options: { preview?: BrandPreview; saveStatus?: number; uploadS
       headers: (init?.headers ?? {}) as Record<string, string>,
       body: typeof init?.body === "string" ? JSON.parse(init.body) : init?.body,
     });
+    if (url === "/api/companies") return answer(COMPANIES);
     if (url === "/api/brand/preview") return answer(options.preview ?? BRAND_PREVIEW);
     if (url === "/api/brand" && method === "PUT") {
       if (options.saveStatus) return answer({ detail: "Not saved: Accent on white is 2.1:1" }, options.saveStatus);

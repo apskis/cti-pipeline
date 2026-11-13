@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { useState } from "react";
 
 import { BrandLockup, ThemeSwitch } from "./components/Brand";
+import { CompanyPicker, NoPipelineNote } from "./components/CompanyPicker";
 import { type Route, useRoute } from "./lib/route";
 import { ThemeProvider } from "./lib/theme";
 import BuiltPage from "./pages/BuiltPage";
@@ -55,9 +56,12 @@ const App = () => {
           <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b-[3px] border-accent pb-4">
             <BrandLockup />
             <div className="flex flex-col items-start gap-2 sm:items-end">
-              <ThemeSwitch />
+              <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+                <CompanyPicker />
+                <ThemeSwitch />
+              </div>
               <p className="text-xs text-muted">
-                Local only. Nothing here changes the pipeline; only the stakeholder list and the branding are saved.
+                Local only. Nothing here changes the pipeline; only companies, their branding and stakeholders are saved.
               </p>
             </div>
           </header>
@@ -79,6 +83,7 @@ const App = () => {
             ))}
           </nav>
           <main>
+            <NoPipelineNote />
             <Page route={route} />
           </main>
         </div>

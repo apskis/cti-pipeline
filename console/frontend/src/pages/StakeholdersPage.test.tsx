@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import App from "../App";
 import {
   AUDIENCE,
+  COMPANIES,
   DELIVERABLES,
   DOCUMENT,
   NO_STAKEHOLDERS,
@@ -22,6 +23,7 @@ function mockApi(list = STAKEHOLDERS) {
   vi.spyOn(globalThis, "fetch").mockImplementation((input, init) => {
     const url = String(input);
     calls.push({ url, init });
+    if (url === "/api/companies") return answer(COMPANIES);
     if (init?.method === "DELETE") return Promise.resolve(new Response(null, { status: 204 }));
     if (init?.method === "POST" && url.endsWith("/start-from-example")) return answer(STAKEHOLDERS, 201);
     if (init?.method === "POST") {
@@ -91,7 +93,9 @@ describe("Stakeholders", () => {
     vi.spyOn(globalThis, "fetch").mockImplementation((input, init) =>
       init?.method === "POST"
         ? answer({ detail: [{ loc: ["body", "email"], msg: "does not look like an email address" }] }, 422)
-        : answer(String(input).startsWith("/api/stakeholders") ? STAKEHOLDERS : DELIVERABLES),
+        : String(input) === "/api/companies"
+          ? answer(COMPANIES)
+          : answer(String(input).startsWith("/api/stakeholders") ? STAKEHOLDERS : DELIVERABLES),
     );
     render(<App />);
     await userEvent.type(await screen.findByLabelText("Name (required)"), "X");
