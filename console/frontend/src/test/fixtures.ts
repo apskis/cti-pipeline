@@ -242,6 +242,7 @@ export const ME: Me = {
   platform_admin: true,
   can_manage: true,
   roles: {},
+  view_as: { role: "platform", company: null },
 };
 
 export const COMPANIES: CompanyList = {

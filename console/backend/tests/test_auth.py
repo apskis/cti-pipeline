@@ -182,6 +182,7 @@ def test_sign_in_runs_the_code_flow_with_pkce(settings: Settings, provider: Fake
         "platform_admin": True,
         "can_manage": True,
         "roles": {},
+        "view_as": None,  # signed in, a role comes from the account alone
     }
     # Only groups that mean something here are kept in the cookie.
     session = unsign(client.cookies.get(SESSION_COOKIE), SECRET)

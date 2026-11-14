@@ -40,6 +40,7 @@ from .auth import (
     AuthSettings,
     OidcClient,
     Principal,
+    ViewAs,
     principal_from,
     sign,
     unsign,
@@ -118,6 +119,9 @@ def create_app(
     checks_file = settings.cache_dir / "checks.json"
     companies = Companies(settings)
     contexts: dict[str, CompanyContext] = {}
+    # Sign in off only: the role the local user is acting as. Held in memory, so a
+    # restart is always back to platform admin.
+    viewing = [ViewAs()]
     contexts_lock = threading.Lock()
 
     console = urlsplit(auth.console_url)
@@ -179,7 +183,7 @@ def create_app(
     def who(request: Request) -> Principal:
         """The person this request is for. Signed out, under sign in, is a 401."""
         if not auth.enabled:
-            return LOCAL_USER
+            return viewing[0].principal()
         session = unsign(request.cookies.get(SESSION_COOKIE), auth.session_secret)
         person = principal_from(session, auth)
         if person is None:
@@ -289,8 +293,7 @@ def create_app(
             raise HTTPException(404, SIGN_IN_OFF)
         return provider
 
-    @app.get("/api/me")
-    def me(person: Principal = Depends(who)) -> dict[str, object]:
+    def describe(person: Principal) -> dict[str, object]:
         return {
             "auth": auth.mode,
             "name": person.name,
@@ -298,7 +301,23 @@ def create_app(
             "platform_admin": person.platform_admin,
             "can_manage": person.can_manage,
             "roles": person.roles,
+            # Only the local console can act as another role.
+            "view_as": None if auth.enabled else viewing[0].model_dump(),
         }
+
+    @app.get("/api/me")
+    def me(person: Principal = Depends(who)) -> dict[str, object]:
+        return describe(person)
+
+    @app.put("/api/view-as", dependencies=writes)
+    def view_as(item: ViewAs) -> dict[str, object]:
+        """Act as another role, to show it in a demo. Not there with sign in on."""
+        if auth.enabled:
+            raise HTTPException(404, "With sign in on, a role comes from each person's account")
+        if item.company is not None:
+            company_call(lambda: companies.workspace(item.company or ""))
+        viewing[0] = item
+        return describe(item.principal())
 
     @app.get("/api/auth/login")
     def login() -> RedirectResponse:

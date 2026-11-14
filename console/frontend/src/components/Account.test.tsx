@@ -26,6 +26,7 @@ const person = (roles: Me["roles"], platform_admin = false): Me => ({
   platform_admin,
   can_manage: platform_admin,
   roles,
+  view_as: null,
 });
 
 interface Call {
@@ -153,5 +154,76 @@ describe("Roles", () => {
     window.location.hash = "#/stakeholders/new";
     expect(await screen.findByText(/You can view this company's stakeholders but not change it/)).toBeInTheDocument();
     expect(screen.queryByLabelText("Name (required)")).not.toBeInTheDocument();
+  });
+});
+
+describe("View as", () => {
+  const local = (view: Me["view_as"]): Me => {
+    const role = view?.role;
+    return {
+      auth: "off",
+      name: "Local user",
+      email: "",
+      platform_admin: role === "platform",
+      can_manage: role === "platform",
+      roles: view && view.role !== "platform" ? { [view.company]: view.role } : {},
+      view_as: view,
+    };
+  };
+
+  /** The local backend, which switches role on PUT /api/view-as as the real one does. */
+  function mockLocal() {
+    let me = local({ role: "platform", company: null });
+    const calls: Call[] = [];
+    vi.spyOn(globalThis, "fetch").mockImplementation((input, init) => {
+      const url = String(input);
+      const method = init?.method ?? "GET";
+      calls.push({ url, method, headers: (init?.headers ?? {}) as Record<string, string> });
+      if (url === "/api/view-as") {
+        me = local(JSON.parse(String(init?.body)) as Me["view_as"]);
+        return answer(me);
+      }
+      if (url === "/api/me") return answer(me);
+      if (url === "/api/companies") return answer(COMPANIES);
+      if (url === "/api/brand/preview") return answer(BRAND_PREVIEW);
+      if (url.startsWith("/api/brand")) return answer(BRAND);
+      if (url.startsWith("/api/summary")) return answer(SUMMARY);
+      if (url.startsWith("/api/deliverables")) return answer(DELIVERABLES);
+      if (url.startsWith("/api/stakeholders")) return answer(STAKEHOLDERS);
+      if (url.startsWith("/api/audience")) return answer(AUDIENCE);
+      return answer(RUNS);
+    });
+    return calls;
+  }
+
+  it("acts as a viewer, says so, and goes back to platform admin", async () => {
+    window.location.hash = "#/settings/branding";
+    const calls = mockLocal();
+    render(<App />);
+    const menu = await screen.findByRole("combobox", { name: "View as" });
+    expect(await screen.findByLabelText(/Company name/)).toBeEnabled();
+    expect(screen.queryByText(/Viewing as/)).not.toBeInTheDocument();
+
+    await userEvent.selectOptions(menu, "Viewer of GeneLabs");
+    expect((await screen.findByText(/Viewing as/)).closest("[role=status]")).toHaveTextContent(
+      "Viewing as Viewer of GeneLabs.",
+    );
+    expect(await screen.findByLabelText(/Company name/)).toBeDisabled();
+    expect(screen.queryByRole("link", { name: "Add or copy" })).not.toBeInTheDocument();
+    const put = calls.find((c) => c.url === "/api/view-as");
+    expect(put?.method).toBe("PUT");
+    expect(put?.headers["X-CTI-Console"]).toBe("1");
+
+    await userEvent.click(screen.getByRole("button", { name: "Back to platform admin" }));
+    await waitFor(() => expect(screen.queryByText(/Viewing as/)).not.toBeInTheDocument());
+    expect(await screen.findByLabelText(/Company name/)).toBeEnabled();
+    expect(screen.getByRole("link", { name: "Add or copy" })).toBeInTheDocument();
+  });
+
+  it("is not there under sign in", async () => {
+    mockApi(person({}, true));
+    render(<App />);
+    expect(await screen.findByRole("combobox", { name: "Company" })).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "View as" })).not.toBeInTheDocument();
   });
 });

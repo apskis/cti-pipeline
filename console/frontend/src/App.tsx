@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { useState } from "react";
 
 import { ApiError, useCompanies, useMe } from "./api/client";
-import { Account, NoCompany, SignIn } from "./components/Account";
+import { Account, NoCompany, SignIn, ViewAsBanner, ViewAsSwitch } from "./components/Account";
 import { BrandLockup, ThemeSwitch } from "./components/Brand";
 import { CompanyPicker, NoRunsNote } from "./components/CompanyPicker";
 import { type Route, useRoute } from "./lib/route";
@@ -62,6 +62,7 @@ const Console = () => {
             <div className="flex flex-col items-start gap-2 sm:items-end">
               <div className="flex flex-wrap items-center gap-3 sm:justify-end">
                 <CompanyPicker />
+                <ViewAsSwitch />
                 <ThemeSwitch />
                 <Account />
               </div>
@@ -89,6 +90,7 @@ const Console = () => {
             ))}
           </nav>
           <main>
+            <ViewAsBanner />
             <NoRunsNote />
             <Page route={route} />
           </main>

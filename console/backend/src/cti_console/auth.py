@@ -18,6 +18,10 @@ Roles come from the groups (or Entra app roles) in the ID token, named with a pr
 
 The groups are kept in the session and turned into roles on every request, so a rule
 change here applies at once; a group change at the provider applies at the next sign in.
+
+With sign in off, the local user may "view as" a company admin or viewer, so a demo shows
+each role without accounts. The backend then really acts as that role. It never exists
+with sign in on, where a role comes only from a person's groups.
 """
 
 from __future__ import annotations
@@ -29,12 +33,13 @@ import json
 import os
 import secrets
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Literal
 from urllib.parse import urlencode, urlsplit
 
 import httpx
 import jwt
+from pydantic import BaseModel, ConfigDict, model_validator
 
 from .config import COMPANY_SLUG
 
@@ -81,6 +86,28 @@ class Principal:
 
 
 LOCAL_USER = Principal(subject=None, name="Local user", email="", platform_admin=True)
+
+
+class ViewAs(BaseModel):
+    """The role the local user is acting as. "platform" is themselves: every company."""
+
+    model_config = ConfigDict(extra="forbid")
+    role: Literal["platform", "admin", "viewer"] = "platform"
+    company: str | None = None
+
+    @model_validator(mode="after")
+    def _company_fits_role(self) -> ViewAs:
+        if self.role == "platform":
+            if self.company is not None:
+                raise ValueError("A platform admin is not tied to one company")
+        elif self.company is None or not COMPANY_SLUG.match(self.company):
+            raise ValueError("Name the company this role is for")
+        return self
+
+    def principal(self) -> Principal:
+        if self.role == "platform" or self.company is None:
+            return LOCAL_USER
+        return replace(LOCAL_USER, platform_admin=False, roles={self.company: self.role})
 
 
 def roles_from_groups(groups: list[str], prefix: str) -> tuple[bool, dict[str, Role]]:
