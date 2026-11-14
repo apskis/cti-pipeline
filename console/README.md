@@ -145,6 +145,12 @@ With sign in off the console is for this machine only: it refuses any request th
 arrives through a proxy or tunnel (one carrying `Forwarded` or `X-Forwarded-*` headers),
 because a tunnel rewrites `Host` to localhost and would otherwise get past the host check.
 
+To show the roles in a demo without accounts, use **View as** in the header (sign in off
+only). It acts as a company admin or a viewer of any company, and the backend really holds
+the console to that role, so a viewer's save is refused just as it would be when signed in.
+A banner says which role is in use, with a way back to platform admin. The choice is held
+in memory, so a restart is back to platform admin. With sign in on there is no View as.
+
 - **Light, dark or system.** The switch in the header is remembered in this browser.
   System follows Windows. `public/theme-init.js` applies a saved choice before the page
   draws, so it never flashes the other theme.

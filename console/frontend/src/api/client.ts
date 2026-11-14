@@ -18,6 +18,7 @@ import type {
   StakeholderInput,
   StakeholderList,
   Summary,
+  ViewAs,
 } from "./types";
 
 export class ApiError extends Error {
@@ -66,6 +67,21 @@ export function useSignOut() {
   return useMutation({
     mutationFn: () => send<{ redirect: string }>("POST", "/api/auth/logout"),
     onSuccess: ({ redirect }) => window.location.assign(redirect),
+  });
+}
+
+/**
+ * Act as another role (sign in off only). The backend then answers as that role would,
+ * so everything the page shows is fetched again.
+ */
+export function useViewAs() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (view: ViewAs) => send<Me>("PUT", "/api/view-as", view),
+    onSuccess: async (me) => {
+      client.setQueryData(["me"], me);
+      await client.resetQueries({ predicate: (query) => query.queryKey[0] !== "me" });
+    },
   });
 }
 

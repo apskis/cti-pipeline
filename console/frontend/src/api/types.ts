@@ -221,7 +221,12 @@ export interface Me {
   can_manage: boolean;
   /** Companies this person has a role in, beyond what a platform admin has everywhere. */
   roles: Record<string, "admin" | "viewer">;
+  /** Sign in off only: the role the local user is acting as, for a demo. Null under sign in. */
+  view_as: ViewAs | null;
 }
+
+/** A role the local console can act as. "platform" is the local user themself. */
+export type ViewAs = { role: "platform"; company: null } | { role: "admin" | "viewer"; company: string };
 
 /** One company the console can show. */
 export interface Company {
