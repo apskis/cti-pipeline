@@ -1,7 +1,7 @@
 # CTI Pipeline POC — overview
 
 Sanitized **GeneLabs** build of the CTI automation, reproduced on April's own **AWS and
-Azure** with free/open sources. One container image, seven components, switchable cloud and
+Azure** with free/open sources. One container image, six components (plus a local console), switchable cloud and
 model backend. This file is the context and plan; the **executable source of truth** is the
 two deploy runbooks:
 

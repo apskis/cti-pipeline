@@ -3,8 +3,8 @@
 Guidance Claude Code should read on every session in this repo.
 
 ## What this is
-Sanitized GeneLabs build of April's CTI automation. One container image, seven
-components (`components/<name>/`), switchable cloud (`CLOUD=aws|azure`) and model backend
+Sanitized GeneLabs build of April's CTI automation. One container image, six
+components (`components/<name>/`) plus a local console (`console/`), switchable cloud (`CLOUD=aws|azure`) and model backend
 (`MODEL_BACKEND=bedrock|subscription`). Shared core under `core/` (skills, threatpipe MCP
 servers, tools). Deploy via `deploy/aws|azure/deploy-with-claude-code.md`. See
 `docs/POC-overview.md`.

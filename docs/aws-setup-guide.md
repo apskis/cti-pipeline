@@ -61,7 +61,7 @@ Model choice and run frequency decide the cost; the hosting is noise. Each run p
 
 | Decision | POC value | For a real job |
 |---|---|---|
-| AWS account | Personal account `574625227402` | A dedicated account in the organisation's AWS Organization |
+| AWS account | A personal account | A dedicated account in the organisation's AWS Organization |
 | Region | `us-east-1` | Where Bedrock offers the models you need, close to your data |
 | Scan model | Sonnet 4.5 (`us.anthropic.claude-sonnet-4-5-20250929-v1:0`) | Same, or newer if your account has it |
 | Builder model | Haiku 4.5 (`us.anthropic.claude-haiku-4-5-20251001-v1:0`) | Same |
