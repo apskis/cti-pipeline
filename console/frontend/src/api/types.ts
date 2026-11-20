@@ -41,6 +41,8 @@ export interface Summary {
   run_days: number;
   last_scan: Run | null;
   stages: Stage[];
+  /** How many documents ended in each self check state. */
+  guardrails: GuardrailCounts;
 }
 
 export type DeliverableStatus = "ok" | "broken" | "unchecked";
@@ -61,6 +63,23 @@ export interface Review {
   stale: boolean;
 }
 
+export type GuardrailStatus = "verified" | "self-corrected" | "fixing" | "needs-human";
+export type GateResult = "pass" | "flag" | "unchecked";
+export type GuardrailCounts = Record<GuardrailStatus, number>;
+
+/** The self check loop's outcome on one document. Issues are model text: render as text only. */
+export interface Guardrail {
+  status: GuardrailStatus;
+  gates: Record<string, GateResult>;
+  rounds: number;
+  /** Rounds that failed before the last one: how many times the AI caught itself. */
+  corrections: number;
+  open_issues: string[];
+  lint_warnings: number;
+  updated_at: string;
+  stale: boolean;
+}
+
 export interface Deliverable {
   id: string;
   kind: string;
@@ -71,6 +90,7 @@ export interface Deliverable {
   status: DeliverableStatus;
   problem: string | null;
   review: Review | null;
+  guardrail: Guardrail | null;
 }
 
 /** A deliverable with its body as HTML. Untrusted: sanitize before rendering. */

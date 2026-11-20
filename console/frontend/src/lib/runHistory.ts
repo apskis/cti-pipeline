@@ -5,7 +5,7 @@ export type Series = "scan" | "build" | "review" | "report" | "other";
 export const SERIES_LABELS: Record<Series, string> = {
   scan: "Analyst (scan)",
   build: "Writer (documents)",
-  review: "Reviewer (checks)",
+  review: "Self check (Reviewer and Fixer)",
   report: "Reporter (weekly report)",
   other: "Other agents",
 };
@@ -19,7 +19,7 @@ function seriesOf(run: Run, session: Session): Series {
   if (run.component === "reporting") return "report";
   if (run.component !== "bulletin-scan") return "other";
   if (session.label.startsWith("build")) return "build";
-  return session.label === "review" ? "review" : "scan";
+  return /^(review|fix)(-\d+)?$/.test(session.label) ? "review" : "scan";
 }
 
 /** Model cost per day, split by what the money was spent on. Oldest day first. */

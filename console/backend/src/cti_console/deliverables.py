@@ -16,6 +16,8 @@ from dataclasses import asdict, dataclass, replace
 from datetime import date, datetime
 from pathlib import Path
 
+from .guardrails import Guardrail
+from .guardrails import load as load_guardrails
 from .pipeline import PipelineRules
 from .reviews import Review
 from .reviews import load as load_reviews
@@ -42,6 +44,8 @@ class Deliverable:
     problem: str | None
     # The Reviewer's verdict, or None when no review exists for this document.
     review: Review | None = None
+    # The self check loop's outcome, or None when the loop never judged this document.
+    guardrail: Guardrail | None = None
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -177,9 +181,17 @@ def scan(out_dir: Path, rules: PipelineRules) -> list[Deliverable]:
         found = _identify(path, rules)
         if found and found.ident not in chosen:
             chosen[found.ident] = found
-    reviews = load_reviews(out_dir)
-    items = [_build(found, out_dir, first_seen, rules, reviews) for found in chosen.values()]
+    checks = _Checks(reviews=load_reviews(out_dir), guardrails=load_guardrails(out_dir))
+    items = [_build(found, out_dir, first_seen, rules, checks) for found in chosen.values()]
     return sorted(items, key=lambda d: (d.first_seen, d.id), reverse=True)
+
+
+@dataclass(frozen=True)
+class _Checks:
+    """What the Reviewer and the self check loop said, by document ID, with file times."""
+
+    reviews: dict[str, tuple[Review, float]]
+    guardrails: dict[str, tuple[Guardrail, float]]
 
 
 def _review(found: _Found, reviews: dict[str, tuple[Review, float]]) -> Review | None:
@@ -189,12 +201,19 @@ def _review(found: _Found, reviews: dict[str, tuple[Review, float]]) -> Review |
     return replace(review, stale=found.path.stat().st_mtime > reviewed)
 
 
+def _guardrail(found: _Found, records: dict[str, tuple[Guardrail, float]]) -> Guardrail | None:
+    if found.ident not in records:
+        return None
+    record, written = records[found.ident]
+    return replace(record, stale=found.path.stat().st_mtime > written)
+
+
 def _build(
     found: _Found,
     out_dir: Path,
     first_seen: dict[str, str],
     rules: PipelineRules,
-    reviews: dict[str, tuple[Review, float]],
+    checks: _Checks,
 ) -> Deliverable:
     modified = datetime.fromtimestamp(found.path.stat().st_mtime)
     status, problem = _status(found, rules)
@@ -207,7 +226,8 @@ def _build(
         modified=modified.isoformat(timespec="seconds"),
         status=status,
         problem=problem,
-        review=_review(found, reviews),
+        review=_review(found, checks.reviews),
+        guardrail=_guardrail(found, checks.guardrails),
     )
 
 

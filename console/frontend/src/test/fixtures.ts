@@ -71,6 +71,7 @@ export const RUNS: Run[] = [
 export const SUMMARY: Summary = {
   generated_at: "2026-11-10T22:00:00+00:00",
   counts: { bulletin: 151, hunt: 54, awareness: 19 },
+  guardrails: { verified: 0, "self-corrected": 0, fixing: 0, "needs-human": 0 },
   cves_tracked: 67,
   total_cost_usd: 49.07,
   run_days: 4,
@@ -95,6 +96,7 @@ const deliverable = (id: string, kind: string, title: string, status: Deliverabl
   status,
   problem: status === "broken" ? "8 one letter paragraphs" : null,
   review: null,
+  guardrail: null,
 });
 
 export const DELIVERABLES: Deliverable[] = [

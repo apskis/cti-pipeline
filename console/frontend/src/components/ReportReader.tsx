@@ -2,11 +2,12 @@ import { Download, FileText, LoaderCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { fileUrl, pdfUrl, useDeliverableDocument, usePdfReady } from "../api/client";
-import { kindAgents } from "../lib/agents";
+import { REVIEWER, kindAgents } from "../lib/agents";
 import { formatDay } from "../lib/format";
 import { kindLabel } from "../lib/kinds";
 import { sanitizeReport } from "../lib/sanitize";
 import DocStatus from "./DocStatus";
+import GuardrailPanel from "./Guardrail";
 import IntendedFor from "./IntendedFor";
 import ReviewNote from "./ReviewNote";
 
@@ -110,7 +111,19 @@ const ReportReader = ({ id }: { id: string | null }) => {
           )}
         </div>
       </header>
-      <ReviewNote kind={d.kind} review={d.review} />
+      <GuardrailPanel kind={d.kind} guardrail={d.guardrail} />
+      {/* The self check panel already gives the decision; the Reviewer's own notes stay
+          one click away instead of repeating the same findings underneath it. */}
+      {d.guardrail && d.review ? (
+        <details className="mb-4 text-sm">
+          <summary className="cursor-pointer text-muted">The {REVIEWER}'s full notes</summary>
+          <div className="mt-2">
+            <ReviewNote kind={d.kind} review={d.review} />
+          </div>
+        </details>
+      ) : (
+        <ReviewNote kind={d.kind} review={d.review} />
+      )}
       <IntendedFor reportId={d.id} kind={d.kind} />
       {d.pdf && (
         <div role="group" aria-label="How to show the report" className="mb-4 inline-flex rounded-md border border-line p-0.5 text-sm">

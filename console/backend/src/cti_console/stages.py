@@ -134,26 +134,41 @@ def build_stage(runs: list[Run], day: date) -> Stage:
 
 
 def review_stage(runs: list[Run], items: list[Deliverable], day: date) -> Stage:
-    """The Reviewer's pass on this day: how many documents it checked and flagged."""
+    """The self check loop on this day: what the AI cleared itself and what it could not.
+
+    Reviewer and fixer sessions run in rounds (review-1, fix-1, review-2, ...). The stage
+    is about the outcome, so a reader sees at once whether anything is waiting for them.
+    """
     sessions = [
         s
         for r in runs
         if r.component == "bulletin-scan"
         for s in r.sessions
-        if s.label == "review" and s.started.date() == day
+        if s.is_self_check and s.started.date() == day
     ]
     if not sessions:
-        return Stage("review", "Review", "not run", "unknown", "No reviewer pass on this day")
+        return Stage("review", "Self check", "not run", "unknown", "No self check on this day")
     if any(not s.ok for s in sessions):
-        return Stage("review", "Review", "failed", "fail", "The reviewer pass failed")
+        return Stage("review", "Self check", "failed", "fail", "A reviewer or fixer session failed")
     reviewed = [d for d in items if d.review and d.review.checked_at.startswith(day.isoformat())]
-    flagged = [d for d in reviewed if d.review and d.review.verdict == "flag"]
-    note = f"Flagged: {', '.join(d.id for d in flagged[:5])}" if flagged else "No document flagged"
+    # A flag from before the loop existed has no guardrail record; it still waits for a human.
+    waiting = [
+        d
+        for d in reviewed
+        if (d.guardrail.status == "needs-human" if d.guardrail else d.review.verdict == "flag")
+    ]
+    fixed = [d for d in reviewed if d.guardrail and d.guardrail.status == "self-corrected"]
+    if waiting:
+        note = f"Needs you: {', '.join(d.id for d in waiting[:5])}"
+    elif fixed:
+        note = f"The AI fixed {len(fixed)} itself; nothing needs you"
+    else:
+        note = "Nothing needs you"
     return Stage(
         "review",
-        "Review",
-        f"{len(reviewed)} docs, {len(flagged)} flagged",
-        "warn" if flagged else "ok",
+        "Self check",
+        f"{len(reviewed)} docs, {len(waiting)} need you",
+        "warn" if waiting else "ok",
         note,
     )
 

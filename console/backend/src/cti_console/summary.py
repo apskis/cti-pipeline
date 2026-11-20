@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 
 from .config import Settings
 from .deliverables import counts_by_kind, scan
+from .guardrails import counts_by_status
 from .pipeline import load_rules
 from .register import count_cves, latest_register
 from .runs import Run, group_runs, load_sessions
@@ -30,6 +31,7 @@ def build_summary(settings: Settings) -> dict[str, object]:
     return {
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "counts": counts_by_kind(items),
+        "guardrails": counts_by_status([d.guardrail for d in items]),
         "cves_tracked": count_cves(register) if register else None,
         "total_cost_usd": round(sum(s.cost_usd for r in runs for s in r.sessions), 2),
         "run_days": len({r.started.date() for r in runs}),

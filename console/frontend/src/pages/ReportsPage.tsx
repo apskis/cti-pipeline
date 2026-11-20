@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { useDeliverables } from "../api/client";
 import type { DeliverableStatus } from "../api/types";
 import DocStatus from "../components/DocStatus";
+import { GuardrailBadge } from "../components/Guardrail";
 import LoadState from "../components/LoadState";
 import StatusPill from "../components/StatusPill";
 import ReportReader from "../components/ReportReader";
@@ -15,6 +16,7 @@ import { reportHref } from "../lib/route";
 
 const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "Any status" },
+  { value: "needs-human", label: "Needs you (AI could not clear it)" },
   { value: "ok", label: "OK" },
   { value: "broken", label: "Broken" },
   { value: "unchecked", label: "Not checked" },
@@ -116,7 +118,11 @@ const ReportsPage = ({ selected }: { selected: string | null }) => {
                     {d.id} · {formatDay(d.first_seen)}
                   </span>
                   <span className="flex gap-1">
-                    {d.review?.verdict === "flag" && <StatusPill status="warn" label="Flagged" />}
+                    {d.guardrail ? (
+                      <GuardrailBadge guardrail={d.guardrail} />
+                    ) : (
+                      d.review?.verdict === "flag" && <StatusPill status="warn" label="Flagged" />
+                    )}
                     {showStatus(d.status) && <DocStatus status={d.status} />}
                   </span>
                 </span>

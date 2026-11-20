@@ -99,7 +99,8 @@ def test_review_stage_counts_flags_from_that_day(settings: Settings) -> None:
     _write(settings, "CTI26-01", {**FLAG, "checked_at": f"{DAY}T20:12:00Z"})
     _write(settings, "TH26-01", {"verdict": "pass", "checked_at": f"{DAY}T20:12:00Z"})
     stages = {st["key"]: st for st in build_summary(settings)["stages"]}  # type: ignore[union-attr]
-    assert stages["review"]["value"] == "2 docs, 1 flagged"
+    # No guardrail record yet (a flag from before the loop), so the flag still waits for April.
+    assert stages["review"]["value"] == "2 docs, 1 need you"
     assert stages["review"]["status"] == "warn"
 
 

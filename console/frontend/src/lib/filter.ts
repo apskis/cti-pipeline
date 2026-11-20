@@ -1,10 +1,19 @@
 import type { Deliverable, DeliverableStatus } from "../api/types";
 
-export type StatusFilter = "all" | DeliverableStatus | "flagged";
+export type StatusFilter = "all" | DeliverableStatus | "flagged" | "needs-human";
 
-const matchesStatus = (d: Deliverable, status: StatusFilter): boolean =>
-  status === "all" ||
-  (status === "flagged" ? d.review?.verdict === "flag" : d.status === status);
+function matchesStatus(d: Deliverable, status: StatusFilter): boolean {
+  switch (status) {
+    case "all":
+      return true;
+    case "flagged":
+      return d.review?.verdict === "flag";
+    case "needs-human":
+      return d.guardrail?.status === "needs-human";
+    default:
+      return d.status === status;
+  }
+}
 
 /** The Reports list after the kind, status and search filters. Search matches ID and title. */
 export function filterDeliverables(

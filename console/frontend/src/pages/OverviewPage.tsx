@@ -1,9 +1,10 @@
 import { useDeliverables, useRuns, useSummary } from "../api/client";
-import type { Summary } from "../api/types";
+import type { GuardrailCounts, Summary } from "../api/types";
 import LoadState from "../components/LoadState";
 import PipelineFlow from "../components/PipelineFlow";
 import RunHistoryChart from "../components/RunHistoryChart";
 import StatTile from "../components/StatTile";
+import { clearedLine, needsHuman } from "../lib/guardrails";
 import { pickFeatured } from "../lib/featured";
 import { formatCount, formatDay, formatMoney } from "../lib/format";
 import { reportHref } from "../lib/route";
@@ -46,6 +47,57 @@ const StartHere = () => {
         </li>
       ))}
     </ul>
+  );
+};
+
+/**
+ * The AI self check at a glance: how much it cleared on its own, and the short list of
+ * documents it could not, each one click from its reasons. A human reads this in seconds.
+ */
+const SelfCheck = ({ counts }: { counts: GuardrailCounts }) => {
+  const deliverables = useDeliverables();
+  const waiting = needsHuman(deliverables.data ?? []);
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  if (total === 0) {
+    return (
+      <p className="text-sm text-muted">
+        No document has been through the AI self check yet. The next scan runs it.
+      </p>
+    );
+  }
+  return (
+    <div className="rounded-xl border border-line bg-surface p-4">
+      <p className="font-medium">{clearedLine(counts)}</p>
+      <p className="mt-1 text-sm text-muted">
+        Every document is checked against its sources, NVD, the house rules and the bias
+        guardrails, then fixed and checked again by the AI until it passes.
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+        <StatTile label="Verified first time" value={formatCount(counts.verified)} />
+        <StatTile label="Fixed itself" value={formatCount(counts["self-corrected"])} />
+        <StatTile label="Still checking" value={formatCount(counts.fixing)} />
+        <StatTile label="Needs you" value={formatCount(counts["needs-human"])} />
+      </div>
+      {waiting.length > 0 ? (
+        <ul aria-label="Needs you" className="mt-3 space-y-1 text-sm">
+          {waiting.map((d) => (
+            <li key={d.id}>
+              <a href={reportHref(d.id)} className="underline">
+                {d.id} {d.title}
+              </a>
+              {/* One line here, the full reasons in the reader: this list is for deciding fast. */}
+              {d.guardrail?.open_issues[0] && (
+                <p className="line-clamp-1 text-muted" title={d.guardrail.open_issues[0]}>
+                  {d.guardrail.open_issues[0]}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-3 text-sm text-ok-ink">Nothing needs you.</p>
+      )}
+    </div>
   );
 };
 
@@ -97,6 +149,10 @@ const OverviewPage = () => {
           detail={`${s.run_days} run days, at API prices, covered by the plan`}
         />
       </div>
+
+      <Section title="AI self check">
+        <SelfCheck counts={s.guardrails} />
+      </Section>
 
       <Section title="Start here">
         <StartHere />
