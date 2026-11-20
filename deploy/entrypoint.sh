@@ -123,6 +123,30 @@ run_claude() {
   return "$rc"
 }
 
+# Network preflight: on 2026-11-18 a scheduled run started with no network, every feed
+# failed, and the scan session spent four and a half minutes failing to reach the model.
+# Check the model endpoint first, retrying briefly (a laptop waking from sleep needs a
+# moment), and stop with one clear line if it stays unreachable. NET_PREFLIGHT=0 skips it.
+net_preflight() {
+  [ "${NET_PREFLIGHT:-1}" = "1" ] || return 0
+  local host attempt
+  if [ "$MODEL_BACKEND" = "bedrock" ]; then
+    host="bedrock-runtime.${AWS_REGION}.amazonaws.com"
+  else
+    host="api.anthropic.com"
+  fi
+  for attempt in 1 2 3; do
+    if python3 -c 'import socket, sys; socket.create_connection((sys.argv[1], 443), timeout=10).close()' "$host" 2>/dev/null; then
+      return 0
+    fi
+    echo "[entrypoint] cannot reach $host (attempt $attempt of 3)"
+    [ "$attempt" -lt 3 ] && sleep 30
+  done
+  echo "[entrypoint] no network to the model API; stopping before any session runs"
+  exit 3
+}
+net_preflight
+
 echo "[entrypoint] company=$COMPANY component=$COMPONENT mode=$MODE cloud=${CLOUD:-aws}"
 # The reviewer checks only documents saved from here on, so a run reviews what it built.
 RUN_STARTED="$(date +%s)"

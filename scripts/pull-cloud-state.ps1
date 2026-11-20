@@ -15,7 +15,7 @@ Set-Location (Join-Path $PSScriptRoot "..")
 if (-not $Bucket) {
   Write-Host "usage: .\scripts\pull-cloud-state.ps1 -Bucket <bucket>"
   Write-Host ""
-  Write-Host "No default bucket: the cti-pipeline-out-574625227402 deployment was deleted."
+  Write-Host "No default bucket: the cti-pipeline-out-<account> POC deployment was deleted."
   Write-Host "To seed from a zip export instead, see docs/local-setup.md step 4."
   exit 2
 }

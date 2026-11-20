@@ -23,7 +23,7 @@ at every **STOP**. This is a POC: prefer simple, least privilege, and idempotent
 - Adapt shell syntax to the OS you are on (PowerShell or bash). AWS CLI commands are the same.
 
 ## Fixed facts (confirm, do not assume)
-- Account: `574625227402`  •  Region: `us-east-1`
+- Account: yours (`aws sts get-caller-identity`)  •  Region: `us-east-1`
 - Model backend: **bedrock**, model = `us.anthropic.claude-sonnet-4-5-20250929-v1:0`
   (Opus is not available on this account; Sonnet 4.5 is confirmed invokable.)
 - Builder passes and documentation-sync run on **Haiku 4.5** (`us.anthropic.claude-haiku-4-5-20251001-v1:0`),
@@ -39,7 +39,7 @@ at every **STOP**. This is a POC: prefer simple, least privilege, and idempotent
 ## Step 0 — Preflight
 Run and show results; STOP if any fails.
 ```
-aws sts get-caller-identity                 # expect account 574625227402
+aws sts get-caller-identity                 # note the Account; it is used in Step 1
 aws configure get region || echo us-east-1  # target us-east-1
 ```
 Confirm Sonnet 4.5 invokes:
@@ -56,7 +56,7 @@ If model access for Haiku is not enabled, enable it in the Bedrock console first
 ## Step 1 — Variables
 Set these in your shell (adapt to PowerShell if needed):
 ```
-ACCOUNT=574625227402
+ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 REGION=us-east-1
 MODEL=us.anthropic.claude-sonnet-4-5-20250929-v1:0
 BUILD_MODEL=us.anthropic.claude-haiku-4-5-20251001-v1:0

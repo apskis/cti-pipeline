@@ -18,7 +18,7 @@ if [ "$COMPANY" = "genelabs" ]; then SRC=""; DEST="out"; else SRC="companies/$CO
 [ -n "$BUCKET" ] || {
   echo "usage: scripts/pull-cloud-state.sh <bucket>"
   echo
-  echo "No default bucket: the cti-pipeline-out-574625227402 deployment was deleted."
+  echo "No default bucket: the cti-pipeline-out-<account> POC deployment was deleted."
   echo "To seed from a zip export instead, see docs/local-setup.md step 4."
   exit 2
 }
