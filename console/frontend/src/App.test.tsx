@@ -39,9 +39,12 @@ describe("App", () => {
     expect(await screen.findByText("151")).toBeInTheDocument();
     expect(screen.getByText("54")).toBeInTheDocument();
     expect(screen.getByText("67")).toBeInTheDocument();
-    expect(screen.getByText("$49.07")).toBeInTheDocument();
+    // The Model cost tile and the chart card show the same total.
+    expect(await screen.findAllByText("$49.07")).toHaveLength(2);
     expect(screen.getByText(/How the last scan ran, 10 Nov 2026/)).toBeInTheDocument();
     expect(await screen.findByTestId("chart")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: "Overview" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Overview" })).toHaveAttribute("aria-current", "page");
   });
 
   it("asks for the summary, runs and reports together, not one after another", () => {

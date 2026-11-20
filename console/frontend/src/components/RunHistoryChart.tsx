@@ -42,7 +42,7 @@ const RunHistoryChart = ({ runs }: { runs: Run[] }) => {
     })),
   };
   return (
-    <div className="relative h-56" role="img" aria-label="Model cost per run day, split by stage">
+    <div className="relative h-64" role="img" aria-label="Model cost per run day, split by stage">
       <Bar
         key={`${theme}-${painting}`}
         data={data}
@@ -50,11 +50,11 @@ const RunHistoryChart = ({ runs }: { runs: Run[] }) => {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { labels: { color: ink, boxWidth: 10 } },
+            legend: { position: "bottom", labels: { color: ink, boxWidth: 10, padding: 14 } },
             tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${formatMoney(c.parsed.y)}` } },
           },
           scales: {
-            x: { stacked: true, ticks: { color: ink }, grid: { display: false } },
+            x: { stacked: true, ticks: { color: ink, maxRotation: 0, autoSkipPadding: 8 }, grid: { display: false } },
             y: {
               stacked: true,
               ticks: { color: ink, callback: (v) => `$${v}` },
