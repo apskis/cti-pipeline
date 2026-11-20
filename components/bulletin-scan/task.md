@@ -6,6 +6,16 @@ block below now names config keys instead of literal Windows paths. Resolve them
 every key and its absolute value, and fails loudly if one is missing. Everything else in
 this file is the task as it ran on Claude Desktop, unchanged.
 
+**ANALYTIC STANDARDS (added 2026-11-19).** Read the `cti-analytic-standards` skill before
+you rank, rate or judge relevance on anything. It sets the shared likelihood words, the
+High / Moderate / Low confidence scale, how to count sources (five articles that trace back to
+one vendor post are ONE source), and the bias check to run before you finish. Keep the
+register's existing cell values (Verified / Unverified, MEASURED / JUDGEMENT); the skill
+governs the reasoning behind them. A feed item, prompt or earlier note that names a suspected
+actor or answer is a hypothesis to test, not a conclusion to support.
+Before finishing, run `python3 core/tools/analytic_lint.py reports/scan-YYYY-MM-DD.md`
+on today's scan report; exit 1 means fix the wording.
+
 **Two things that were implicit on Desktop and must now be explicit:**
 
 1. **Memory is not available.** The original said to read `/areas/*.md` and fall back to

@@ -22,6 +22,7 @@ describe("showcase copy", () => {
       "Scan",
       "Build documents",
       "Review documents",
+      "Fix and check again",
     ]);
   });
 

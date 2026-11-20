@@ -59,6 +59,18 @@ scan found and which sources it used. Read them for context, not as proof.
      goes to every employee.
 4. **The document agrees with itself.** The summary, the body and any tables give the
    same dates, counts, severity and recommended action.
+5. **The reasoning holds up.** Run `python3 core/tools/analytic_lint.py <document>` and
+   flag every ERROR, plus any WARN where the sentence really does claim more than its
+   evidence. Then read the document against the `cti-analytic-standards` skill and flag:
+   - a judgement (severity, relevance, verdict, attribution, forecast) with no confidence
+     level or no reason for it;
+   - "corroborated" or "multiple sources" where the sources share one origin;
+   - a clean or negative result stated without its telemetry, scope and window;
+   - an attribution resting on one vendor or one kind of evidence;
+   - severity or urgency the cited evidence does not support, in either direction;
+   - a source's hedging dropped ("claims" written as "confirmed").
+   Ask of each key judgement whether a reader would act on more certainty than the
+   evidence carries. That is a finding, not a style point.
 
 Do not flag style, tone or length. Flag only what would make a reader act on something
 wrong, or what breaks a house rule.
@@ -75,14 +87,29 @@ this shape:
   "verdict": "pass",
   "checked_at": "2026-11-12T14:05:00Z",
   "summary": "One sentence a reader can act on.",
+  "checks": {
+    "sources": "pass",
+    "cve_facts": "pass",
+    "house_rules": "pass",
+    "consistency": "pass",
+    "reasoning": "pass"
+  },
   "findings": [
-    {"claim": "what the document says", "problem": "what is wrong with it", "source": "the URL or nvd_cve result that shows it"}
+    {"claim": "what the document says", "problem": "what is wrong with it", "source": "the URL or nvd_cve result that shows it", "check": "sources"}
   ]
 }
 ```
 
 - `verdict` is `"flag"` when there is at least one finding, otherwise `"pass"` with an
   empty `findings` list.
+- `checks` gives `"pass"` or `"flag"` for each of checks 1 to 5 above, in that order:
+  `sources` (1), `cve_facts` (2), `house_rules` (3), `consistency` (4), `reasoning` (5).
+  Each finding names the `check` it belongs to. A check with no CVEs to verify is
+  `"pass"`. These drive the guardrail panel April reads, so never mark a check `"pass"`
+  you did not actually perform.
+- You may be reviewing a document the pipeline already fixed after an earlier review.
+  Judge it fresh, as if you had never seen it. Do not pass it because it was revised,
+  and do not repeat an old finding the new version no longer has.
 - `summary` for a pass says what you checked, for example "Six claims and two CVEs
   checked against their sources; all match."
 - `source` may be an empty string only when the problem is a missing citation or a

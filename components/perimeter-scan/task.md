@@ -33,6 +33,12 @@ Read `.claude/skills/cti-exposure-team-briefing/SKILL.md`. It is the source of t
 format, the column widths, the colour rules and the build. Everything below supplements it; where
 they disagree the skill wins and you should say so in the run output.
 
+Then read `.claude/skills/cti-analytic-standards/SKILL.md`. It governs every "Where it stands"
+judgement: a measured negative carries its telemetry and window, an inherited one says so,
+and nothing reads as safe because a scan came back empty. Run
+`python tools/analytic_lint.py "<output .docx>"` on the finished briefing; exit 1 means fix the
+wording and rebuild.
+
 ONE KNOWN DEVIATION, DECIDED BY APRIL ON 2026-08-29. The skill says "one landscape page, a table
 and nothing else". That still governs PAGE ONE. Appendix A now follows on pages two onward, the
 same shape the exposure advisories use: one page body, then the working. Do not let the appendix

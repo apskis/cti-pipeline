@@ -13,6 +13,7 @@ const doc = (id: string, kind: string, firstSeen: string, status: Deliverable["s
   status,
   problem: null,
   review: null,
+  guardrail: null,
 });
 
 describe("pickFeatured", () => {

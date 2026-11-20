@@ -30,6 +30,7 @@ const PLAIN: Record<string, string> = {
   scan: "Claude reads, searches and ranks what matters",
   triage: "New items get bulletin and hunt IDs",
   build: "Documents written from each ID",
+  review: "The AI checks every document and fixes what fails",
   check: "Every document checked for breakage",
   deliver: "Ready to send",
 };

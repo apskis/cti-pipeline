@@ -17,6 +17,8 @@ const COMPONENT_AGENT: Record<string, string> = {
 export const WRITER = "Writer";
 /** Checks the Writer's documents against their sources in a fresh session. Flags only. */
 export const REVIEWER = "Reviewer";
+/** Corrects what the Reviewer or the linter flagged and rebuilds it, so no human has to. */
+export const FIXER = "Fixer";
 
 export const componentAgent = (component: string): string =>
   COMPONENT_AGENT[component] ?? "Agent";
@@ -26,7 +28,8 @@ const isBuild = (label: string): boolean => label.startsWith("build");
 /** The agent behind one model session, from the label the cost log gives it. */
 export function sessionAgent(component: string, label: string): string {
   if (isBuild(label)) return WRITER;
-  if (label === "review") return REVIEWER;
+  if (/^review(-\d+)?$/.test(label)) return REVIEWER;
+  if (/^fix-\d+$/.test(label)) return FIXER;
   return componentAgent(component);
 }
 
@@ -34,6 +37,8 @@ export function sessionAgent(component: string, label: string): string {
 export function sessionName(component: string, label: string): string {
   const pass = /^build-(\d+)$/.exec(label);
   if (pass) return `${WRITER}, pass ${pass[1]}`;
+  const round = /^(review|fix)-(\d+)$/.exec(label);
+  if (round) return `${sessionAgent(component, label)}, round ${round[2]}`;
   return sessionAgent(component, label);
 }
 
