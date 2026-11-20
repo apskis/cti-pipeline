@@ -4,7 +4,8 @@
    Sage #A2BFAE, Mist #EAF3EE, Charcoal #202C29. Components use the Tailwind names
    (bg-surface, text-accent, ...), never raw hex, so a theme is one block of overrides.
    Dark mode is Charcoal on a near black charcoal page, with Emerald lifted to #3FB48C,
-   because the brand Emerald is too dark to read on a dark page. Status colours stay red, amber and green: they carry meaning. */
+   because the brand Emerald is too dark to read on a dark page. Faint text is #9AA8A4
+   there, the darkest grey that still reads at 4.5:1 on a raised tile. Status colours stay red, amber and green: they carry meaning. */
 @theme {
   --color-page: #f4f8f6;
   --color-surface: #ffffff;
@@ -46,7 +47,7 @@
     --color-line: #35423e;
     --color-ink: #eaf3ee;
     --color-muted: #b3bfbb;
-    --color-faint: #8d9a96;
+    --color-faint: #9aa8a4;
     --color-brand: #eaf3ee;
     --color-accent: #3fb48c;
     --color-accent-hover: #5cc69f;
@@ -54,7 +55,6 @@
     --color-accent-soft: #2b3b36;
     --color-accent-soft-ink: #d6ebe0;
     --color-rung: #7fa593;
-  --color-symbol-tile: #eaf3ee;
     --color-symbol-tile: #eaf3ee;
     --color-ok-bg: #173404;
     --color-ok-ink: #c0dd97;
@@ -79,7 +79,7 @@
   --color-line: #35423e;
   --color-ink: #eaf3ee;
   --color-muted: #b3bfbb;
-  --color-faint: #8d9a96;
+  --color-faint: #9aa8a4;
   --color-brand: #eaf3ee;
   --color-accent: #3fb48c;
   --color-accent-hover: #5cc69f;
@@ -87,6 +87,7 @@
   --color-accent-soft: #2b3b36;
   --color-accent-soft-ink: #d6ebe0;
   --color-rung: #7fa593;
+  --color-symbol-tile: #eaf3ee;
   --color-ok-bg: #173404;
   --color-ok-ink: #c0dd97;
   --color-warn-bg: #412402;

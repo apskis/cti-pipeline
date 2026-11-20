@@ -1,11 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import clsx from "clsx";
+import { Info } from "lucide-react";
 import { useState } from "react";
 
 import { ApiError, useCompanies, useMe } from "./api/client";
 import { Account, NoCompany, SignIn, ViewAsBanner, ViewAsSwitch } from "./components/Account";
-import { BrandLockup, ThemeSwitch } from "./components/Brand";
-import { CompanyPicker, NoRunsNote } from "./components/CompanyPicker";
+import { ThemeSwitch } from "./components/Brand";
+import { NoRunsNote } from "./components/CompanyPicker";
+import Sidebar, { pageLabel } from "./components/Sidebar";
 import { type Route, useRoute } from "./lib/route";
 import { ThemeProvider } from "./lib/theme";
 import BuiltPage from "./pages/BuiltPage";
@@ -15,16 +16,6 @@ import ReportsPage from "./pages/ReportsPage";
 import RunsPage from "./pages/RunsPage";
 import SettingsPage from "./pages/SettingsPage";
 import StakeholdersPage from "./pages/StakeholdersPage";
-
-const TABS = [
-  { page: "overview", label: "Overview", href: "#/" },
-  { page: "reports", label: "Reports", href: "#/reports" },
-  { page: "runs", label: "Runs", href: "#/runs" },
-  { page: "cves", label: "CVEs", href: "#/cves" },
-  { page: "stakeholders", label: "Stakeholders", href: "#/stakeholders" },
-  { page: "built", label: "How it's built", href: "#/built" },
-  { page: "settings", label: "Settings", href: "#/settings/branding" },
-] as const;
 
 const Page = ({ route }: { route: Route }) => {
   switch (route.page) {
@@ -56,45 +47,34 @@ const Console = () => {
   if (companies.data?.active === "") return <NoCompany />;
   const local = me.data?.auth !== "oidc";
   return (
-        <div className="mx-auto max-w-6xl px-4 py-6 md:px-8">
-          <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b-[3px] border-accent pb-4">
-            <BrandLockup />
-            <div className="flex flex-col items-start gap-2 sm:items-end">
-              <div className="flex flex-wrap items-center gap-3 sm:justify-end">
-                <CompanyPicker />
-                <ViewAsSwitch />
-                <ThemeSwitch />
-                <Account />
-              </div>
-              <p className="text-xs text-muted">
-                {local ? "Local only. " : ""}Nothing here changes the pipeline; only companies, their branding and
-                stakeholders are saved.
-              </p>
-            </div>
-          </header>
-          <nav aria-label="Pages" className="mb-6 flex gap-1 overflow-x-auto [scrollbar-width:none] shadow-[inset_0_-1px_0_var(--color-line)]">
-            {TABS.map((tab) => (
-              <a
-                key={tab.page}
-                href={tab.href}
-                aria-current={route.page === tab.page ? "page" : undefined}
-                className={clsx(
-                  "shrink-0 border-b-2 px-3 py-2 text-sm",
-                  route.page === tab.page
-                    ? "border-accent font-medium text-brand"
-                    : "border-transparent text-muted hover:text-ink",
-                )}
-              >
-                {tab.label}
-              </a>
-            ))}
-          </nav>
-          <main>
-            <ViewAsBanner />
-            <NoRunsNote />
-            <Page route={route} />
-          </main>
-        </div>
+    <div className="md:flex md:min-h-screen">
+      <Sidebar current={route.page} />
+      <div className="min-w-0 flex-1">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-4 md:px-8">
+          <div className="leading-tight">
+            <p className="text-xs text-faint">Console</p>
+            <h2 className="text-xl font-semibold tracking-tight text-brand">{pageLabel(route.page)}</h2>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <ViewAsSwitch />
+            <ThemeSwitch />
+            <Account />
+          </div>
+        </header>
+        <main className="mx-auto max-w-6xl px-4 py-6 md:px-8">
+          <p className="mb-6 flex items-start gap-2 rounded-lg border border-line bg-surface px-4 py-3 text-sm text-muted">
+            <Info aria-hidden size={16} className="mt-0.5 shrink-0 text-accent" />
+            <span>
+              {local && <strong className="font-medium text-ink">Local only. </strong>}
+              Nothing here changes the pipeline; only companies, their branding and stakeholders are saved.
+            </span>
+          </p>
+          <ViewAsBanner />
+          <NoRunsNote />
+          <Page route={route} />
+        </main>
+      </div>
+    </div>
   );
 };
 

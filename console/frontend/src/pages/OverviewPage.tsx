@@ -1,20 +1,38 @@
+import clsx from "clsx";
+import {
+  ArrowRight,
+  CalendarDays,
+  Coins,
+  Crosshair,
+  FileText,
+  type LucideIcon,
+  Newspaper,
+  ShieldAlert,
+} from "lucide-react";
+import { useMemo } from "react";
+
 import { useDeliverables, useRuns, useSummary } from "../api/client";
-import type { GuardrailCounts, Summary } from "../api/types";
+import type { GuardrailCounts, Run, Summary } from "../api/types";
 import LoadState from "../components/LoadState";
-import PipelineFlow from "../components/PipelineFlow";
+import PipelineFlow, { StatusTally } from "../components/PipelineFlow";
 import RunHistoryChart from "../components/RunHistoryChart";
 import StatTile from "../components/StatTile";
-import { clearedLine, needsHuman } from "../lib/guardrails";
 import { pickFeatured } from "../lib/featured";
-import { formatCount, formatDay, formatMoney } from "../lib/format";
+import { formatCount, formatDay, formatMoney, formatShortDay } from "../lib/format";
+import { clearedLine, needsHuman } from "../lib/guardrails";
 import { reportHref } from "../lib/route";
+import { costByDay } from "../lib/runHistory";
 
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <section className="mt-8">
-    <h2 className="mb-3 text-sm font-medium text-muted">{title}</h2>
-    {children}
-  </section>
+const Card = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <section className={clsx("rounded-xl border border-line bg-surface p-4 md:p-5", className)}>{children}</section>
 );
+
+const KIND_ICONS: Record<string, LucideIcon> = {
+  bulletin: Newspaper,
+  hunt: Crosshair,
+  cve_brief: ShieldAlert,
+  weekly: CalendarDays,
+};
 
 const StartHere = () => {
   const deliverables = useDeliverables();
@@ -30,23 +48,64 @@ const StartHere = () => {
     return <p className="text-sm text-muted">No finished reports under out/ yet.</p>;
   }
   return (
-    <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      {featured.map(({ label, blurb, item }) => (
-        <li key={item.id}>
-          <a
-            href={reportHref(item.id)}
-            className="flex h-full flex-col rounded-lg border border-line bg-surface p-4 hover:bg-raised"
-          >
-            <span className="text-xs text-muted">{label}</span>
-            <span className="mt-1 text-sm font-medium">{item.title}</span>
-            <span className="mt-1 text-xs text-muted">{blurb}</span>
-            <span className="mt-auto pt-3 text-xs text-faint">
-              {item.id} · {formatDay(item.first_seen)}
-            </span>
-          </a>
-        </li>
-      ))}
+    <ul className="grid gap-3 sm:grid-cols-2">
+      {featured.map(({ label, blurb, item }) => {
+        const Icon = KIND_ICONS[item.kind] ?? FileText;
+        return (
+          <li key={item.id}>
+            <a
+              href={reportHref(item.id)}
+              className="group flex h-full flex-col rounded-xl border border-line bg-surface p-4 hover:border-accent/60 hover:bg-raised"
+            >
+              <span className="flex items-center gap-1.5 text-xs text-muted">
+                <Icon aria-hidden size={14} className="text-accent" />
+                {label}
+              </span>
+              <span className="mt-2 font-semibold leading-snug">{item.title}</span>
+              <span className="mt-1 text-xs text-muted">{blurb}</span>
+              <span className="mt-auto flex items-center justify-between gap-2 pt-4 font-mono text-xs text-faint">
+                {item.id} · {formatDay(item.first_seen)}
+                <ArrowRight aria-hidden size={14} className="shrink-0 group-hover:text-accent" />
+              </span>
+            </a>
+          </li>
+        );
+      })}
     </ul>
+  );
+};
+
+/** The chart in a card that says what it covers and what it adds up to. */
+interface CostCardProps {
+  runs: Run[] | undefined;
+  error: Error | null;
+  /** The summary's total, so the card and the Model cost tile never show two figures. */
+  total: number;
+}
+
+const CostCard = ({ runs, error, total }: CostCardProps) => {
+  const days = useMemo(() => (runs ? costByDay(runs) : []), [runs]);
+  const first = days[0];
+  const last = days[days.length - 1];
+  return (
+    <Card className="flex h-full flex-col">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <h3 className="font-semibold">Run history: model cost per day</h3>
+          {first && last && (
+            <p className="mt-0.5 text-xs text-faint">
+              {formatShortDay(first.day)} to {formatShortDay(last.day)}, split by stage
+            </p>
+          )}
+        </div>
+        {days.length > 0 && <p className="font-mono text-lg font-semibold">{formatMoney(total)}</p>}
+      </div>
+      {runs ? (
+        <RunHistoryChart runs={runs} />
+      ) : (
+        <p className="text-sm text-muted">{error ? error.message : "Loading runs."}</p>
+      )}
+    </Card>
   );
 };
 
@@ -58,46 +117,48 @@ const SelfCheck = ({ counts }: { counts: GuardrailCounts }) => {
   const deliverables = useDeliverables();
   const waiting = needsHuman(deliverables.data ?? []);
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
-  if (total === 0) {
-    return (
-      <p className="text-sm text-muted">
-        No document has been through the AI self check yet. The next scan runs it.
-      </p>
-    );
-  }
   return (
-    <div className="rounded-xl border border-line bg-surface p-4">
-      <p className="font-medium">{clearedLine(counts)}</p>
-      <p className="mt-1 text-sm text-muted">
-        Every document is checked against its sources, NVD, the house rules and the bias
-        guardrails, then fixed and checked again by the AI until it passes.
-      </p>
-      <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatTile label="Verified first time" value={formatCount(counts.verified)} />
-        <StatTile label="Fixed itself" value={formatCount(counts["self-corrected"])} />
-        <StatTile label="Still checking" value={formatCount(counts.fixing)} />
-        <StatTile label="Needs you" value={formatCount(counts["needs-human"])} />
-      </div>
-      {waiting.length > 0 ? (
-        <ul aria-label="Needs you" className="mt-3 space-y-1 text-sm">
-          {waiting.map((d) => (
-            <li key={d.id}>
-              <a href={reportHref(d.id)} className="underline">
-                {d.id} {d.title}
-              </a>
-              {/* One line here, the full reasons in the reader: this list is for deciding fast. */}
-              {d.guardrail?.open_issues[0] && (
-                <p className="line-clamp-1 text-muted" title={d.guardrail.open_issues[0]}>
-                  {d.guardrail.open_issues[0]}
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
+    <Card className="mt-6">
+      <h3 className="font-semibold">AI self check</h3>
+      {total === 0 ? (
+        <p className="mt-1 text-sm text-muted">
+          No document has been through the AI self check yet. The next scan runs it.
+        </p>
       ) : (
-        <p className="mt-3 text-sm text-ok-ink">Nothing needs you.</p>
+        <>
+          <p className="mt-1 font-medium">{clearedLine(counts)}</p>
+          <p className="mt-1 text-sm text-muted">
+            Every document is checked against its sources, NVD, the house rules and the bias
+            guardrails, then fixed and checked again by the AI until it passes.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <StatTile label="Verified first time" value={formatCount(counts.verified)} />
+            <StatTile label="Fixed itself" value={formatCount(counts["self-corrected"])} />
+            <StatTile label="Still checking" value={formatCount(counts.fixing)} />
+            <StatTile label="Needs you" value={formatCount(counts["needs-human"])} />
+          </div>
+          {waiting.length > 0 ? (
+            <ul aria-label="Needs you" className="mt-3 space-y-1 text-sm">
+              {waiting.map((d) => (
+                <li key={d.id}>
+                  <a href={reportHref(d.id)} className="underline">
+                    {d.id} {d.title}
+                  </a>
+                  {/* One line here, the full reasons in the reader: this list is for deciding fast. */}
+                  {d.guardrail?.open_issues[0] && (
+                    <p className="line-clamp-1 text-muted" title={d.guardrail.open_issues[0]}>
+                      {d.guardrail.open_issues[0]}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-ok-ink">Nothing needs you.</p>
+          )}
+        </>
       )}
-    </div>
+    </Card>
   );
 };
 
@@ -134,43 +195,49 @@ const OverviewPage = () => {
   if (isEmpty(s)) {
     return <NothingYet />;
   }
-  const bulletins = s.counts.bulletin ?? 0;
-  const hunts = s.counts.hunt ?? 0;
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatTile label="Bulletins" value={formatCount(bulletins)} />
-        <StatTile label="Hunt packages" value={formatCount(hunts)} />
-        <StatTile label="CVEs tracked" value={formatCount(s.cves_tracked)} />
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatTile label="Bulletins" value={formatCount(s.counts.bulletin ?? 0)} Icon={Newspaper} />
+        <StatTile label="Hunt packages" value={formatCount(s.counts.hunt ?? 0)} Icon={Crosshair} />
+        <StatTile label="CVEs tracked" value={formatCount(s.cves_tracked)} Icon={ShieldAlert} />
         <StatTile
           label="Model cost"
           value={formatMoney(s.total_cost_usd)}
           detail={`${s.run_days} run days, at API prices, covered by the plan`}
+          Icon={Coins}
+          highlight
         />
       </div>
 
-      <Section title="AI self check">
-        <SelfCheck counts={s.guardrails} />
-      </Section>
+      <SelfCheck counts={s.guardrails} />
 
-      <Section title="Start here">
-        <StartHere />
-      </Section>
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+        <section>
+          <div className="mb-3 flex items-baseline justify-between gap-3">
+            <h3 className="font-semibold">Start here</h3>
+            <p className="text-xs text-faint">Latest of each document type</p>
+          </div>
+          <StartHere />
+        </section>
+        <CostCard runs={runs.data} error={runs.error} total={s.total_cost_usd} />
+      </div>
 
-      <Section
-        title={s.last_scan ? `How the last scan ran, ${formatDay(s.last_scan.started)}` : "How a run works"}
-      >
+      <Card className="mt-6">
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3 className="font-semibold">
+              {s.last_scan ? `How the last scan ran, ${formatDay(s.last_scan.started)}` : "How a run works"}
+            </h3>
+            <p className="mt-0.5 text-xs text-faint">
+              {s.stages.length} stages, from feeds to delivery
+            </p>
+          </div>
+          <StatusTally stages={s.stages} />
+        </div>
         <PipelineFlow stages={s.stages} />
-      </Section>
-
-      <Section title="Run history: model cost per day">
-        {runs.data ? (
-          <RunHistoryChart runs={runs.data} />
-        ) : (
-          <p className="text-sm text-muted">{runs.error ? runs.error.message : "Loading runs."}</p>
-        )}
-      </Section>
+      </Card>
     </>
   );
 };
