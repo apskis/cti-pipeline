@@ -48,6 +48,10 @@ yourself.
    that match `osint_sources_used`, no invented percentages or quarter-over-quarter
    comparisons unless prior-quarter data was actually supplied). Read that skill before
    writing anything.
+   Also follow the **`cti-analytic-standards`** skill for every risk level, threat level,
+   trend and outlook: ICD 203 likelihood words only, confidence in a separate sentence,
+   a trend counted from independent sources rather than repeats of one report, and no
+   urgency the data does not support.
 
 3. **Write the analysis.** Save the analysis as **`$OUTPUT_DIR/analysis_result.json`** —
    a single JSON object matching the MODE's schema. This file is the only thing you
@@ -71,6 +75,9 @@ yourself.
 - **Industry specificity.** Only name an industry as targeted if the source says so; for
   broad campaigns use general language ("organizations across multiple sectors").
 - **Do not use Hyphens.**
+- **Lint the analysis.** Before finishing run
+  `python core/tools/analytic_lint.py "$OUTPUT_DIR/analysis_result.json"`. Exit 1 means fix
+  the wording. The entrypoint runs it again and writes `analytic_lint.txt` beside the report.
 - **Memory is not available** in this runtime; the collected data and any mounted
   prior-run outputs are the only context. Say so in your run output.
 - **Delivery.** There is no SendUserFile here. Writing `$OUTPUT_DIR/analysis_result.json`

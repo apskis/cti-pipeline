@@ -40,9 +40,15 @@ class Session:
         return self.label.startswith("build")
 
     @property
+    def is_self_check(self) -> bool:
+        """A reviewer or fixer session of the self check loop ("review", "review-2", "fix-1")."""
+        name, _, round_no = self.label.partition("-")
+        return name in ("review", "fix") and (round_no == "" or round_no.isdigit())
+
+    @property
     def is_follow_on(self) -> bool:
-        """A builder or reviewer session: it continues the run its scan started."""
-        return self.is_build or self.label == "review"
+        """A builder, reviewer or fixer session: it continues the run its scan started."""
+        return self.is_build or self.is_self_check
 
 
 @dataclass

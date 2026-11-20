@@ -73,8 +73,18 @@ are not broken, so a demo opens on a working document. If the backend is not run
 page says how to start it and offers a retry. With no output at all it says how to make
 some, and every list says so when it is empty.
 
-The Reports page lists every deliverable, filtered by kind, status and a search on ID or
-title. Picking one opens it in the reader, rendered from its `.docx`, with a button to
+The overview's **AI self check** section shows how many documents the AI cleared with no
+human (verified first time, or fixed itself after failing a check) and lists the few that
+need you, each with its reason on one line. This is the part of the page to read first:
+the pipeline checks and corrects its own work, and a person only decides what it could
+not clear.
+
+The Reports page lists every deliverable, filtered by kind, status (including **Needs
+you**) and a search on ID or title. Each row carries its self check state: Verified,
+Fixed itself, Checking or Needs you. The reader opens with the self check panel: one
+headline, the six guardrails with a tick or a cross, and the reasons only when the AI
+could not clear the document. The Reviewer's own notes sit one click below it.
+Picking one opens it in the reader, rendered from its `.docx`, with a button to
 download the original. A report has its own link, such as `#/reports/CTI26-137`, for a
 demo script or a bookmark.
 
@@ -318,6 +328,11 @@ heading in the HTML, because the pipeline writes its headings that way.
 - **CVEs:** the newest `CVE_Register_*.xlsx`, sheet `CVE Register`, read only. "Exploited"
   is read from the register's free text exploitation status. A bulletin or hunt cell is
   linked only when it holds a real ID, because a few older rows are shifted a column.
+- **AI self check:** every `out/*/state/guardrails/<ID>.json`, written by
+  `scripts/self_check.py` after each review round: the state, each guardrail's result,
+  the rounds taken and the reasons left open. The Reviewer's verdicts are
+  `out/*/state/reviews/<ID>.json`. Both are model influenced text, so the console checks
+  their shape, caps every string and renders them as text only.
 - **Stages:** the run's log in `logs/`, its `reports/scan-<date>.md` and the dedup log.
   When a source is missing or silent the stage says `unknown`, never a guess.
 

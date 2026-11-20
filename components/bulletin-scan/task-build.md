@@ -98,4 +98,9 @@ keys were wrong: fix them and rebuild. Never report a shell as done.
   takes the item out of the batch for the rest of this run, so write it only when you have
   genuinely exhausted the options above: it is the difference between one wasted slot and a
   slot wasted in every remaining pass. The next run clears the markers and retries.
+- Write every judgement to the `cti-analytic-standards` skill: ICD 203 likelihood words,
+  a High / Moderate / Low confidence in its own sentence with its reason, sources whose
+  independence is stated, and negative results with their coverage. After each document
+  is built run `python3 core/tools/analytic_lint.py <out.docx>`. Exit 1 means fix the
+  wording in the spec and rebuild. Fix or justify each WARN in the run output.
 - Finish with one line per item: ID, path written, or the reason it failed.

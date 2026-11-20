@@ -87,7 +87,7 @@ Suspicious side-finding, an environmental gap, or campaign pressure in the glanc
       "id": "TH26-07A",
       "title": "SmartApeSG / NetSupport",
       "verdict": "NOT SUPPORTED",
-      "confidence": "Medium-High",
+      "confidence": "Moderate",
       "flag": "Campaign pressure",
       "pivot_of": "TH26-07",
       "archived": "2026-08-20-SmartApeSGNetSupport-TH2607A-Complete.docx",

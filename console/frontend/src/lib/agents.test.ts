@@ -16,6 +16,8 @@ describe("agent names", () => {
     expect(sessionName("bulletin-scan", "build-2")).toBe("Writer, pass 2");
     expect(sessionName("reporting", "scan")).toBe("Reporter");
     expect(sessionName("bulletin-scan", "review")).toBe("Reviewer");
+    expect(sessionName("bulletin-scan", "review-2")).toBe("Reviewer, round 2");
+    expect(sessionName("bulletin-scan", "fix-1")).toBe("Fixer, round 1");
   });
 
   it("lists the agents in a run once each, in order", () => {

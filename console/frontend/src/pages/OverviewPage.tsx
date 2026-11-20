@@ -12,13 +12,14 @@ import {
 import { useMemo } from "react";
 
 import { useDeliverables, useRuns, useSummary } from "../api/client";
-import type { Run, Summary } from "../api/types";
+import type { GuardrailCounts, Run, Summary } from "../api/types";
 import LoadState from "../components/LoadState";
 import PipelineFlow, { StatusTally } from "../components/PipelineFlow";
 import RunHistoryChart from "../components/RunHistoryChart";
 import StatTile from "../components/StatTile";
 import { pickFeatured } from "../lib/featured";
 import { formatCount, formatDay, formatMoney, formatShortDay } from "../lib/format";
+import { clearedLine, needsHuman } from "../lib/guardrails";
 import { reportHref } from "../lib/route";
 import { costByDay } from "../lib/runHistory";
 
@@ -108,6 +109,59 @@ const CostCard = ({ runs, error, total }: CostCardProps) => {
   );
 };
 
+/**
+ * The AI self check at a glance: how much it cleared on its own, and the short list of
+ * documents it could not, each one click from its reasons. A human reads this in seconds.
+ */
+const SelfCheck = ({ counts }: { counts: GuardrailCounts }) => {
+  const deliverables = useDeliverables();
+  const waiting = needsHuman(deliverables.data ?? []);
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  return (
+    <Card className="mt-6">
+      <h3 className="font-semibold">AI self check</h3>
+      {total === 0 ? (
+        <p className="mt-1 text-sm text-muted">
+          No document has been through the AI self check yet. The next scan runs it.
+        </p>
+      ) : (
+        <>
+          <p className="mt-1 font-medium">{clearedLine(counts)}</p>
+          <p className="mt-1 text-sm text-muted">
+            Every document is checked against its sources, NVD, the house rules and the bias
+            guardrails, then fixed and checked again by the AI until it passes.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <StatTile label="Verified first time" value={formatCount(counts.verified)} />
+            <StatTile label="Fixed itself" value={formatCount(counts["self-corrected"])} />
+            <StatTile label="Still checking" value={formatCount(counts.fixing)} />
+            <StatTile label="Needs you" value={formatCount(counts["needs-human"])} />
+          </div>
+          {waiting.length > 0 ? (
+            <ul aria-label="Needs you" className="mt-3 space-y-1 text-sm">
+              {waiting.map((d) => (
+                <li key={d.id}>
+                  <a href={reportHref(d.id)} className="underline">
+                    {d.id} {d.title}
+                  </a>
+                  {/* One line here, the full reasons in the reader: this list is for deciding fast. */}
+                  {d.guardrail?.open_issues[0] && (
+                    <p className="line-clamp-1 text-muted" title={d.guardrail.open_issues[0]}>
+                      {d.guardrail.open_issues[0]}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-ok-ink">Nothing needs you.</p>
+          )}
+        </>
+      )}
+    </Card>
+  );
+};
+
 const isEmpty = (s: Summary): boolean =>
   s.last_scan === null && s.run_days === 0 && Object.values(s.counts).every((n) => n === 0);
 
@@ -156,6 +210,8 @@ const OverviewPage = () => {
           highlight
         />
       </div>
+
+      <SelfCheck counts={s.guardrails} />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
         <section>

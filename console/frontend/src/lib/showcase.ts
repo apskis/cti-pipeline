@@ -46,8 +46,19 @@ export const AGENTS: Agent[] = [
     role: "Check",
     cadence: "After each build",
     model: "Sonnet 4.5 in the cloud, Opus locally",
-    why: "Reads each new document cold, with none of the Writer's context, and checks every claim against its source and every CVE against NVD. That is judgement, so it gets the strong model. It flags problems and never edits: a person decides.",
-    tools: ["NVD", "Web fetch"],
+    why: "Reads each new document cold, with none of the Writer's context, and checks every claim against its source, every CVE against NVD, and the reasoning against the bias guardrails. That is judgement, so it gets the strong model. It flags and never edits, and it judges a fixed document as fresh as the first time.",
+    tools: ["NVD", "Web fetch", "Analytic linter"],
+    status: "live",
+    statusNote: "Runs locally today",
+  },
+  {
+    persona: "Fixer",
+    name: "Self correction",
+    role: "Fix",
+    cadence: "After any failed check",
+    model: "Sonnet 4.5 in the cloud, Opus locally",
+    why: "Corrects what the Reviewer or the linter flagged and rebuilds the document, then the Reviewer checks it again, up to three rounds. It removes a claim it cannot source rather than invent one, and never weakens a true finding to pass. A person only reads what it could not clear.",
+    tools: ["15 GeneLabs skills", "Analytic linter", "Web fetch"],
     status: "live",
     statusNote: "Runs locally today",
   },
@@ -153,8 +164,20 @@ export const HANDOFFS: Handoff[] = [
   {
     actor: "Reviewer",
     model: "Sonnet 4.5 or Opus",
-    does: "Checks each document against its sources and NVD and flags what does not hold up. It cannot edit a document.",
+    does: "Checks each document against its sources, NVD and the bias guardrails and flags what does not hold up. It cannot edit a document.",
     leaves: "One review per document",
+  },
+  {
+    actor: "Coordinator",
+    model: null,
+    does: "Lints every reviewed document in code, records the round, and sends anything that failed to the Fixer.",
+    leaves: "Fix list and a guardrail record per document",
+  },
+  {
+    actor: "Fixer",
+    model: "Sonnet 4.5 or Opus",
+    does: "Corrects and rebuilds each flagged document. The Reviewer then checks it again, up to three rounds.",
+    leaves: "Corrected documents",
   },
   {
     actor: "Coordinator",
@@ -213,7 +236,13 @@ export const FLOW: FlowStep[] = [
     title: "Review documents",
     by: "model",
     who: "Sonnet 4.5 or Opus",
-    what: "A fresh Reviewer checks each new document's claims against its sources and NVD. It flags, never edits, and a failed review never stops a run from shipping.",
+    what: "A fresh Reviewer checks each new document's claims against its sources and NVD, and its reasoning against the bias guardrails. A linter checks the confidence wording in code.",
+  },
+  {
+    title: "Fix and check again",
+    by: "model",
+    who: "Sonnet 4.5 or Opus",
+    what: "The Fixer corrects whatever failed and the Reviewer checks it again, up to three rounds, with no human in the loop. Only what the AI cannot clear reaches a person, with its reasons.",
   },
   {
     title: "Check and finalize",
@@ -235,6 +264,10 @@ export interface Practice {
 }
 
 export const PRACTICES: Practice[] = [
+  {
+    title: "The AI checks itself until it passes",
+    body: "Every document goes through review, a code linter and the bias guardrails: one source counted once, confidence and likelihood kept apart, a negative result stated with its coverage, other explanations considered. What fails is fixed and checked again automatically. A person spends seconds on the outcome, not minutes on the document.",
+  },
   {
     title: "The right model for each job",
     body: "Research and judgement get Sonnet or Opus. Template filling gets Haiku. Anything with no judgement in it runs as plain code. Model choice is a cost decision made per step.",
