@@ -201,25 +201,49 @@ if [ -f "$BUILD_TASK" ]; then
   done
 fi
 
-# Reviewer pass: a fresh session, with no share in the builders' context, checks each
-# document built this run against its sources and NVD and writes state/reviews/<ID>.json.
-# It only flags: Edit and Write are withheld so it cannot change a document. A reviewer
-# failure is logged and ignored, because the documents are already built and an
-# unreviewed document is still worth shipping. REVIEW=0 turns the pass off; REVIEW_ALL=1
+# Self check loop: the AI checks and corrects itself so April only reads the outcome.
+# Each round a reviewer (a fresh session, no share in the builders' context, Edit and Write
+# withheld) checks the documents against their sources, NVD, the house rules and the
+# cti-analytic-standards skill and writes state/reviews/<ID>.json. Then self_check.py lints
+# each one in code, records the round in state/guardrails/<ID>.json, and sends anything
+# failing to a fix pass, which corrects and rebuilds it. A rebuilt document is newer than
+# its review, so the next round's queue picks it up again. The loop ends when nothing fails
+# or SELF_CHECK_ROUNDS (default 3) is spent; whatever still fails is marked needs-human
+# with a one line reason. A reviewer or fixer failure stops the loop but not the job: the
+# documents are built and still worth shipping. REVIEW=0 turns the loop off; REVIEW_ALL=1
 # reviews older unreviewed documents too (REVIEW_BATCH at a time), e.g. with SKIP_SCAN=1.
+# FIX_MODEL defaults to the reviewer's model, because fixing reasoning is judgement.
 REVIEW_TASK="$PROMPTS/task-review.md"
+FIX_TASK="$PROMPTS/task-fix.md"
 if [ -f "$REVIEW_TASK" ] && [ "${REVIEW:-1}" != "0" ]; then
   REVIEW_LIST="$OUTPUT_DIR/state/_work/review.json"
+  FIX_LIST="$OUTPUT_DIR/state/_work/fix.json"
+  ROUNDS="${SELF_CHECK_ROUNDS:-3}"
+  : "${FIX_MODEL:=${REVIEW_MODEL:-}}"
   SINCE=(--since "$RUN_STARTED")
   [ "${REVIEW_ALL:-0}" = "1" ] && SINCE=()
-  if python3 scripts/review_queue.py "${SINCE[@]}" --batch "${REVIEW_BATCH:-6}" --out "$REVIEW_LIST"; then
-    echo "[entrypoint] reviewer pass model=${REVIEW_MODEL:-plan default}"
+  rm -rf "$OUTPUT_DIR/state/_work/fixes"
+  for round in $(seq 1 "$ROUNDS"); do
+    python3 scripts/review_queue.py "${SINCE[@]}" --batch "${REVIEW_BATCH:-6}" --out "$REVIEW_LIST" || break  # 3 = nothing to review
+    echo "[entrypoint] self check round $round of $ROUNDS: reviewer model=${REVIEW_MODEL:-plan default}"
     # The prompt comes first: --disallowedTools takes a list and would swallow it.
-    run_claude review \
+    if ! run_claude "review-$round" \
       "Read ${REVIEW_TASK} and review every document listed in ${REVIEW_LIST}. The output folder is ${OUTPUT_DIR}. Report one line per document." \
-      ${REVIEW_MODEL:+--model "$REVIEW_MODEL"} --disallowedTools Edit Write \
-      || echo "[entrypoint] reviewer pass failed; documents ship unreviewed (REVIEW_ALL=1 reviews them later)"
-  fi
+      ${REVIEW_MODEL:+--model "$REVIEW_MODEL"} --disallowedTools Edit Write; then
+      echo "[entrypoint] reviewer failed in round $round; unreviewed documents ship and REVIEW_ALL=1 reviews them later"
+      break
+    fi
+    python3 scripts/self_check.py record --round "$round" --max "$ROUNDS" \
+      --list "$REVIEW_LIST" --out "$FIX_LIST" && rc=0 || rc=$?
+    [ "$rc" -eq 3 ] && continue   # this batch passed; the next round reviews any backlog
+    [ "$rc" -eq 0 ] || { echo "[entrypoint] self check record failed (exit $rc)"; break; }
+    [ -f "$FIX_TASK" ] || break
+    echo "[entrypoint] self check round $round: fix pass model=${FIX_MODEL:-plan default}"
+    run_claude "fix-$round" ${FIX_MODEL:+--model "$FIX_MODEL"} \
+      "Read ${FIX_TASK} and fix every item listed in ${FIX_LIST}. The output folder is ${OUTPUT_DIR}. Report one line per item." \
+      || { echo "[entrypoint] fix pass failed in round $round; flagged documents go to April"; break; }
+  done
+  python3 scripts/self_check.py finalize
 fi
 
 # Reporting is the analysis layer only: Claude wrote analysis_result.json, and the

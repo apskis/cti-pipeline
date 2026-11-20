@@ -87,14 +87,29 @@ this shape:
   "verdict": "pass",
   "checked_at": "2026-11-12T14:05:00Z",
   "summary": "One sentence a reader can act on.",
+  "checks": {
+    "sources": "pass",
+    "cve_facts": "pass",
+    "house_rules": "pass",
+    "consistency": "pass",
+    "reasoning": "pass"
+  },
   "findings": [
-    {"claim": "what the document says", "problem": "what is wrong with it", "source": "the URL or nvd_cve result that shows it"}
+    {"claim": "what the document says", "problem": "what is wrong with it", "source": "the URL or nvd_cve result that shows it", "check": "sources"}
   ]
 }
 ```
 
 - `verdict` is `"flag"` when there is at least one finding, otherwise `"pass"` with an
   empty `findings` list.
+- `checks` gives `"pass"` or `"flag"` for each of checks 1 to 5 above, in that order:
+  `sources` (1), `cve_facts` (2), `house_rules` (3), `consistency` (4), `reasoning` (5).
+  Each finding names the `check` it belongs to. A check with no CVEs to verify is
+  `"pass"`. These drive the guardrail panel April reads, so never mark a check `"pass"`
+  you did not actually perform.
+- You may be reviewing a document the pipeline already fixed after an earlier review.
+  Judge it fresh, as if you had never seen it. Do not pass it because it was revised,
+  and do not repeat an old finding the new version no longer has.
 - `summary` for a pass says what you checked, for example "Six claims and two CVEs
   checked against their sources; all match."
 - `source` may be an empty string only when the problem is a missing citation or a
