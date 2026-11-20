@@ -25,8 +25,9 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash && rm -rf /var/lib/apt/lis
 
 WORKDIR /app
 COPY . /app
-# Deps via pip: no lockfile is shipped and core/pyproject.toml pins Python 3.13, which
-# this base image does not carry, so `uv sync` never installed anything.
+# Deps via pip from deploy/requirements.txt, not uv. core/uv.lock exists, but
+# core/pyproject.toml requires Python 3.13 and this base image is 3.11, so `uv sync`
+# would refuse to install.
 # The symlink exposes core/.claude (settings + skills) at the project root Claude Code
 # actually reads, which is the cwd (/app).
 # Strip CR from shell scripts in case the build context came from a Windows checkout
