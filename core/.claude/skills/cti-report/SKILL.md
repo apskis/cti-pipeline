@@ -49,6 +49,11 @@ Two modes. Read `$MODE` (`weekly` default, or `quarterly`) and build the matchin
 7. **No invented numbers.** Do not state percentages or quarter-over-quarter changes unless
    the data supports them. Prefer absolute counts from the current period.
 8. **Do not use Hyphens.**
+9. **Analytic standards.** Every `risk_assessment` level, threat level and outlook follows the
+   `cti-analytic-standards` skill: ICD 203 likelihood words only, never fused with a
+   confidence level in one sentence; each level's rationale names the evidence behind it;
+   a trend rests on independent sources, not one report repeated. `analytic_lint.py` must
+   exit 0 on the finished JSON.
 
 Output: a single JSON object. No markdown, no code fences, no prose around it.
 

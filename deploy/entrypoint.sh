@@ -227,6 +227,10 @@ fi
 if [ "$COMPONENT" = "reporting" ]; then
   ANALYSIS="${OUTPUT_DIR}/analysis_result.json"
   [ -f "$ANALYSIS" ] || { echo "[entrypoint] reporting: ${ANALYSIS} missing — analysis did not complete"; exit 4; }
+  # Wording check from the cti-analytic-standards skill. It never blocks the render: a report
+  # with a flagged sentence is still worth shipping, and the findings ship beside it.
+  python core/tools/analytic_lint.py "$ANALYSIS" > "${OUTPUT_DIR}/analytic_lint.txt" \
+    || echo "[entrypoint] analytic lint flagged wording; see ${OUTPUT_DIR}/analytic_lint.txt"
   echo "[entrypoint] rendering ${MODE} report from ${ANALYSIS}"
   python core/tools/reporting/render_report.py --mode "$MODE" \
     --analysis "$ANALYSIS" --out-dir "$OUTPUT_DIR"

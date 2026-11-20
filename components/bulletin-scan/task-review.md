@@ -59,6 +59,18 @@ scan found and which sources it used. Read them for context, not as proof.
      goes to every employee.
 4. **The document agrees with itself.** The summary, the body and any tables give the
    same dates, counts, severity and recommended action.
+5. **The reasoning holds up.** Run `python3 core/tools/analytic_lint.py <document>` and
+   flag every ERROR, plus any WARN where the sentence really does claim more than its
+   evidence. Then read the document against the `cti-analytic-standards` skill and flag:
+   - a judgement (severity, relevance, verdict, attribution, forecast) with no confidence
+     level or no reason for it;
+   - "corroborated" or "multiple sources" where the sources share one origin;
+   - a clean or negative result stated without its telemetry, scope and window;
+   - an attribution resting on one vendor or one kind of evidence;
+   - severity or urgency the cited evidence does not support, in either direction;
+   - a source's hedging dropped ("claims" written as "confirmed").
+   Ask of each key judgement whether a reader would act on more certainty than the
+   evidence carries. That is a finding, not a style point.
 
 Do not flag style, tone or length. Flag only what would make a reader act on something
 wrong, or what breaks a house rule.
